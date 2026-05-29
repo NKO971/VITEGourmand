@@ -87,10 +87,10 @@
           <div class="card-body">
             <h5 class="card-title fw-bold"><?php echo htmlspecialchars($menu['titre']); ?></h5>
             
-            <p class="text-muted small mb-2"><i class="bi bi-tag"></i> Thème ID : <?php echo $menu['theme_id']; ?></p>
+            <p class="text-muted small mb-2"><i class="bi bi-tag"></i> Thème : <?php echo htmlspecialchars($menu['theme_libelle']); ?></p>
 
             <div class="d-flex gap-2 mb-3">
-              <span class="badge bg-success-subtle text-success">Régime ID : <?php echo $menu['regime_id']; ?></span>
+              <span class="badge bg-success-subtle text-success"><?php echo htmlspecialchars($menu['regime_libelle']); ?></span>
               <span class="badge bg-info-subtle text-info">Min. <?php echo $menu['nombre_personne_minimum']; ?> pers</span>
             </div>
 

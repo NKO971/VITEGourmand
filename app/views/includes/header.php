@@ -1,32 +1,27 @@
 <!DOCTYPE html>
 <html lang="fr">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>
-<?php 
-echo $title ?? 'vg'; 
-?>
-    </title>
-         <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
-         <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
-         <link rel="stylesheet" href="/public/css/style.css">
+    <title><?php echo $title ?? 'ViteGourmand'; ?></title>
 
-<?php 
-if (isset($specificCss)): ?>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
+
+    <?php if (isset($specificCss) && is_array($specificCss)): ?>
     <?php foreach ($specificCss as $css): ?>
-        <link rel="stylesheet" href="<?= $css ?>">
+        <link rel="stylesheet" href="/VITEGourmand/public/<?php echo ltrim($css, '/'); ?>">
     <?php endforeach; ?>
-    <?php endif; ?>
-    
-<?php 
-if (isset($specificJS)): ?>
-   <?php foreach ($specificJS as $script): ?>
-        <script src="<?= $script ?>" defer></script>
+<?php endif; ?>
+
+<?php if (isset($specificJS) && is_array($specificJS)): ?>
+    <?php foreach ($specificJS as $script): ?>
+        <script src="/VITEGourmand/public/<?php echo ltrim($script, '/'); ?>" defer></script>
     <?php endforeach; ?>
-    <?php endif; ?>
+<?php endif; ?>
 </head>
+<body>
 <header>
     
     <nav class="navbar navbar-expand-lg">

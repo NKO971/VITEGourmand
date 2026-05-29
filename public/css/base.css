@@ -1,0 +1,92 @@
+  /* VARIABLES DU THÈME (À mettre idéalement dans :root) */
+   
+:root {
+    --vg-blue-dark: #0f172a;       /* Bleu nuit pour les titres */
+    --vg-blue-primary: #1e40af;    /* Bleu Royal (Boutons secondaires, liens) */
+    --vg-blue-soft: #f1f5f9;       /* Fond du bloc filtre (remplace le bg-light gris) */
+    
+    --vg-orange-primary: #ff7a00;  /* Orange ViteGourmand (Boutons, prix, badges) */
+    --vg-orange-hover: #e06a00;    
+    --vg-orange-light: #fff7ed;    /* Fond orange très clair pour les badges */
+}
+
+   /* STYLE DU BLOC DE FILTRES */
+   
+.vg-filter-container {
+    background-color: var(--vg-blue-soft) !important;
+    border: 1px solid rgba(30, 64, 175, 0.08) !important;
+    border-radius: 12px !important;
+}
+
+/* Titre des filtres */
+.vg-filter-title {
+    color: var(--vg-blue-primary) !important;
+    letter-spacing: 0.5px;
+}
+
+/* Inputs et sélecteurs au focus */
+.vg-filter-container .form-control:focus, 
+.vg-filter-container .form-select:focus {
+    border-color: var(--vg-orange-primary);
+    box-shadow: 0 0 0 3px rgba(255, 122, 0, 0.2);
+}
+
+/* Bouton réinitialiser */
+.btn-vg-reset {
+    border-color: #cbd5e1 !important;
+    color: #64748b !important;
+    background-color: #ffffff;
+    transition: all 0.2s ease;
+}
+.btn-vg-reset:hover {
+    background-color: #f8fafc;
+    color: var(--vg-blue-dark) !important;
+    border-color: #94a3b8 !important;
+}
+
+   /* STYLE DES CARTES DE MENUS */
+
+.menu-item-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Effet au survol sur la div qui contient la carte */
+.menu-item-card:hover {
+    transform: translateY(-6px);
+}
+
+.menu-item-card .card {
+    box-shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.05), 0 2px 4px -2px rgba(15, 23, 42, 0.05) !important;
+    transition: box-shadow 0.3s ease;
+}
+
+.menu-item-card:hover .card {
+    box-shadow: 0 20px 25px -5px rgba(15, 23, 42, 0.1), 0 8px 10px -6px rgba(15, 23, 42, 0.05) !important;
+}
+
+/* Badge de Stock (Orange) */
+.vg-badge-stock {
+    background-color: var(--vg-orange-primary) !important;
+    color: #ffffff !important;
+    font-weight: 600;
+    padding: 0.5rem 0.75rem;
+    border-radius: 6px;
+}
+
+/* Prix (Orange Gourmand) */
+.vg-price {
+    color: var(--vg-orange-primary) !important;
+    font-size: 1.35rem;
+}
+
+/* Bouton "Voir détails" (Bleu principal) */
+.btn-vg-details {
+    border-color: var(--vg-blue-primary) !important;
+    color: var(--vg-blue-primary) !important;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+.btn-vg-details:hover {
+    background-color: var(--vg-blue-primary) !important;
+    color: #ffffff !important;
+}

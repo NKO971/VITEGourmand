@@ -24,3 +24,7 @@ INSERT INTO `menu` (`titre`, `prix_par_personne`, `theme_id`, `regime_id`, `nomb
 ('L''Océanique', 34.00, 2, 1, 4, 8),
 ('Fraîcheur Marine', 31.00, 2, 3, 2, 12),
 ('Le Voyageur', 27.00, 3, 1, 2, 20);
+
+UPDATE menu 
+SET composition = '{"entree": {"nom": "Foie gras de canard maison", "allergenes": ["Sulfites"]}, "plat": {"nom": "Confit de canard et pommes sarladaises", "allergenes": []}, "dessert": {"nom": "Croustade aux pommes et Armagnac", "allergenes": ["Gluten"]}}'
+WHERE menu_id = 1;

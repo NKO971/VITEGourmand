@@ -68,14 +68,16 @@
 <!-- Sections des menus -->
 <section id="menu-categories" class="container my-5">
   <div class="row g-4">
-    
-    <?php foreach ($menus as $menu): ?>
-      <div class="col-12 col-md-6 col-lg-4 menu-item-card" 
-           data-prix="<?php echo $menu['prix_par_personne']; ?>"
-           data-theme="<?php echo $menu['theme_id']; ?>"
-           data-regime="<?php echo $menu['regime_id']; ?>"
-           data-convives="<?php echo $menu['nombre_personne_minimum']; ?>">
-        
+
+    <?php foreach ($menus as $menu):
+      $composition = json_decode($menu['composition'], true);
+    ?>
+      <div class="col-12 col-md-6 col-lg-4 menu-item-card"
+        data-prix="<?php echo $menu['prix_par_personne']; ?>"
+        data-theme="<?php echo $menu['theme_id']; ?>"
+        data-regime="<?php echo $menu['regime_id']; ?>"
+        data-convives="<?php echo $menu['nombre_personne_minimum']; ?>">
+
         <div class="card h-100 shadow-sm border-0 rounded-4 overflow-hidden">
           <div class="position-relative">
             <img src="Image/photo_accueil.jpg" class="card-img-top" alt="Menu" style="height: 200px; object-fit: cover;">
@@ -86,7 +88,7 @@
 
           <div class="card-body">
             <h5 class="card-title fw-bold"><?php echo htmlspecialchars($menu['titre']); ?></h5>
-            
+
             <p class="text-muted small mb-2"><i class="bi bi-tag"></i> Thème : <?php echo htmlspecialchars($menu['theme_libelle']); ?></p>
 
             <div class="d-flex gap-2 mb-3">
@@ -94,15 +96,20 @@
               <span class="badge bg-info-subtle text-info">Min. <?php echo $menu['nombre_personne_minimum']; ?> pers</span>
             </div>
 
-            <p class="card-text small text-truncate">Découvrez notre délicieux menu préparé avec soin.</p>
+            <div class="menu-description-container">
+              <p class="card-text small text-muted menu-description-text">
+                <?= htmlspecialchars($menu['description'] ?? 'Découvrez notre délicieux menu préparé avec soin.') ?>
+              </p>
+            </div>
 
             <div class="d-flex justify-content-between align-items-center mt-3">
               <span class="h5 mb-0 vg-price fw-bold"><?php echo $menu['prix_par_personne']; ?>€</span>
-              <button class="btn btn-vg-details btn-sm" data-bs-toggle="modal" data-bs-target="#menuModal">Voir détails</button>
+              <button class="btn btn-vg-details btn-sm" data-bs-toggle="modal" data-bs-target="#menuModal-<?= $menu['menu_id'] ?>">Voir détails</button>
             </div>
           </div>
         </div>
       </div>
+      <?php include __DIR__ . '/partials/_menu_modal.php'; ?>
     <?php endforeach; ?>
 
   </div>

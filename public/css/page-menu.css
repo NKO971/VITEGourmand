@@ -1,0 +1,15 @@
+/* Style de base pour la description */
+.menu-description-text {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;  
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: all 0.3s ease-in-out;
+}
+
+/* Effet au survol de la carte */
+.menu-item-card:hover .menu-description-text {
+    -webkit-line-clamp: unset;
+    overflow: visible;
+}

@@ -1,7 +1,7 @@
 <?php
 
 define('DB_HOST', 'localhost');
-define('DB_NAME', 'vite&gourmand');
+define('DB_NAME', 'vitegourmand');
 define('DB_USER', 'root');
 define('DB_PASS', '');
 

@@ -1,15 +1,24 @@
 <?php
 
-function registerController($pdo) {
-    $error = '';
-    $success = '';
 
-    $specificCss = ['public/css/inscription.css']; 
-    $specificJS = [];
+function registerController($pdo)
+{
+
+    BaseController::render(
+        "Créer un compte - VITEGourmand",
+        "register.view.php",
+        ["css/inscription.css"],
+        [],
+        [
+            'error' => $error ?? '',
+            'success' => $success ?? ''
+        ]
+    );
+
 
     // On vérifie si le formulaire a été soumis
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        
+
         $nom = trim($_POST['nom'] ?? '');
         $prenom = trim($_POST['prenom'] ?? '');
         $email = trim($_POST['email'] ?? '');
@@ -38,7 +47,7 @@ function registerController($pdo) {
         } else {
             require_once __DIR__ . '/../models/user.php';
             $userModel = new User($pdo);
-                
+
             $result = $userModel->register($nom, $prenom, $email, $gsm, $adresse, $password);
 
             if ($result) {
@@ -51,6 +60,6 @@ function registerController($pdo) {
                 unset($_SESSION['error_sql']); // On nettoie après affichage
             }
         }
-    } 
+    }
     require_once __DIR__ . '/../views/register.view.php';
 }

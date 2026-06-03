@@ -63,10 +63,11 @@
 
                     <!-- php else:  -->
 
-                        <a class="nav-link" href="/EcoRide/public/?page=connexion">Connexion</a>
+                        <a class="nav-link" href="/VITEGourmand/public/?page=connexion">Connexion</a>
 
                     <!-- php endif; -->
-                    </div>
+
+                   <a class="nav-link btn btn-primary fw-bold ms-2" href="index.php?page=inscription">S'inscrire</a>
             </div>
         </div>
     </nav>

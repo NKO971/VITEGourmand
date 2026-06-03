@@ -28,3 +28,9 @@ INSERT INTO `menu` (`titre`, `prix_par_personne`, `theme_id`, `regime_id`, `nomb
 UPDATE menu 
 SET composition = '{"entree": {"nom": "Foie gras de canard maison", "allergenes": ["Sulfites"]}, "plat": {"nom": "Confit de canard et pommes sarladaises", "allergenes": []}, "dessert": {"nom": "Croustade aux pommes et Armagnac", "allergenes": ["Gluten"]}}'
 WHERE menu_id = 1;
+
+INSERT INTO role (role_id, libelle) VALUES 
+(1, 'admin'),
+(2, 'employe'),
+(3, 'utilisateur')
+ON DUPLICATE KEY UPDATE libelle=VALUES(libelle);

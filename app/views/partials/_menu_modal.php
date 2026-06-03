@@ -49,24 +49,39 @@
         ?>
 
         <?php if (!empty($conditions)): ?>
-          <hr class="my-3">
-          <h6 class="fw-bold text-warning mb-2"><i class="bi bi-exclamation-triangle me-1"></i> Conditions & Conservation :</h6>
-          <ul class="list-unstyled small mb-0">
-            <?php if (!empty($conditions['delai_commande'])): ?>
-              <li class="mb-1"><strong>Délai de commande :</strong> À réserver au moins <?= htmlspecialchars($conditions['delai_commande']) ?>.</li>
-            <?php endif; ?>
-            <?php if (!empty($conditions['conservation'])): ?>
-              <li><strong>Précautions :</strong> <?= htmlspecialchars($conditions['conservation']) ?></li>
-            <?php endif; ?>
-          </ul>
+          <div class="alert alert-warning border-warning-subtle my-3" role="alert">
+            <h6 class="alert-heading fw-bold d-flex align-items-center mb-2 text-warning-emphasis">
+              <i class="bi bi-exclamation-triangle-fill me-2 fs-5"></i>
+              IMPORTANT : Conditions obligatoires de ce menu
+            </h6>
+            <hr class="my-2 bg-warning-border">
+            <ul class="mb-0 small text-dark">
+              <?php if (!empty($conditions['delai_commande'])): ?>
+                <li class="mb-1">
+                  <strong>Délai de réservation :</strong> Ce menu doit impérativement être commandé au moins <span class="badge bg-dark"><?= htmlspecialchars($conditions['delai_commande']) ?></span> avant la prestation.
+                </li>
+              <?php endif; ?>
+              <?php if (!empty($conditions['conservation'])): ?>
+                <li>
+                  <strong>Consignes de stockage :</strong> <?= htmlspecialchars($conditions['conservation']) ?>
+                </li>
+              <?php endif; ?>
+            </ul>
+          </div>
         <?php endif; ?>
       </div>
       <div class="modal-footer d-flex justify-content-between">
         <button type="button" class="btn btn-light btn-sm text-muted" data-bs-dismiss="modal">Annuler</button>
 
-        <a href="index.php?page=commander&menu_id=<?= $menu['menu_id'] ?>" class="btn btn-primary">
-          <i class="bi bi-cart-plus me-2"></i>Commander ce menu
-        </a>
+        <?php if (isset($_SESSION['user'])): ?>
+          <a href="index.php?page=commander&menu_id=<?= $menu['menu_id'] ?>" class="btn btn-primary fw-bold">
+            <i class="bi bi-cart-plus me-2"></i>Commander ce menu
+          </a>
+        <?php else: ?>
+          <a href="index.php?page=connexion&redirect_to=commander&menu_id=<?= $menu['menu_id'] ?>" class="btn btn-outline-danger fw-bold">
+            <i class="bi bi-box-arrow-in-right me-2"></i>Se connecter pour commander
+          </a>
+        <?php endif; ?>
       </div>
     </div>
   </div>

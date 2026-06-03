@@ -30,10 +30,10 @@ switch ($page) {
     //     loginController($pdo); 
     //     break;
 
-    // case 'inscription':
-    //     require_once __DIR__ . '/../app/controllers/auth_controller.php';
-    //     registerController($pdo); 
-    //     break;
+     case 'inscription':
+         require_once __DIR__ . '/../app/controllers/registerController.php';
+         registerController($pdo); 
+         break;
 
     // case 'contact':
     //     require_once __DIR__ . '/../app/controllers/contact_controller.php';

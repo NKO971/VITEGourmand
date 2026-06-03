@@ -1,29 +1,32 @@
 -- Tables de base (sans dépendances)
-CREATE TABLE IF NOT EXISTS `role` (
-    role_id INT AUTO_INCREMENT PRIMARY KEY NOT NULL,
-    libelle VARCHAR(50) NOT NULL
-);
+CREATE TABLE IF NOT EXISTS role (
+    role_id INT AUTO_INCREMENT PRIMARY KEY,
+    libelle VARCHAR(50) NOT NULL UNIQUE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `theme` (
     theme_id INT AUTO_INCREMENT PRIMARY KEY,
     libelle VARCHAR(50) NOT NULL
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `regime` (
     regime_id INT AUTO_INCREMENT PRIMARY KEY,
     libelle VARCHAR(50) NOT NULL
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Tables avec dépendances
-CREATE TABLE IF NOT EXISTS `utilisateur` (
+CREATE TABLE IF NOT EXISTS utilisateur (
     utilisateur_id INT AUTO_INCREMENT PRIMARY KEY,
-    email VARCHAR(100) NOT NULL,
-    password CHAR(255) NOT NULL,
-    prenom VARCHAR(50),
-    nom VARCHAR(50),
-    role_id INT,
-    FOREIGN KEY (role_id) REFERENCES role(role_id)
-);
+    nom VARCHAR(100) NOT NULL,
+    prenom VARCHAR(100) NOT NULL,
+    email VARCHAR(150) NOT NULL UNIQUE,
+    gsm VARCHAR(20) NOT NULL,
+    adresse TEXT NOT NULL,
+    mot_de_passe CHAR(255) NOT NULL,
+    role_id INT NOT NULL,
+    FOREIGN KEY (role_id) REFERENCES role(role_id) ON DELETE RESTRICT ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 
 -- Table hybride SQL / NoSQL (composition en JSON)
 CREATE TABLE IF NOT EXISTS `menu` (
@@ -38,13 +41,13 @@ CREATE TABLE IF NOT EXISTS `menu` (
     conditions_stockage JSON,
     FOREIGN KEY (theme_id) REFERENCES theme(theme_id),
     FOREIGN KEY (regime_id) REFERENCES regime(regime_id)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `plat` (
     plat_id INT AUTO_INCREMENT PRIMARY KEY,
     titre_plat VARCHAR(100) NOT NULL,
     photo LONGBLOB
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `avis` (
     avis_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -53,7 +56,7 @@ CREATE TABLE IF NOT EXISTS `avis` (
     statut VARCHAR(50) DEFAULT 'En attente', -- Pour la modération des avis
     utilisateur_id INT,
     FOREIGN KEY (utilisateur_id) REFERENCES utilisateur(utilisateur_id)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `commande` (
     commande_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -71,7 +74,7 @@ CREATE TABLE IF NOT EXISTS `commande` (
     menu_id INT,
     FOREIGN KEY (utilisateur_id) REFERENCES utilisateur(utilisateur_id),
     FOREIGN KEY (menu_id) REFERENCES menu(menu_id)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `horaire` (
     horaire_id INT AUTO_INCREMENT PRIMARY KEY,

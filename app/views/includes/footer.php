@@ -1,7 +1,6 @@
 <footer>
     <div class="container-fluid">
         <div class="row">
-            <!-- Liste des horraires -->
             <div class="col-xl text-center">
                 <h5 class="horaires">Horaires d'ouverture</h5>
                 <p class="horaires">Lundi: Fermé<br>
@@ -18,5 +17,4 @@
     </div>
 </footer>
 </body>
-
 </html>

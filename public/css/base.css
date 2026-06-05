@@ -1,4 +1,4 @@
-  /* VARIABLES DU THÈME (À mettre idéalement dans :root) */
+/* VARIABLES ET CHARTE GRAPHIQUE GLOBALE*/
    
 :root {
     --vg-blue-dark: #0f172a;       /* Bleu nuit pour les titres */
@@ -8,14 +8,16 @@
     --vg-orange-primary: #ff7a00;  /* Orange ViteGourmand (Boutons, prix, badges) */
     --vg-orange-hover: #e06a00;    
     --vg-orange-light: #fff7ed;    /* Fond orange très clair pour les badges */
+    --vg-radius: 12px;
+    --vg-shadow-md: 0 4px 6px -1px rgba(15, 23, 42, 0.05), 0 2px 4px -2px rgba(15, 23, 42, 0.05);
 }
 
-   /* STYLE DU BLOC DE FILTRES */
+/* STYLE DU BLOC DE FILTRES*/
    
 .vg-filter-container {
     background-color: var(--vg-blue-soft) !important;
     border: 1px solid rgba(30, 64, 175, 0.08) !important;
-    border-radius: 12px !important;
+    border-radius: var(--vg-radius) !important;
 }
 
 /* Titre des filtres */
@@ -31,20 +33,7 @@
     box-shadow: 0 0 0 3px rgba(255, 122, 0, 0.2);
 }
 
-/* Bouton réinitialiser */
-.btn-vg-reset {
-    border-color: #cbd5e1 !important;
-    color: #64748b !important;
-    background-color: #ffffff;
-    transition: all 0.2s ease;
-}
-.btn-vg-reset:hover {
-    background-color: #f8fafc;
-    color: var(--vg-blue-dark) !important;
-    border-color: #94a3b8 !important;
-}
-
-   /* STYLE DES CARTES DE MENUS */
+/* STYLE DES CARTES DE MENUS*/
 
 .menu-item-card {
     transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -56,12 +45,12 @@
 }
 
 .menu-item-card .card {
-    box-shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.05), 0 2px 4px -2px rgba(15, 23, 42, 0.05) !important;
+    box-shadow: var(--vg-shadow-md) !important;
     transition: box-shadow 0.3s ease;
 }
 
 .menu-item-card:hover .card {
-    box-shadow: 0 20px 25px -5px rgba(15, 23, 42, 0.1), 0 8px 10px -6px rgba(15, 23, 42, 0.05) !important;
+    box-shadow: var(--vg-shadow-md) !important;
 }
 
 /* Badge de Stock (Orange) */
@@ -79,14 +68,50 @@
     font-size: 1.35rem;
 }
 
-/* Bouton "Voir détails" (Bleu principal) */
-.btn-vg-details {
-    border-color: var(--vg-blue-primary) !important;
-    color: var(--vg-blue-primary) !important;
+/* BIBLIOTHÈQUE DE BOUTONS CENTRALISÉE (VITEGourmand) */
+
+/* 1. Bouton Principal : Action Forte (Anciennement #btnInscription) */
+.btn-vg-primary {
+    background-color: var(--vg-orange-primary) !important;
+    border: none !important;
+    color: #ffffff !important;
+    font-family: 'Poppins', sans-serif;
     font-weight: 600;
+    border-radius: var(--vg-radius);
+    transition: background-color 0.2s ease, transform 0.1s ease;
+}
+.btn-vg-primary:hover {
+    background-color: var(--vg-orange-hover) !important;
+    cursor: pointer;
+}
+.btn-vg-primary:active {
+    transform: scale(0.98);
+}
+
+/* 2. Bouton Secondaire : Contour Bleu (Voir détails) */
+.btn-vg-details {
+    border: 1px solid var(--vg-blue-primary) !important;
+    color: var(--vg-blue-primary) !important;
+    background-color: transparent;
+    font-weight: 600;
+    border-radius: var(--vg-radius);
     transition: all 0.2s ease;
 }
 .btn-vg-details:hover {
     background-color: var(--vg-blue-primary) !important;
     color: #ffffff !important;
+}
+
+/* 3. Bouton Neutre : Gris / Blanc (Réinitialiser) */
+.btn-vg-reset {
+    border-color: #cbd5e1 !important;
+    color: #64748b !important;
+    background-color: #ffffff;
+    border-radius: var(--vg-radius);
+    transition: all 0.2s ease;
+}
+.btn-vg-reset:hover {
+    background-color: #f8fafc;
+    color: var(--vg-blue-dark) !important;
+    border-color: #94a3b8 !important;
 }

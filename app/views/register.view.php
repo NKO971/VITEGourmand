@@ -17,7 +17,7 @@
             <form id="inscription-form" method="post" action="">
                 <fieldset class="fieldset-connexion p-4 bg-white">
                     <legend class="fw-bold mb-4">Créer un compte</legend>
-                    
+
                     <div class="row">
                         <div class="col-md-6 mb-3" id="nom-div">
                             <label for="nom" class="form-label small fw-semibold text-muted">Nom</label>
@@ -55,7 +55,9 @@
                     </div>
 
                     <div class="d-grid gap-2 mb-3">
-                        <button type="submit" id="btnInscription" class="btn fw-bold">S'inscrire</button>
+                        <button type="submit" id="btnInscription" class="btn btn-vg-primary w-100 py-2.5 fw-bold">
+                            S'inscrire
+                        </button>
                     </div>
 
                     <div class="text-center">
@@ -66,15 +68,15 @@
         </div>
 
         <div class="col-12 col-md-6 col-lg-5 d-flex flex-column align-items-center justify-content-center text-center p-4">
-    <div class="vg-welcome-badge mb-3">
-        <i class="bi bi-egg-fried"></i> L'aventure commence ici
-    </div>
-    <h2 class="vg-title-inscription fw-black mb-3">
-        Inscrivez-vous <br><span class="text-dark">& rejoignez la table !</span>
-    </h2>
-    <p class="text-muted max-w-300 small">
-        Créez votre compte en moins d'une minute et accédez à nos menus exclusifs imaginés par nos chefs locaux.
-    </p>
-</div>
+            <div class="vg-welcome-badge mb-3">
+                <i class="bi bi-egg-fried"></i> L'aventure commence ici
+            </div>
+            <h2 class="vg-title-inscription fw-black mb-3">
+                Inscrivez-vous <br><span class="text-dark">& rejoignez la table !</span>
+            </h2>
+            <p class="text-muted max-w-300 small">
+                Créez votre compte en moins d'une minute et accédez à nos menus exclusifs imaginés par nos chefs locaux.
+            </p>
+        </div>
     </div>
 </div>

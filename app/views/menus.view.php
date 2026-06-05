@@ -104,7 +104,7 @@
 
             <div class="d-flex justify-content-between align-items-center mt-3">
               <span class="h5 mb-0 vg-price fw-bold"><?php echo $menu['prix_par_personne']; ?>€</span>
-              <button class="btn btn-vg-details btn-sm" data-bs-toggle="modal" data-bs-target="#menuModal-<?= $menu['menu_id'] ?>">Voir détails</button>
+              <button class="btn btn-vg-details btn-sm px-3 fw-bold" data-bs-toggle="modal" data-bs-target="#menuModal-<?= $menu['menu_id'] ?>">Voir détails</button>
             </div>
           </div>
         </div>

@@ -25,10 +25,10 @@ switch ($page) {
         break;
 
 
-    // case 'connexion':
-    //     require_once __DIR__ . '/../app/controllers/auth_controller.php';
-    //     loginController($pdo); 
-    //     break;
+    case 'connexion':
+         require_once __DIR__ . '/../app/controllers/loginController.php';
+         loginController($pdo); 
+         break;
 
      case 'inscription':
          require_once __DIR__ . '/../app/controllers/registerController.php';

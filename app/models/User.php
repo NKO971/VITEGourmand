@@ -34,4 +34,14 @@ class User {
             return false;
         }
     }
+
+    public function getUserByEmail($email) {
+        try {
+            $stmt = $this->pdo->prepare("SELECT * FROM utilisateur WHERE email = ?");
+            $stmt->execute([$email]);
+            return $stmt->fetch(PDO::FETCH_ASSOC); // Renvoie un tableau contenant les infos ou false si rien trouvé
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
 }

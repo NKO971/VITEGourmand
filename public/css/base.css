@@ -115,3 +115,102 @@
     color: var(--vg-blue-dark) !important;
     border-color: #94a3b8 !important;
 }
+
+/* DESIGN ENHANCEMENT : HEADER & NAVBAR */
+.font-poppins {
+    font-family: 'Poppins', sans-serif;
+}
+.text-orange {
+    color: var(--vg-orange-primary) !important;
+}
+.fw-black {
+    font-weight: 900;
+}
+
+/* Ombre légère sous la navbar fixe */
+.vg-header {
+    box-shadow: 0 2px 15px rgba(15, 23, 42, 0.04);
+}
+
+/* Liens de navigation avec soulignement animé */
+.vg-nav-link {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    color: var(--vg-blue-dark) !important;
+    position: relative;
+    padding: 0.5rem 0.7rem !important;
+    transition: color 0.2s ease;
+}
+.vg-nav-link:hover {
+    color: var(--vg-orange-primary) !important;
+}
+
+/* Séparateur vertical dans la nav */
+.nav-vr {
+    width: 1px;
+    height: 24px;
+    background-color: #e2e8f0;
+}
+
+/* Bouton Mon Compte stylisé */
+.btn-vg-user {
+    background-color: var(--vg-blue-soft) !important;
+    color: var(--vg-blue-primary) !important;
+    border-radius: 50px !important;
+    padding: 0.5rem 1.2rem !important;
+    font-weight: 600;
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.9rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+}
+.btn-vg-user:hover, .btn-vg-user:focus {
+    background-color: var(--vg-orange-light) !important;
+    color: var(--vg-orange-primary) !important;
+}
+
+/* DESIGN ENHANCEMENT : FOOTER */
+.vg-footer {
+    background-color: var(--vg-blue-dark);
+}
+.letter-spacing-1 {
+    letter-spacing: 1px;
+}
+.opacity-10 {
+    opacity: 0.1;
+}
+.bg-danger-soft {
+    background-color: rgba(239, 68, 68, 0.15);
+    color: #f87171;
+}
+
+/* Comportement des liens du footer au survol */
+.vg-footer-link {
+    transition: color 0.2s ease, padding-left 0.2s ease;
+}
+
+.opacity-100-hover:hover {
+    color: var(--vg-orange-primary) !important;
+    opacity: 1 !important;
+}
+
+/* Controuner boostrap pour les couleurs et la visibilité du footer */
+.vg-footer, 
+.vg-footer p, 
+.vg-footer ul,
+.vg-footer .text-muted {
+    color: #cbd5e1 !important;
+}
+
+.vg-footer .vg-footer-link,
+.vg-footer a.text-muted {
+    color: #94a3b8 !important;
+    text-decoration: none !important;
+}
+
+.vg-footer .vg-footer-link:hover {
+    color: var(--vg-orange-primary) !important;
+    padding-left: 4px;
+}

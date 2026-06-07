@@ -115,4 +115,3 @@
   </div>
 </section>
 
-<script src="JS/menus-filter.js"></script>

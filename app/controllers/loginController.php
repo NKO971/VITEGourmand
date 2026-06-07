@@ -3,7 +3,7 @@
 function loginController($pdo) {
     $error = '';
 
-    $specificCss = ['public/css/connexion.css']; 
+    $specificCss = ['public/css/inscription.css']; 
     $specificJS = ['public/js/connexion.js'];
 
     // On vérifie si le formulaire a été soumis
@@ -42,6 +42,16 @@ function loginController($pdo) {
             }
         }
     }
+
+    BaseController::render(
+        "Connexion - VITEGourmand",
+        "connexion.view.php",
+        $specificCss,
+        $specificJS,
+        [
+            'error' => $error ?? ''
+        ]
+    );
 
     // On charge la vue
     require_once __DIR__ . '/../views/connexion.view.php';

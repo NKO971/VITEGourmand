@@ -56,7 +56,7 @@
                                 </li>
                                 <li><hr class="dropdown-divider opacity-50"></li>
                                 <li>
-                                    <a class="dropdown-item py-2 text-danger" href="/VITEGourmand/public/?page=deconnexion">
+                                    <a class="dropdown-itempy-2 text-danger" href="index.php?page=deconnexion">
                                         <i class="bi bi-box-arrow-right me-2"></i> Déconnexion
                                     </a>
                                 </li>

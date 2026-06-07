@@ -30,6 +30,10 @@ switch ($page) {
          loginController($pdo); 
          break;
 
+    case 'deconnexion':
+        require_once __DIR__ . '/../app/controllers/logout_controller.php';
+        break;
+
      case 'inscription':
          require_once __DIR__ . '/../app/controllers/registerController.php';
          registerController($pdo); 

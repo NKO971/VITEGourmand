@@ -7,7 +7,7 @@ function registerController($pdo)
     BaseController::render(
         "Créer un compte - VITEGourmand",
         "register.view.php",
-        ["css/inscription.css"],
+        ["css/auth.css"],
         [],
         [
             'error' => $error ?? '',

@@ -3,7 +3,7 @@
 function loginController($pdo) {
     $error = '';
 
-    $specificCss = ['public/css/inscription.css']; 
+    $specificCss = ['css/auth.css']; 
     $specificJS = ['public/js/connexion.js'];
 
     // On vérifie si le formulaire a été soumis

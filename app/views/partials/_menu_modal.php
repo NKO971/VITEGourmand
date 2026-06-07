@@ -73,14 +73,18 @@
       <div class="modal-footer d-flex justify-content-between">
         <button type="button" class="btn btn-light btn-sm text-muted" data-bs-dismiss="modal">Annuler</button>
 
-        <?php if (isset($_SESSION['user'])): ?>
+        <?php if (isset($_SESSION['user_id'])): ?>
+
           <a href="index.php?page=commander&menu_id=<?= $menu['menu_id'] ?>" class="btn btn-primary fw-bold">
             <i class="bi bi-cart-plus me-2"></i>Commander ce menu
           </a>
+
         <?php else: ?>
+
           <a href="index.php?page=connexion&redirect_to=commander&menu_id=<?= $menu['menu_id'] ?>" class="btn btn-outline-danger fw-bold">
             <i class="bi bi-box-arrow-in-right me-2"></i>Se connecter pour commander
           </a>
+
         <?php endif; ?>
       </div>
     </div>

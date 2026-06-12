@@ -38,5 +38,10 @@
         </div>
     </div>
 </footer>
+<?php if (isset($specificJs)): ?>
+        <?php foreach ($specificJs as $js): ?>
+            <script src="<?= $js; ?>"></script>
+        <?php endforeach; ?>
+<?php endif; ?>
 </body>
 </html>

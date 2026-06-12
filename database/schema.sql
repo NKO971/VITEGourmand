@@ -82,3 +82,10 @@ CREATE TABLE IF NOT EXISTS `horaire` (
     heure_ouverture VARCHAR(50) NOT NULL,
     heure_fermeture VARCHAR(50) NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS `zone_livraison` (
+    zone_id INT AUTO_INCREMENT PRIMARY KEY,
+    code_postal VARCHAR(5) NOT NULL,
+    ville VARCHAR(50) NOT NULL,
+    distance_km INT NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

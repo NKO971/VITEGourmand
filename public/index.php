@@ -38,6 +38,19 @@ switch ($page) {
          require_once __DIR__ . '/../app/controllers/registerController.php';
          registerController($pdo); 
          break;
+        
+    case 'commander':
+        require_once __DIR__ . '/../app/models/Menu.php';
+        require_once __DIR__ . '/../app/controllers/commandeController.php';
+        $menuModel = new Menu($pdo);
+        commandeController($menuModel);
+        break;
+    
+    case 'api_zone':
+        require_once __DIR__ . '/../app/controllers/commandeController.php';
+        getZoneDistance($pdo);
+        exit();
+        break;
 
     // case 'contact':
     //     require_once __DIR__ . '/../app/controllers/contact_controller.php';

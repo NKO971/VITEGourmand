@@ -18,7 +18,7 @@ class BaseController
         ], $additionalCss);
 
         // JS par défaut
-        $specificJS = array_merge([
+        $specificJs = array_merge([
             "js/jquery-3.7.1.min.js",
             "js/bootstrap.bundle.min.js"
         ], $additionalJs);

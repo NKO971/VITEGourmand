@@ -34,3 +34,12 @@ INSERT INTO role (role_id, libelle) VALUES
 (2, 'employe'),
 (3, 'utilisateur')
 ON DUPLICATE KEY UPDATE libelle=VALUES(libelle);
+
+-- Insertion de quelques distances de test
+INSERT INTO `zone_livraison` (`code_postal`, `ville`, `distance_km`) VALUES
+('33000', 'Bordeaux Centre', 0),
+('33200', 'Bordeaux Caudéran', 3),
+('33600', 'Pessac', 8),
+('33400', 'Talence', 6),
+('33130', 'Bègles', 7),
+('33700', 'Mérignac', 12);

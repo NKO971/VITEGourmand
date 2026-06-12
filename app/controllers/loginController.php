@@ -34,6 +34,7 @@ function loginController($pdo) {
                 $_SESSION['prenom'] = $user['prenom'];
                 $_SESSION['email'] = $user['email'];
                 $_SESSION['role_id'] = $user['role_id'];
+                $_SESSION['gsm'] = $user['gsm'];
 
                 header("Location: index.php?page=menus");
                 exit();

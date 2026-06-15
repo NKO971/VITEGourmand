@@ -73,6 +73,16 @@ switch ($page) {
         }
         break;
 
+    case 'confirmation':
+        BaseController::render(
+            "Confirmation - VITEGourmand",
+            "confirmation.view.php",
+            [],
+            [], 
+            []  
+        );
+        break;
+
     // case 'contact':
     //     require_once __DIR__ . '/../app/controllers/contact_controller.php';
     //     contactController($pdo);

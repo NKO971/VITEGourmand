@@ -119,7 +119,9 @@ function enregistrerCommande($pdo, $menuModel, $commandeModel, $dataPost)
         $message = "Bonjour " . $_SESSION['nom'] . ", votre commande a été enregistrée avec succès !";
         $headers = "From: no-reply@vitegourmand.fr\r\nReply-To: no-reply@vitegourmand.fr";
         
-        mail($to, $subject, $message, $headers);
+        $mailSent = mail($to, $subject, $message, $headers);
+
+        error_log("Tentative d'envoi de mail à : " . $to . " - Résultat : " . ($mailSent ? "Succès" : "Échec"));
         
         header("Location: ?page=confirmation");
         exit();

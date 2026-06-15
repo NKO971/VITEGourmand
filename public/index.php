@@ -51,6 +51,27 @@ switch ($page) {
         getZoneDistance($pdo);
         exit();
         break;
+    
+    case 'enregistrer_commande':
+        require_once __DIR__ . '/../app/models/Menu.php';
+        require_once __DIR__ . '/../app/models/Commande.php';
+        require_once __DIR__ . '/../app/controllers/commandeController.php';
+        
+        $menuModel = new Menu($pdo); 
+        $commandeModel = new Commande($pdo);      
+        
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            try {
+                enregistrerCommande($pdo, $menuModel, $commandeModel, $_POST);
+            } catch (Exception $e) {
+                // Si une erreur survient (menu inexistant, etc.)
+                echo "Une erreur est survenue : " . htmlspecialchars($e->getMessage());
+            }
+        } else {
+            header("Location: ?page=home");
+            exit();
+        }
+        break;
 
     // case 'contact':
     //     require_once __DIR__ . '/../app/controllers/contact_controller.php';

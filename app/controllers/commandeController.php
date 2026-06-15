@@ -72,3 +72,59 @@ function getZoneDistance($pdo)
         echo json_encode(['error' => 'Zone de livraison non trouvée']);
     }
 }
+
+
+function getDistanceByCodePostal($pdo, $codePostal) 
+{
+    $stmt = $pdo->prepare("SELECT distance_km FROM zone_livraison WHERE code_postal = :cp");
+    $stmt->execute(['cp' => $codePostal]);
+    $zone = $stmt->fetch(PDO::FETCH_ASSOC);
+    
+    return $zone ? (float)$zone['distance_km'] : 0.0;
+}
+
+function enregistrerCommande($pdo, $menuModel, $commandeModel, $dataPost)
+{
+    $menu = $menuModel->getMenuById($dataPost['menu_id']);
+    
+    if (!$menu) {
+        throw new Exception("Menu non trouvé ");
+    }
+    
+    $distance = getDistanceByCodePostal($pdo, $dataPost['code_postal']);
+
+    $resultat = calculerTotalCommande(
+        $menu['prix_par_personne'],
+        $dataPost['nb_personnes'],
+        $menu['min_personnes'],
+        $distance
+    );
+
+    $success = $commandeModel->enregistrerCommande([
+    'numero_commande' => 'CMD-' . uniqid(), // NOT NULL
+    'date_commande'   => date('Y-m-d'), // NOT NULL
+    'date_prestation' => $dataPost['date_prestation'],
+    'heure_livraison' => $dataPost['heure_livraison'],
+    'prix_menu'       => $resultat['total_menu'],
+    'nombre_personne' => $dataPost['nb_personnes'],
+    'prix_livraison'  => $resultat['frais_livraison'],
+    'utilisateur_id'  => $_SESSION['id_utilisateur'],
+    'menu_id'         => $dataPost['menu_id'],
+    'statut'          => 'En attente'
+]);
+    
+   if ($success) {
+        $to = $_SESSION['email'];
+        $subject = "Confirmation de votre commande - VITEGourmand";
+        $message = "Bonjour " . $_SESSION['nom'] . ", votre commande a été enregistrée avec succès !";
+        $headers = "From: no-reply@vitegourmand.fr\r\nReply-To: no-reply@vitegourmand.fr";
+        
+        mail($to, $subject, $message, $headers);
+        
+        header("Location: ?page=confirmation");
+        exit();
+    } else {
+        throw new Exception("Erreur lors de l'enregistrement de la commande.");
+    }
+    
+}

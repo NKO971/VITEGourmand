@@ -3,6 +3,7 @@
         <h1 class="mb-4">Finaliser votre commande</h1>
 
         <form action="index.php?page=enregistrer_commande" method="POST">
+            <input type="hidden" name="menu_id" value="<?= htmlspecialchars($menu['menu_id']) ?>">
             <div class="row">
 
                 <div class="col-md-6">
@@ -22,6 +23,16 @@
                         <label for="nb_personnes" class="form-label fw-bold">Nombre de personnes (couverts)</label>
                         <input type="number" class="form-control" id="nb_personnes" name="nb_personnes" min="1" value="1" required>
                         <div class="form-text">Indiquez le nombre de convives pour ce menu.</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="heure_livraison" class="form-label fw-bold">Heure souhaitée</label>
+                        <input type="time" class="form-control" name="heure_livraison" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="lieu_livraison" class="form-label fw-bold">Lieu de livraison</label>
+                        <input type="text" class="form-control" name="lieu_livraison" value="<?= htmlspecialchars($user_data['adresse']) ?>" required>
                     </div>
 
                     <div class="mb-3">
@@ -72,7 +83,8 @@
                                 <span id="prix_total" class="h4 text-success fw-bold">0.00 €</span>
                             </div>
 
-                            <button type="submit" class="btn btn-success w-100 btn-lg shadow">Confirmer et payer</button>
+                            <button type="submit"
+                                name="valider_commande" class="btn btn-success w-100 btn-lg shadow">Confirmer et payer</button>
                         </div>
                     </div>
                 </div>

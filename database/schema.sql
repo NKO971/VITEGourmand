@@ -1,5 +1,5 @@
 -- Tables de base (sans dépendances)
-CREATE TABLE IF NOT EXISTS role (
+CREATE TABLE IF NOT EXISTS `role` (
     role_id INT AUTO_INCREMENT PRIMARY KEY,
     libelle VARCHAR(50) NOT NULL UNIQUE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS `regime` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Tables avec dépendances
-CREATE TABLE IF NOT EXISTS utilisateur (
+CREATE TABLE IF NOT EXISTS `utilisateur` (
     utilisateur_id INT AUTO_INCREMENT PRIMARY KEY,
     nom VARCHAR(100) NOT NULL,
     prenom VARCHAR(100) NOT NULL,

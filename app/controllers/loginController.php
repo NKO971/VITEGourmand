@@ -36,7 +36,7 @@ function loginController($pdo) {
                 $_SESSION['role_id'] = $user['role_id'];
                 $_SESSION['gsm'] = $user['gsm'];
 
-                header("Location: index.php?page=menus");
+                header("Location: index.php?page=profile");
                 exit();
             } else {
                 $error = "Identifiants incorrects.";
@@ -54,6 +54,4 @@ function loginController($pdo) {
         ]
     );
 
-    // On charge la vue
-    require_once __DIR__ . '/../views/connexion.view.php';
 }

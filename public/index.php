@@ -82,16 +82,18 @@ switch ($page) {
             []  
         );
         break;
+    
+    case 'profile':
+        require_once __DIR__ . '/../app/controllers/profileController.php';
+        profileController($pdo);
+        break;
 
     // case 'contact':
     //     require_once __DIR__ . '/../app/controllers/contact_controller.php';
     //     contactController($pdo);
     //     break;
 
-    // case 'profile':
-    //     require_once __DIR__ . '/../app/controllers/profile_controller.php';
-    //     profileController($pdo);
-    //     break;
+    
 
     // case 'employee':
     //     require_once __DIR__ . '/../app/controllers/employee_controller.php';

@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/../models/user.php';
+require_once __DIR__ . '/../models/Commande.php';
 
 function profileController($pdo) {
     if (session_status() === PHP_SESSION_NONE) { session_start(); }
@@ -11,6 +12,7 @@ function profileController($pdo) {
     }
 
     $userModel = new User($pdo);
+    $commandeModel = new Commande($pdo);
     
     $message = $_SESSION['flash_message'] ?? '';
     unset($_SESSION['flash_message']);
@@ -45,11 +47,16 @@ function profileController($pdo) {
         }
     }
 
+    // Récupération des commandes de l'utilisateur
+    $orders = $commandeModel->getOrdersByUserId($_SESSION['user_id']);
+
     BaseController::render(
         "Mon Profil - VITEGourmand",
         "profile.view.php",
         ['css/profile.css'],
         [],
-        ['message' => $message, 'error' => $error]
+        ['message' => $message, 
+        'error' => $error, 
+        'orders' => $orders]
     );
 }

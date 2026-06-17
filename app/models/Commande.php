@@ -23,8 +23,26 @@ class Commande
             ':nb_p'       => $data['nombre_personne'],
             ':prix_l'     => $data['prix_livraison'],
             ':statut'     => $data['statut'],
-            ':u_id'       => $data['utilisateur_id'],
+            ':u_id'       => $data['user_id'],
             ':m_id'       => $data['menu_id']
         ]);
+    }
+
+    public function getOrdersByUserId($userId)
+    {
+        $stmt = $this->pdo->prepare("SELECT * FROM commande WHERE utilisateur_id = :user_id ORDER BY date_commande DESC");
+        $stmt->execute(['user_id' => $userId]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function canModifyOrder($orderId, $userId)
+    {
+        $stmt = $this->pdo->prepare("SELECT statut FROM commande WHERE id = :c_id AND utilisateur_id = :u_id");
+        $stmt = $this->pdo->prepare("SELECT statut FROM commande WHERE id = :c_id AND utilisateur_id = :u_id");
+        $stmt->execute(['c_id' => $orderId, 'u_id' => $userId]);
+        $order = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        // Attention : vérifie si dans ta base le champ s'appelle 'statut' ou 'status'
+        return $order && $order['statut'] === 'En attente';
     }
 }

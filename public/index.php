@@ -87,6 +87,11 @@ switch ($page) {
         require_once __DIR__ . '/../app/controllers/profileController.php';
         profileController($pdo);
         break;
+        
+    case 'annuler':
+        require_once __DIR__ . '/../app/controllers/commandeController.php';
+        annulerCommandeController($pdo);
+        break;
 
     // case 'contact':
     //     require_once __DIR__ . '/../app/controllers/contact_controller.php';

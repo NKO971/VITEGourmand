@@ -45,4 +45,20 @@ class Commande
         // Attention : vérifie si dans ta base le champ s'appelle 'statut' ou 'status'
         return $order && $order['statut'] === 'En attente';
     }
+
+    public function updateStatut($orderId, $userId, $nouveauStatut)
+    {
+        // On vérifie que la commande appartient bien à l'utilisateur
+        // ET que le statut est bien 'En attente' avant de modifier
+        $sql = "UPDATE commande 
+            SET statut = :statut 
+            WHERE commande_id = :c_id AND utilisateur_id = :u_id AND statut = 'En attente'";
+
+        $stmt = $this->pdo->prepare($sql);
+        return $stmt->execute([
+            ':statut' => $nouveauStatut,
+            ':c_id'   => $orderId,
+            ':u_id'   => $userId
+        ]);
+    }
 }

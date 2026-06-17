@@ -40,6 +40,16 @@
             <div class="card shadow-sm">
                 <div class="card-header bg-secondary text-white">Mes Commandes</div>
                 <div class="card-body">
+                    
+                    <?php if (!empty($_SESSION['flash_message'])): ?>
+                        <div class="alert alert-info">
+                            <?php 
+                                echo htmlspecialchars($_SESSION['flash_message']); 
+                                unset($_SESSION['flash_message']); // On efface le message après affichage
+                            ?>
+                        </div>
+                    <?php endif; ?>
+
                     <?php if (empty($orders)): ?>
                         <p>Aucune commande passée pour le moment.</p>
                     <?php else: ?>

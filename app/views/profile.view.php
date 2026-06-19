@@ -37,51 +37,56 @@
         </div>
 
         <div class="col-md-6">
-            <div class="card shadow-sm">
-                <div class="card-header bg-secondary text-white">Mes Commandes</div>
-                <div class="card-body">
-                    
-                    <?php if (!empty($_SESSION['flash_message'])): ?>
-                        <div class="alert alert-info">
-                            <?php 
-                                echo htmlspecialchars($_SESSION['flash_message']); 
-                                unset($_SESSION['flash_message']); // On efface le message après affichage
-                            ?>
-                        </div>
-                    <?php endif; ?>
-
-                    <?php if (empty($orders)): ?>
-                        <p>Aucune commande passée pour le moment.</p>
-                    <?php else: ?>
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th translate="no">N° Commande</th>
-                                    <th translate="no">Date</th>
-                                    <th translate="no">Statut</th>
-                                    <th translate="no">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php foreach ($orders as $order): ?>
-                                    <tr>
-                                        <td><?= htmlspecialchars($order['numero_commande']) ?></td>
-                                        <td><?= htmlspecialchars($order['date_commande']) ?></td>
-                                        <td><?= htmlspecialchars($order['statut']) ?></td>
-                                        <td>
-                                            <?php if ($order['statut'] === 'En attente'): ?>
-                                                <a href="?page=annuler&id=<?= $order['commande_id'] ?>" class="btn btn-sm btn-danger">Annuler</a>
-                                            <?php else: ?>
-                                                <span class="text-muted">Non modifiable</span>
-                                            <?php endif; ?>
-                                        </td>
-                                    </tr>
-                                <?php endforeach; ?>
-                            </tbody>
-                        </table>
-                    <?php endif; ?>
-                </div>
-            </div>
+    <div class="card shadow-sm">
+        <div class="card-header bg-secondary text-white">Mes Commandes</div>
+        <div class="card-body">
+            <?php if (empty($orders)): ?>
+                <p>Aucune commande passée pour le moment.</p>
+            <?php else: ?>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>N° Commande</th>
+                            <th>Date</th>
+                            <th>Statut</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($orders as $order): ?>
+                            <tr>
+                                <td><?= htmlspecialchars($order['numero_commande']) ?></td>
+                                <td><?= htmlspecialchars($order['date_commande']) ?></td>
+                                <td>
+                                    <?= htmlspecialchars($order['statut']) ?>
+                                    <?php if (isset($tousLesSuivis[$order['commande_id']])): ?>
+                                        <br>
+                                        <button class="btn btn-sm btn-link p-0" type="button" data-bs-toggle="collapse" data-bs-target="#suivi-<?= $order['commande_id'] ?>">
+                                            <small>Voir suivi</small>
+                                        </button>
+                                        <div id="suivi-<?= $order['commande_id'] ?>" class="collapse mt-2 border-start ps-2">
+                                            <small>
+                                                <?php foreach ($tousLesSuivis[$order['commande_id']] as $etape): ?>
+                                                    <div class="text-muted"><?= htmlspecialchars($etape['date_suivi']) ?> : <strong><?= htmlspecialchars($etape['statut']) ?></strong></div>
+                                                <?php endforeach; ?>
+                                            </small>
+                                        </div>
+                                    <?php endif; ?>
+                                </td>
+                                <td>
+                                    <?php if ($order['statut'] === 'En attente'): ?>
+                                        <a href="?page=annuler&id=<?= $order['commande_id'] ?>" class="btn btn-sm btn-danger">Annuler</a>
+                                    <?php else: ?>
+                                        <span class="text-muted">Non modifiable</span>
+                                    <?php endif; ?>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            <?php endif; ?>
         </div>
+    </div>
+</div>
     </div>
 </main>

@@ -46,7 +46,7 @@ class Commande
         return $order && $order['statut'] === 'En attente';
     }
 
-    public function updateStatut($orderId, $userId, $nouveauStatut)
+    public function cancelOrder($orderId, $userId, $nouveauStatut)
     {
         // On vérifie que la commande appartient bien à l'utilisateur
         // ET que le statut est bien 'En attente' avant de modifier
@@ -60,5 +60,39 @@ class Commande
             ':c_id'   => $orderId,
             ':u_id'   => $userId
         ]);
+    }
+
+    public function changeOrdersStatusWithFollowUp($orderId, $nouveauStatut)
+    {
+        try {
+            $this->pdo->beginTransaction();
+
+            // Mettre à jour le statut de la commande
+            $stmt1 = $this->pdo->prepare("UPDATE commande SET statut = :statut WHERE commande_id = :c_id");
+            $stmt1->execute([
+                ':statut' => $nouveauStatut,
+                ':c_id'   => $orderId
+            ]);
+
+            $stmt2 = $this->pdo->prepare("INSERT INTO suivi_commande (commande_id, date_suivi, statut) VALUES (:c_id, NOW(), :statut)");
+            $stmt2->execute([
+                ':c_id'   => $orderId,
+                ':statut' => $nouveauStatut
+            ]);
+
+            $this->pdo->commit();
+            return true;
+        } catch (Exception $e) {
+            $this->pdo->rollBack();
+            return false;
+        }
+    }
+
+    public function getOrderFollowUp($orderId)
+    {
+        $sql = "SELECT statut, date_suivi FROM suivi_commande WHERE commande_id = :c_id ORDER BY date_suivi ASC";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([':c_id' => $orderId]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 }

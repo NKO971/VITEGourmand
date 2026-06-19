@@ -89,3 +89,12 @@ CREATE TABLE IF NOT EXISTS `zone_livraison` (
     ville VARCHAR(50) NOT NULL,
     distance_km INT NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS `suivi_commande` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `commande_id` INT(11) NOT NULL,
+  `statut` VARCHAR(50) NOT NULL,
+  `date_suivi` DATETIME DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`commande_id`) REFERENCES `commande`(`commande_id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

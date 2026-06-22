@@ -43,3 +43,10 @@ INSERT INTO `zone_livraison` (`code_postal`, `ville`, `distance_km`) VALUES
 ('33400', 'Talence', 6),
 ('33130', 'Bègles', 7),
 ('33700', 'Mérignac', 12);
+
+// Insertion de test 
+INSERT INTO suivi_commande (commande_id, statut, date_suivi) VALUES 
+(6, 'En attente', '2026-06-19 10:00:00'),
+(6, 'Acceptée', '2026-06-19 11:00:00'),
+(6, 'En préparation', '2026-06-19 11:30:00'),
+(6, 'Terminée', '2026-06-19 12:24:00');

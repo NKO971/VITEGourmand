@@ -74,8 +74,8 @@ class Commande
                 ':c_id'   => $orderId
             ]);
 
-            $stmt2 = $this->pdo->prepare("INSERT INTO suivi_commande (commande_id, date_suivi, statut) VALUES (:c_id, NOW(), :statut)");
-            $stmt2->execute([
+            $stmt2 = $this->pdo->prepare("INSERT INTO suivi_commande (commande_id, statut, date_suivi) VALUES (:c_id, :statut, NOW())");
+        $stmt2->execute([
                 ':c_id'   => $orderId,
                 ':statut' => $nouveauStatut
             ]);
@@ -84,6 +84,7 @@ class Commande
             return true;
         } catch (Exception $e) {
             $this->pdo->rollBack();
+            error_log("Erreur suivi commande : " . $e->getMessage());
             return false;
         }
     }

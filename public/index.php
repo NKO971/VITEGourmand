@@ -93,6 +93,54 @@ switch ($page) {
         annulerCommandeController($pdo);
         break;
 
+    case 'donner_avis':
+        // Affichage de la vue du formulaire
+        BaseController::render(
+            "Donner un avis - VITEGourmand",
+            "donner_avis.view.php",
+            [],
+            [], 
+            []  
+        );
+        break;
+
+    case 'traitement_avis':
+        // Traitement de l'insertion dans MongoDB
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            require_once __DIR__ . '/../app/config/mongo.php';
+            
+            $commandeId = $_POST['commande_id'] ?? '';
+            $note = (int) $_POST['note'];
+            $commentaire = htmlspecialchars($_POST['commentaire']);
+            
+            $userId = $_SESSION['user_id'] ?? null; 
+            
+            if ($commandeId && $note && $commentaire && $userId) {
+                try {
+                    $collection = $db->avis;
+                    $collection->insertOne([
+                        'commande_id' => $commandeId,
+                        'user_id' => $userId,
+                        'note' => $note,
+                        'commentaire' => $commentaire,
+                        'date' => new MongoDB\BSON\UTCDateTime()
+                    ]);
+                    
+                    header('Location: ?page=profile');
+                    exit();
+                    
+                } catch (Exception $e) {
+                    die("Erreur MongoDB : " . $e->getMessage());
+                }
+            } else {
+                die("Erreur : Données manquantes ou utilisateur non connecté.");
+            }
+        } else {
+            header("Location: ?page=profile");
+            exit();
+        }
+        break;
+
     // case 'contact':
     //     require_once __DIR__ . '/../app/controllers/contact_controller.php';
     //     contactController($pdo);

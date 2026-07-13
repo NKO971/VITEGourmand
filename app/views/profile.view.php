@@ -81,10 +81,25 @@
                                         <td>
                                             <?php if ($order['statut'] === 'En attente'): ?>
                                                 <a href="?page=annuler&id=<?= $order['commande_id'] ?>" class="btn btn-sm btn-danger">Annuler</a>
+
+                                            <?php elseif ($order['statut'] === 'Terminée'): ?>
+
+                                                <!-- Si la commande a déjà été évaluée, on affiche le badge de validation -->
+                                                <?php if (in_array($order['commande_id'], $commandesAvecAvis)): ?>
+                                                    <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-2">
+                                                        <i class="bi bi-check-circle-fill"></i> Avis envoyé
+                                                    </span>
+
+                                                    <!-- Sinon, on affiche le bouton pour donner l'avis -->
+                                                <?php else: ?>
+                                                    <a href="?page=donner_avis&commande_id=<?= $order['commande_id'] ?>" class="btn btn-sm btn-success">Donner mon avis</a>
+                                                <?php endif; ?>
+
                                             <?php else: ?>
                                                 <span class="text-muted">Non modifiable</span>
                                             <?php endif; ?>
                                         </td>
+
                                     </tr>
                                 <?php endforeach; ?>
                             </tbody>

@@ -21,7 +21,7 @@ function profileController($pdo)
     unset($_SESSION['flash_message']);
     $error = '';
 
-    // Traitement du formulaire
+    // Traitement du formulaire (Uniquement en POST)
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $nom = trim($_POST['nom'] ?? '');
         $prenom = trim($_POST['prenom'] ?? '');
@@ -50,7 +50,20 @@ function profileController($pdo)
         }
     }
 
-    // Récupération des commandes de l'utilisateur
+    // Récupération des données MongoDB (S'exécute TOUT LE TEMPS, en GET et en POST)
+    require_once __DIR__ . '/../config/mongo.php';
+    $collection = $db->avis;
+
+    // Récupération de tous les avis de l'utilisateur connecté
+    $listeAvis = $collection->find(['user_id' => $_SESSION['user_id']]);
+
+    // Création d'un tableau pour stocker les IDs des commandes évaluées
+    $commandesAvecAvis = [];
+    foreach ($listeAvis as $avis) {
+        $commandesAvecAvis[] = $avis['commande_id'];
+    }
+
+    // Récupération des commandes de l'utilisateur (SQL)
     $orders = $commandeModel->getOrdersByUserId($_SESSION['user_id']);
 
     $tousLesSuivis = [];
@@ -70,7 +83,8 @@ function profileController($pdo)
             'message' => $message,
             'error' => $error,
             'orders' => $orders,
-            'tousLesSuivis' => $tousLesSuivis 
+            'tousLesSuivis' => $tousLesSuivis,
+            'commandesAvecAvis' => $commandesAvecAvis
         ]
     );
 }

@@ -1,0 +1,10 @@
+# Dépendances PHP (Composer)
+/vendor/
+
+# Fichiers de configuration sensibles
+.env
+/app/config/db_credentials.php
+
+# Fichiers système
+.DS_Store
+Thumbs.db

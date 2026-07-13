@@ -36,11 +36,18 @@ function loginController($pdo) {
                 $_SESSION['role_id'] = $user['role_id'];
                 $_SESSION['gsm'] = $user['gsm'];
 
-                header("Location: index.php?page=profile");
-                exit();
-            } else {
-                $error = "Identifiants incorrects.";
+                if ($_SESSION['role_id'] == 3) {
+    
+            header("Location: ?page=profile");
+            exit();
+        } elseif ($_SESSION['role_id'] == 2 || $_SESSION['role_id'] == 1) {
+            header("Location: ?page=employee");
+            exit();
+        } else {
+            header("Location: ?page=home");
+            exit();
             }
+        }
         }
     }
 

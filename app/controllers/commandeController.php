@@ -1,6 +1,12 @@
 <?php
 function commandeController($menuModel)
 {
+    // Sécurité : Vérification connexion utilisateur
+    if (!isset($_SESSION['user_id'])) {
+        header("Location: ?page=connexion");
+        exit();
+    }
+
     $menuId = $_GET['menu_id'] ?? null;
     $menu = $menuModel->getMenuById($menuId);
 
@@ -108,7 +114,7 @@ function enregistrerCommande($pdo, $menuModel, $commandeModel, $dataPost)
         'prix_menu'       => $resultat['total_menu'],
         'nombre_personne' => $dataPost['nb_personnes'],
         'prix_livraison'  => $resultat['frais_livraison'],
-        'utilisateur_id'  => $_SESSION['id_utilisateur'],
+        'utilisateur_id'  => $_SESSION['user_id'],
         'menu_id'         => $dataPost['menu_id'],
         'statut'          => 'En attente'
     ]);
@@ -153,7 +159,7 @@ function annulerCommandeController($pdo)
 
         $commandeModel = new Commande($pdo);
 
-        $succes = $commandeModel->updateStatut($commandeId, $_SESSION['user_id'], 'Annulée');
+        $succes = $commandeModel->cancelOrder($commandeId, $_SESSION['user_id'], 'Annulée');
 
         if ($succes) {
             $_SESSION['flash_message'] = "Commande annulée avec succès.";

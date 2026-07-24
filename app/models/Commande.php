@@ -37,12 +37,10 @@ class Commande
 
     public function canModifyOrder($orderId, $userId)
     {
-        $stmt = $this->pdo->prepare("SELECT statut FROM commande WHERE id = :c_id AND utilisateur_id = :u_id");
-        $stmt = $this->pdo->prepare("SELECT statut FROM commande WHERE id = :c_id AND utilisateur_id = :u_id");
-        $stmt->execute(['c_id' => $orderId, 'u_id' => $userId]);
-        $order = $stmt->fetch(PDO::FETCH_ASSOC);
+       $stmt = $this->pdo->prepare("SELECT statut FROM commande WHERE commande_id = :c_id AND utilisateur_id = :u_id");
+       $stmt->execute(['c_id' => $orderId, 'u_id' => $userId]);
+       $order = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        // Attention : vérifie si dans ta base le champ s'appelle 'statut' ou 'status'
         return $order && $order['statut'] === 'En attente';
     }
 

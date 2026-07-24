@@ -105,41 +105,43 @@ switch ($page) {
         break;
 
     case 'traitement_avis':
-        // Traitement de l'insertion dans MongoDB
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            require_once __DIR__ . '/../app/config/mongo.php';
-            
-            $commandeId = $_POST['commande_id'] ?? '';
-            $note = (int) $_POST['note'];
-            $commentaire = htmlspecialchars($_POST['commentaire']);
-            
-            $userId = $_SESSION['user_id'] ?? null; 
-            
-            if ($commandeId && $note && $commentaire && $userId) {
-                try {
-                    $collection = $db->avis;
-                    $collection->insertOne([
-                        'commande_id' => $commandeId,
-                        'user_id' => $userId,
-                        'note' => $note,
-                        'commentaire' => $commentaire,
-                        'date' => new MongoDB\BSON\UTCDateTime()
-                    ]);
-                    
-                    header('Location: ?page=profile');
-                    exit();
-                    
-                } catch (Exception $e) {
-                    die("Erreur MongoDB : " . $e->getMessage());
-                }
-            } else {
-                die("Erreur : Données manquantes ou utilisateur non connecté.");
+    // Traitement de l'insertion dans MongoDB
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        require_once __DIR__ . '/../app/config/mongo.php';
+        
+        // Récupération sécurisée des données
+        $commandeId  = $_POST['commande_id'] ?? '';
+        $commentaire = isset($_POST['commentaire']) ? trim(htmlspecialchars($_POST['commentaire'])) : '';
+        $userId      = $_SESSION['user_id'] ?? null;
+        
+        $hasNote = isset($_POST['note']) && $_POST['note'] !== '';
+        $note    = $hasNote ? (int) $_POST['note'] : null;
+        
+        if ($commandeId && $userId && $note !== null && $note >= 1 && $note <= 5 && !empty($commentaire)) {
+            try {
+                $collection = $db->avis;
+                $collection->insertOne([
+                    'commande_id' => $commandeId,
+                    'user_id'     => $userId,
+                    'note'        => $note,
+                    'commentaire' => $commentaire,
+                    'date'        => new MongoDB\BSON\UTCDateTime()
+                ]);
+                
+                header('Location: ?page=profile');
+                exit();
+                
+            } catch (Exception $e) {
+                die("Erreur MongoDB : " . $e->getMessage());
             }
         } else {
-            header("Location: ?page=profile");
-            exit();
+            die("Erreur : Données manquantes, note invalide (1 à 5) ou utilisateur non connecté.");
         }
-        break;
+    } else {
+        header("Location: ?page=profile");
+        exit();
+    }
+    break;
 
     case 'employee':
          require_once __DIR__ . '/../app/controllers/employee_controller.php';

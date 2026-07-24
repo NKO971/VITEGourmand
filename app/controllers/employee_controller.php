@@ -1,29 +1,25 @@
 <?php
 require_once __DIR__ . '/baseController.php';
 
-function employeeController($pdo)
-{
-    if (session_status() === PHP_SESSION_NONE) {
-        session_start();
-    }
+function employeeController($pdo) {
 
-    // 1. Protection : Si pas connecté, redirection vers la page de connexion
-    if (!isset($_SESSION['user_id'])) {
-        header("Location: ?page=connexion");
+    // Vérification de sécurité (Rôle Employé / Admin)
+    if (!isset($_SESSION['user_id']) || !in_array($_SESSION['role_id'], [1, 2])) {
+        header('Location: ?page=home');
         exit();
     }
 
-    if ($_SESSION['role_id'] == 3) {
-        header("Location: ?page=profile");
-        exit();
-    }
+    // Préparation des variables pour la vue
+    $data = [
+        'pageTitle'  => 'Espace Employé - Gestion des Commandes',
+    ];
 
-    // 3. Si tout est OK, on charge le tableau de bord
+    // Si tout est OK, on charge le tableau de bord
     BaseController::render(
         "Tableau de bord Employé - VITEGourmand",
         "employee_dashboard.view.php",
         [], // On utilisera le Bootstrap global du site pour l'instant
-        [], 
-        []  
+        ['js/dashboard-orders.js'],
+        $data  
     );
 }

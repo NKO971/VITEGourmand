@@ -1,31 +1,45 @@
 <?php
 class BaseController
 {
-
-    // On ajoute un 5ème paramètre : $data = []
-    public static function render($title, $viewFile, $additionalCss = [], $additionalJs = [], $data = [])
-    {
-
-        // Si le contrôleur nous a envoyé des données, on les transforme en vraies variables
+    /**
+     * @param string $title Titre de la page
+     * @param string $viewFile Nom du fichier vue
+     * @param array $additionalCss CSS spécifiques
+     * @param array $additionalJs JS spécifiques
+     * @param array $data Données pour la vue
+     * @param string|bool $layout 'front' (par défaut), 'back' ou false
+     */
+    public static function render(
+        $title, 
+        $viewFile, 
+        $additionalCss = [], 
+        $additionalJs = [], 
+        $data = [], 
+        $layout = 'front' // 'front', 'back' ou false
+    ) {
         if (!empty($data)) {
             extract($data);
         }
 
-        // CSS par défaut
-        $specificCss = array_merge([
-            "css/bootstrap.min.css",
-            "css/base.css"
-        ], $additionalCss);
+        // CSS & JS spécifiques
+        $specificCss = array_merge(["css/bootstrap.min.css", "css/base.css"], $additionalCss);
+        $specificJs  = array_merge(["js/jquery-3.7.1.min.js", "js/bootstrap.bundle.min.js"], $additionalJs);
 
-        // JS par défaut
-        $specificJs = array_merge([
-            "js/jquery-3.7.1.min.js",
-            "js/bootstrap.bundle.min.js"
-        ], $additionalJs);
+        // 1. Inclusion du Header / Layout supérieur
+        if ($layout === 'front') {
+            require_once __DIR__ . '/../views/includes/header.php';
+        } elseif ($layout === 'back') {
+            require_once __DIR__ . '/../views/includes/header_back.php';
+        }
 
-        // Inclusions dans le bon ordre
-        require_once(__DIR__ . '/../views/includes/header.php');
-        require_once(__DIR__ . '/../views/' . $viewFile);
-        require_once(__DIR__ . '/../views/includes/footer.php');
+        // 2. Vue principale
+        require_once __DIR__ . '/../views/' . $viewFile;
+
+        // 3. Inclusion du Footer / Scripts
+        if ($layout === 'front') {
+            require_once __DIR__ . '/../views/includes/footer.php';
+        } elseif ($layout === 'back') {
+            require_once __DIR__ . '/../views/includes/footer_back.php';
+        }
     }
 }

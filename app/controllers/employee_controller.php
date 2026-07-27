@@ -11,15 +11,16 @@ function employeeController($pdo) {
 
     // Préparation des variables pour la vue
     $data = [
-        'pageTitle'  => 'Espace Employé - Gestion des Commandes',
+        'pageTitle' => 'Espace Employé - Gestion des Commandes',
     ];
 
-    // Si tout est OK, on charge le tableau de bord
+    // Chargement de la vue SANS le layout public
     BaseController::render(
         "Tableau de bord Employé - VITEGourmand",
         "employee_dashboard.view.php",
-        [], // On utilisera le Bootstrap global du site pour l'instant
-        ['js/dashboard-orders.js'],
-        $data  
+        [],                          // CSS additionnels
+        ['js/dashboard-orders.js'],  // JS additionnels
+        $data,                       // Données envoyées à la vue
+        'back'                        // Layout back office !
     );
 }

@@ -27,7 +27,7 @@
         <div class="container">
             <a class="navbar-brand d-flex align-items-center" href="/VITEGourmand/public/?page=home">
                 <span class="fw-black fs-3 text-dark font-poppins">VITE<span class="text-orange">Gourmand</span></span>
-                </a>
+            </a>
 
             <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
                 aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -49,6 +49,16 @@
                                 <span><?= htmlspecialchars($_SESSION['prenom'] ?? $_SESSION['email'] ?? 'Mon Compte'); ?></span>
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end border-0 shadow mt-2" aria-labelledby="navbarDropdown">
+                                
+                                <?php if (isset($_SESSION['role_id']) && in_array($_SESSION['role_id'], [1, 2])): ?>
+                                    <li>
+                                        <a class="dropdown-item py-2 fw-bold text-primary" href="/VITEGourmand/public/?page=employee">
+                                            <i class="bi bi-speedometer2 me-2"></i> Espace Employé
+                                        </a>
+                                    </li>
+                                    <li><hr class="dropdown-divider opacity-50"></li>
+                                <?php endif; ?>
+
                                 <li>
                                     <a class="dropdown-item py-2" href="/VITEGourmand/public/?page=profile">
                                         <i class="bi bi-gear me-2"></i> Mon Profil
@@ -56,7 +66,7 @@
                                 </li>
                                 <li><hr class="dropdown-divider opacity-50"></li>
                                 <li>
-                                    <a class="dropdown-itempy-2 text-danger" href="index.php?page=deconnexion">
+                                    <a class="dropdown-item py-2 text-danger" href="index.php?page=deconnexion">
                                         <i class="bi bi-box-arrow-right me-2"></i> Déconnexion
                                     </a>
                                 </li>

@@ -1,18 +1,16 @@
 <?php
-require_once __DIR__ . '/../app/config/db.php';
-// Initialiser la session et charger la BDD
+// Initialiser la session
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-// require_once __DIR__ . '/../app/config/db.php';
+
+// Chargement de la BDD et du contrôleur de base
+require_once __DIR__ . '/../app/config/db.php';
 require_once __DIR__ . '/../app/controllers/baseController.php';
 
-$page = $_GET['page'] ?? 'home'; // Page par défaut : home
+$page = $_GET['page'] ?? 'home';
+
 switch ($page) {
-    // case 'mentions':
-    //     require_once __DIR__ . '/../app/controllers/legal_controller.php';
-    //     mentionsLegales($pdo);
-    //     break;
 
     case 'home':
         require_once __DIR__ . '/../app/controllers/home_controller.php';
@@ -24,20 +22,19 @@ switch ($page) {
         menusController();
         break;
 
-
     case 'connexion':
-         require_once __DIR__ . '/../app/controllers/loginController.php';
-         loginController($pdo); 
-         break;
+        require_once __DIR__ . '/../app/controllers/loginController.php';
+        loginController($pdo); 
+        break;
 
     case 'deconnexion':
         require_once __DIR__ . '/../app/controllers/logout_controller.php';
         break;
 
-     case 'inscription':
-         require_once __DIR__ . '/../app/controllers/registerController.php';
-         registerController($pdo); 
-         break;
+    case 'inscription':
+        require_once __DIR__ . '/../app/controllers/registerController.php';
+        registerController($pdo); 
+        break;
         
     case 'commander':
         require_once __DIR__ . '/../app/models/Menu.php';
@@ -64,7 +61,6 @@ switch ($page) {
             try {
                 enregistrerCommande($pdo, $menuModel, $commandeModel, $_POST);
             } catch (Exception $e) {
-                // Si une erreur survient (menu inexistant, etc.)
                 echo "Une erreur est survenue : " . htmlspecialchars($e->getMessage());
             }
         } else {
@@ -94,7 +90,6 @@ switch ($page) {
         break;
 
     case 'donner_avis':
-        // Affichage de la vue du formulaire
         BaseController::render(
             "Donner un avis - VITEGourmand",
             "donner_avis.view.php",
@@ -105,61 +100,54 @@ switch ($page) {
         break;
 
     case 'traitement_avis':
-    // Traitement de l'insertion dans MongoDB
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        require_once __DIR__ . '/../app/config/mongo.php';
-        
-        // Récupération sécurisée des données
-        $commandeId  = $_POST['commande_id'] ?? '';
-        $commentaire = isset($_POST['commentaire']) ? trim(htmlspecialchars($_POST['commentaire'])) : '';
-        $userId      = $_SESSION['user_id'] ?? null;
-        
-        $hasNote = isset($_POST['note']) && $_POST['note'] !== '';
-        $note    = $hasNote ? (int) $_POST['note'] : null;
-        
-        if ($commandeId && $userId && $note !== null && $note >= 1 && $note <= 5 && !empty($commentaire)) {
-            try {
-                $collection = $db->avis;
-                $collection->insertOne([
-                    'commande_id' => $commandeId,
-                    'user_id'     => $userId,
-                    'note'        => $note,
-                    'commentaire' => $commentaire,
-                    'date'        => new MongoDB\BSON\UTCDateTime()
-                ]);
-                
-                header('Location: ?page=profile');
-                exit();
-                
-            } catch (Exception $e) {
-                die("Erreur MongoDB : " . $e->getMessage());
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            require_once __DIR__ . '/../app/config/mongo.php';
+            
+            $commandeId  = $_POST['commande_id'] ?? '';
+            $commentaire = isset($_POST['commentaire']) ? trim(htmlspecialchars($_POST['commentaire'])) : '';
+            $userId      = $_SESSION['user_id'] ?? null;
+            
+            $hasNote = isset($_POST['note']) && $_POST['note'] !== '';
+            $note    = $hasNote ? (int) $_POST['note'] : null;
+            
+            if ($commandeId && $userId && $note !== null && $note >= 1 && $note <= 5 && !empty($commentaire)) {
+                try {
+                    $collection = $db->avis;
+                    $collection->insertOne([
+                        'commande_id' => $commandeId,
+                        'user_id'     => $userId,
+                        'note'        => $note,
+                        'commentaire' => $commentaire,
+                        'date'        => new MongoDB\BSON\UTCDateTime()
+                    ]);
+                    
+                    header('Location: ?page=profile');
+                    exit();
+                    
+                } catch (Exception $e) {
+                    die("Erreur MongoDB : " . $e->getMessage());
+                }
+            } else {
+                die("Erreur : Données manquantes, note invalide (1 à 5) ou utilisateur non connecté.");
             }
         } else {
-            die("Erreur : Données manquantes, note invalide (1 à 5) ou utilisateur non connecté.");
+            header("Location: ?page=profile");
+            exit();
         }
-    } else {
-        header("Location: ?page=profile");
-        exit();
-    }
-    break;
+        break;
 
+    // 🛠️ Dashboard Employé & Admin
     case 'employee':
-         require_once __DIR__ . '/../app/controllers/employee_controller.php';
-         employeeController($pdo);
-         break;
-
-    // case 'contact':
-    //     require_once __DIR__ . '/../app/controllers/contact_controller.php';
-    //     contactController($pdo);
-    //     break;
-
-    // case 'admin':
-    //     require_once __DIR__ . '/../app/controllers/admin_controller.php';
-    //     adminController($pdo);
-    //     break;
+    case 'employee_dashboard':
+        if (!isset($_SESSION['user_id']) || !in_array($_SESSION['role_id'], [1, 2])) {
+            header('Location: ?page=connexion');
+            exit();
+        }
+        require_once __DIR__ . '/../app/controllers/employee_controller.php';
+        employeeController($pdo);
+        break;
 
     default:
-        // Page par défaut: redirection vers home
         header("Location: ?page=home");
         exit();
 }

@@ -2,6 +2,7 @@
 session_start();
 header('Content-Type: application/json');
 
+// Contrôle d'accès (Employé = 2, Admin = 1)
 if (!isset($_SESSION['user_id']) || !in_array($_SESSION['role_id'], [1, 2])) {
     http_response_code(403);
     echo json_encode(['error' => 'Accès refusé.']);
@@ -10,39 +11,51 @@ if (!isset($_SESSION['user_id']) || !in_array($_SESSION['role_id'], [1, 2])) {
 
 require_once __DIR__ . '/../../app/config/db.php';
 
-// Récupération des filtres depuis la requête GET
+// Récupération et nettoyage des filtres depuis la requête GET
 $search = !empty($_GET['search']) ? trim($_GET['search']) : null;
 $status = !empty($_GET['status']) ? trim($_GET['status']) : null;
-$date = !empty($_GET['date']) ? trim($_GET['date']) : null;
+$date   = !empty($_GET['date'])   ? trim($_GET['date'])   : null;
 
-// Construction de la requête SQL avec des conditions dynamiques
-$sql = "SELECT c.commande_id, c.date_commande, c.statut, u.nom, u.prenom
-          FROM commande c
-          JOIN utilisateur u ON c.utilisateur_id = u.utilisateur_id
-          WHERE 1=1"; // Condition toujours vraie pour faciliter l'ajout de conditions
+$sql = "SELECT 
+            c.commande_id, 
+            c.numero_commande, 
+            c.date_commande, 
+            c.statut, 
+            (c.prix_menu + c.prix_livraison) AS montant_total,
+            u.nom, 
+            u.prenom
+        FROM commande c
+        JOIN utilisateur u ON c.utilisateur_id = u.utilisateur_id
+        WHERE 1=1";
 
-// Ajout des conditions dynamiques en fonction des filtres
 $params = [];
 
+// Filtre par statut (Match exact avec les valeurs BDD : "En attente", "Acceptée", etc.)
 if ($status) {
     $sql .= " AND c.statut = :status";
     $params[':status'] = $status;
 }
 
+// Filtre par date
 if ($date) {
     $sql .= " AND DATE(c.date_commande) = :date";
     $params[':date'] = $date;
 }
 
+// Recherche textuelle (Nom, Prénom, ID ou Référence N° commande)
 if ($search) {
-    $sql .= " AND (u.nom LIKE :search OR u.prenom LIKE :search OR c.commande_id LIKE :search)";
+    $sql .= " AND (
+        u.nom LIKE :search 
+        OR u.prenom LIKE :search 
+        OR c.commande_id LIKE :search 
+        OR c.numero_commande LIKE :search
+    )";
     $params[':search'] = '%' . $search . '%';
 }
 
-// Ordre par date récente
+// Ordre d'affichage : les plus récents en premier
 $sql .= " ORDER BY c.date_commande DESC";
 
-// Préparation et exécution de la requête
 try {
     $stmt = $pdo->prepare($sql);
     $stmt->execute($params);
@@ -53,6 +66,6 @@ try {
     
 } catch (PDOException $e) {
     http_response_code(500);
-    echo json_encode(['error' => 'Erreur lors de la récupération des commandes.' . $e->getMessage()]);
+    echo json_encode(['error' => 'Erreur lors de la récupération des commandes.']);
     exit();
 }

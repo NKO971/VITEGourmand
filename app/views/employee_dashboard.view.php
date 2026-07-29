@@ -10,7 +10,7 @@
 <div class="card shadow-sm border-0 mb-4">
     <div class="card-body">
         <form id="filter-form" onsubmit="event.preventDefault();" class="row g-3 align-items-end">
-            
+
             <!-- Recherche textuelle (Nom client ou N° commande) -->
             <div class="col-md-4">
                 <label for="filter-search" class="form-label text-muted small fw-bold">Recherche</label>
@@ -21,15 +21,17 @@
             </div>
 
             <!-- Filtre par Statut -->
+            <!-- Filtre par Statut -->
             <div class="col-md-3">
                 <label for="filter-status" class="form-label text-muted small fw-bold">Statut</label>
                 <select id="filter-status" class="form-select">
                     <option value="">Tous les statuts</option>
-                    <option value="en_attente">En attente</option>
-                    <option value="en_cours">En cours de préparation</option>
-                    <option value="prete">Prête</option>
-                    <option value="livree">Livrée</option>
-                    <option value="annulee">Annulée</option>
+                    <option value="En attente">En attente</option>
+                    <option value="Acceptée">Acceptée</option>
+                    <option value="En préparation">En préparation</option>
+                    <option value="En livraison">En livraison</option>
+                    <option value="Terminée">Terminée</option>
+                    <option value="Annulée">Annulée</option>
                 </select>
             </div>
 
@@ -56,7 +58,7 @@
         <h5 class="mb-0 fw-bold"><i class="bi bi-list-check me-2 text-primary"></i>Commandes reçues</h5>
         <span class="badge bg-primary fs-6" id="orders-count">0 commande(s)</span>
     </div>
-    
+
     <div class="table-responsive">
         <table class="table table-hover align-middle mb-0">
             <thead class="table-light">

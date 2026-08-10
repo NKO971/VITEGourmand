@@ -17,13 +17,23 @@ $status = !empty($_GET['status']) ? trim($_GET['status']) : null;
 $date   = !empty($_GET['date'])   ? trim($_GET['date'])   : null;
 
 $sql = "SELECT 
-            c.commande_id, 
-            c.numero_commande, 
-            c.date_commande, 
-            c.statut, 
-            (c.prix_menu + c.prix_livraison) AS montant_total,
-            u.nom, 
-            u.prenom
+            c.commande_id,
+            c.numero_commande,
+            c.date_commande,
+            c.date_prestation,
+            c.heure_livraison,
+            c.prix_menu,
+            c.nombre_personne,
+            c.prix_livraison,
+            (c.prix_menu + COALESCE(c.prix_livraison, 0)) AS montant_total,
+            c.statut,
+            c.pret_materiel,
+            c.restitution_materiel,
+            c.mode_contact,
+            c.motif_annulation,
+            u.nom,
+            u.prenom,
+            u.email
         FROM commande c
         JOIN utilisateur u ON c.utilisateur_id = u.utilisateur_id
         WHERE 1=1";

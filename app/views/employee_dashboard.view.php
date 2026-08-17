@@ -54,10 +54,10 @@
                 <label for="filter-status" class="form-label text-muted small fw-bold">Statut</label>
                 <select id="filter-status" class="form-select">
                     <option value="">Tous les statuts</option>
-                    <option value="En attente">En attente</option>
                     <option value="Acceptée">Acceptée</option>
                     <option value="En préparation">En préparation</option>
-                    <option value="En livraison">En livraison</option>
+                    <option value="En cours de livraison">En cours de livraison</option>
+                    <option value="En attente du retour de matériel">En attente du retour de matériel</option>
                     <option value="Terminée">Terminée</option>
                     <option value="Annulée">Annulée</option>
                 </select>

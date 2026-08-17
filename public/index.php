@@ -136,7 +136,7 @@ switch ($page) {
         }
         break;
 
-    // 🛠️ Dashboard Employé & Admin
+    // Dashboard Employé & Admin
     case 'employee':
     case 'employee_dashboard':
         if (!isset($_SESSION['user_id']) || !in_array($_SESSION['role_id'], [1, 2])) {
@@ -145,6 +145,20 @@ switch ($page) {
         }
         require_once __DIR__ . '/../app/controllers/employee_controller.php';
         employeeController($pdo);
+        break;
+
+    case 'get_orders':
+        header('Content-Type: application/json');
+        require_once __DIR__ . '/../app/controllers/gestionCommandeController.php';
+        getOrdersController($pdo);
+        exit();
+        break;
+    
+    case 'update_order_status':
+        header('Content-Type: application/json');
+        require_once __DIR__ . '/../app/controllers/employeCommandeController.php';
+        updateOrderStatusController($pdo);
+        exit();
         break;
 
     default:

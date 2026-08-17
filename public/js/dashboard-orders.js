@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         try {
-            const response = await fetch(`api/get_orders.php?${params.toString()}`);
+            const response = await fetch(`index.php?page=get_orders&${params.toString()}`);
             
             if (!response.ok) {
                 throw new Error(`Erreur serveur (${response.status})`);
@@ -218,7 +218,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const commandeId = btnAccept.dataset.id;
 
         try {
-            const response = await fetch('api/update_order_status.php', {
+            const response = await fetch('index.php?page=update_order_status', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -349,7 +349,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const cancelReason = document.getElementById('modal-cancel-reason').value;
 
             try {
-                const response = await fetch('api/update_order_status.php', {
+                const response = await fetch('index.php?page=update_order_status', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({

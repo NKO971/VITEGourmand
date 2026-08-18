@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/../../helpers/mailer.php';
+require_once ROOT_PATH . 'helpers/mailer.php';
 
 /**
  * Contrôleur de gestion des statuts de commande (Back-office Employé / Admin)

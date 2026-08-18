@@ -1,58 +1,61 @@
 <?php
+// Définir le chemin absolu de l'application
+define('ROOT_PATH', dirname(__DIR__) . '/');
+
 // Initialiser la session
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
 // Chargement de la BDD et du contrôleur de base
-require_once __DIR__ . '/../app/config/db.php';
-require_once __DIR__ . '/../app/controllers/baseController.php';
+require_once ROOT_PATH . 'app/config/db.php';
+require_once ROOT_PATH . 'app/controllers/baseController.php';
 
 $page = $_GET['page'] ?? 'home';
 
 switch ($page) {
 
     case 'home':
-        require_once __DIR__ . '/../app/controllers/home_controller.php';
+        require_once ROOT_PATH . 'app/controllers/home_controller.php';
         homeController();
         break;
 
     case 'menus':
-        require_once __DIR__ . '/../app/controllers/menus_controller.php';
+        require_once ROOT_PATH . 'app/controllers/menus_controller.php';
         menusController();
         break;
 
     case 'connexion':
-        require_once __DIR__ . '/../app/controllers/loginController.php';
+        require_once ROOT_PATH . 'app/controllers/loginController.php';
         loginController($pdo); 
         break;
 
     case 'deconnexion':
-        require_once __DIR__ . '/../app/controllers/logout_controller.php';
+        require_once ROOT_PATH . 'app/controllers/logout_controller.php';
         break;
 
     case 'inscription':
-        require_once __DIR__ . '/../app/controllers/registerController.php';
+        require_once ROOT_PATH . 'app/controllers/registerController.php';
         registerController($pdo); 
         break;
         
     case 'commander':
-        require_once __DIR__ . '/../app/models/Menu.php';
-        require_once __DIR__ . '/../app/controllers/commandeController.php';
+        require_once ROOT_PATH . 'app/models/Menu.php';
+        require_once ROOT_PATH . 'app/controllers/commandeController.php';
         $menuModel = new Menu($pdo);
         commandeController($menuModel);
         break;
     
     case 'api_zone':
-        require_once __DIR__ . '/../app/controllers/commandeController.php';
+        require_once ROOT_PATH . 'app/controllers/commandeController.php';
         getZoneDistance($pdo);
         exit();
         break;
     
     case 'enregistrer_commande':
-        require_once __DIR__ . '/../app/models/Menu.php';
-        require_once __DIR__ . '/../app/models/Commande.php';
-        require_once __DIR__ . '/../app/controllers/commandeController.php';
+        require_once ROOT_PATH . 'app/models/Menu.php';
+        require_once ROOT_PATH . 'app/models/Commande.php';
+        require_once ROOT_PATH . 'app/controllers/commandeController.php';
         
         $menuModel = new Menu($pdo); 
         $commandeModel = new Commande($pdo);      
@@ -80,12 +83,12 @@ switch ($page) {
         break;
     
     case 'profile':
-        require_once __DIR__ . '/../app/controllers/profileController.php';
+        require_once ROOT_PATH . 'app/controllers/profileController.php';
         profileController($pdo);
         break;
         
     case 'annuler':
-        require_once __DIR__ . '/../app/controllers/commandeController.php';
+        require_once ROOT_PATH . 'app/controllers/commandeController.php';
         annulerCommandeController($pdo);
         break;
 
@@ -101,7 +104,7 @@ switch ($page) {
 
     case 'traitement_avis':
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            require_once __DIR__ . '/../app/config/mongo.php';
+            require_once ROOT_PATH . 'app/config/mongo.php';
             
             $commandeId  = $_POST['commande_id'] ?? '';
             $commentaire = isset($_POST['commentaire']) ? trim(htmlspecialchars($_POST['commentaire'])) : '';
@@ -143,20 +146,20 @@ switch ($page) {
             header('Location: ?page=connexion');
             exit();
         }
-        require_once __DIR__ . '/../app/controllers/employee_controller.php';
+        require_once ROOT_PATH . 'app/controllers/employee_controller.php';
         employeeController($pdo);
         break;
 
     case 'get_orders':
         header('Content-Type: application/json');
-        require_once __DIR__ . '/../app/controllers/gestionCommandeController.php';
+        require_once ROOT_PATH . 'app/controllers/gestionCommandeController.php';
         getOrdersController($pdo);
         exit();
         break;
     
     case 'update_order_status':
         header('Content-Type: application/json');
-        require_once __DIR__ . '/../app/controllers/employeCommandeController.php';
+        require_once ROOT_PATH . 'app/controllers/employeCommandeController.php';
         updateOrderStatusController($pdo);
         exit();
         break;

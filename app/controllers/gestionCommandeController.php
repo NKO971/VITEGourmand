@@ -117,7 +117,6 @@ function updateOrderStatusController($pdo) {
 
         // Validation de la transaction
         $pdo->commit();
-
         // RÈGLE MÉTIER : Envoi du Mail de rappel si prêt de matériel via ton helper PHPMailer
         $mailSent = false;
         if ($newStatus === 'En attente du retour de matériel') {

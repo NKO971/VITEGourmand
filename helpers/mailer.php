@@ -2,7 +2,7 @@
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
-require_once __DIR__ . '/../vendor/autoload.php';
+require_once ROOT_PATH . 'vendor/autoload.php';
 
 /**
  * Notification par e-mail pour le retour de matériel sous 10 jours ouvrés.
@@ -23,7 +23,7 @@ function sendEquipmentReturnNotification(string $toEmail, string $clientName, st
         $mail->Host       = 'sandbox.smtp.mailtrap.io';
         $mail->SMTPAuth   = true;
         $mail->Username   = '6b2a318f09623a';
-        $mail->Password   = '473a4af677f3ae473a4af677f3ae';
+        $mail->Password   = '473a4af677f3ae';
         $mail->Port       = 2525;
         $mail->CharSet    = 'UTF-8';
 

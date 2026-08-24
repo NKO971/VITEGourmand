@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -17,60 +18,61 @@
         <?php endforeach; ?>
     <?php endif; ?>
 </head>
+
 <body class="bg-light">
 
-<div class="container-fluid">
-    <div class="row">
-        <!-- SIDEBAR LATÉRALE GAUCHE -->
-        <nav class="col-md-3 col-lg-2 d-md-block bg-dark text-white min-vh-100 p-3 shadow">
-            <div class="position-sticky pt-3">
-                <div class="text-center mb-4">
-                    <h5 class="text-primary fw-bold mb-0">VITEGourmand</h5>
-                    <small class="text-muted">Espace Employé</small>
-                </div>
-                <hr class="text-muted">
-                
-                <!-- Liens de navigation du Dashboard -->
-                <ul class="nav flex-column gap-2">
-                    <li class="nav-item">
-                        <a class="nav-link text-white bg-primary rounded px-3 py-2 d-flex align-items-center gap-2" href="?page=employee">
-                            <i class="bi bi-speedometer2"></i> Commandes
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-white-50 px-3 py-2 d-flex align-items-center gap-2" href="#">
-                            <i class="bi bi-egg-fried"></i> Menus & Plats
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-white-50 px-3 py-2 d-flex align-items-center gap-2" href="#">
-                            <i class="bi bi-clock"></i> Horaires
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-white-50 px-3 py-2 d-flex align-items-center gap-2" href="#">
-                            <i class="bi bi-chat-left-text"></i> Modération Avis
-                        </a>
-                    </li>
-                </ul>
-                
-                <hr class="text-muted mt-4">
-                
-                <!-- Liens de sortie -->
-                <ul class="nav flex-column gap-2">
-                    <li class="nav-item">
-                        <a class="nav-link text-info px-3 py-2 d-flex align-items-center gap-2" href="?page=home">
-                            <i class="bi bi-arrow-left-circle"></i> Retour au site public
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-danger px-3 py-2 d-flex align-items-center gap-2" href="?page=deconnexion">
-                            <i class="bi bi-box-arrow-right"></i> Déconnexion
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </nav>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- SIDEBAR LATÉRALE GAUCHE -->
+            <nav class="col-md-3 col-lg-2 d-md-block bg-dark text-white min-vh-100 p-3 shadow">
+                <div class="position-sticky pt-3">
+                    <div class="text-center mb-4">
+                        <h5 class="text-primary fw-bold mb-0">VITEGourmand</h5>
+                        <small class="text-muted">Espace Employé</small>
+                    </div>
+                    <hr class="text-muted">
 
-        <!-- ZONE DE CONTENU PRINCIPAL -->
-        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
+                    <!-- Liens de navigation du Dashboard -->
+                    <ul class="nav flex-column gap-2">
+                        <li class="nav-item">
+                            <a class="nav-link <?= (($currentPage ?? '') === 'employee') ? 'bg-primary text-white' : 'text-white-50' ?> rounded px-3 py-2 d-flex align-items-center gap-2" href="?page=employee">
+                                <i class="bi bi-speedometer2"></i> Commandes
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link <?= (($currentPage ?? '') === 'employee_menus') ? 'bg-primary text-white' : 'text-white-50' ?> rounded px-3 py-2 d-flex align-items-center gap-2" href="?page=employee_menus">
+                                <i class="bi bi-egg-fried"></i> Menus & Plats
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link <?= (($currentPage ?? '') === 'employee_schedules') ? 'bg-primary text-white' : 'text-white-50' ?> rounded px-3 py-2 d-flex align-items-center gap-2" href="?page=employee_schedules">
+                                <i class="bi bi-clock"></i> Horaires
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link <?= (($currentPage ?? '') === 'employee_reviews') ? 'bg-primary text-white' : 'text-white-50' ?> rounded px-3 py-2 d-flex align-items-center gap-2" href="?page=employee_reviews">
+                                <i class="bi bi-chat-left-text"></i> Modération Avis
+                            </a>
+                        </li>
+                    </ul>
+
+                    <hr class="text-muted mt-4">
+
+                    <!-- Liens de sortie -->
+                    <ul class="nav flex-column gap-2">
+                        <li class="nav-item">
+                            <a class="nav-link text-info px-3 py-2 d-flex align-items-center gap-2" href="?page=home">
+                                <i class="bi bi-arrow-left-circle"></i> Retour au site public
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-danger px-3 py-2 d-flex align-items-center gap-2" href="?page=deconnexion">
+                                <i class="bi bi-box-arrow-right"></i> Déconnexion
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- ZONE DE CONTENU PRINCIPAL -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">

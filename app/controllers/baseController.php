@@ -25,17 +25,17 @@ class BaseController
         $specificCss = array_merge(["css/bootstrap.min.css", "css/base.css"], $additionalCss);
         $specificJs  = array_merge(["js/jquery-3.7.1.min.js", "js/bootstrap.bundle.min.js"], $additionalJs);
 
-        // 1. Inclusion du Header / Layout supérieur
+        // Inclusion du Header / Layout supérieur
         if ($layout === 'front') {
             require_once __DIR__ . '/../views/includes/header.php';
         } elseif ($layout === 'back') {
             require_once __DIR__ . '/../views/includes/header_back.php';
         }
 
-        // 2. Vue principale
+        //  Vue principale
         require_once __DIR__ . '/../views/' . $viewFile;
 
-        // 3. Inclusion du Footer / Scripts
+        // Inclusion du Footer / Scripts
         if ($layout === 'front') {
             require_once __DIR__ . '/../views/includes/footer.php';
         } elseif ($layout === 'back') {

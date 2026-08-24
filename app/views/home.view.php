@@ -58,14 +58,24 @@
 
 <!-- Avis-->
 <section id="menus" class="container my-5">
-  <h2 class="text-center mb-4 fw-bold">Retours clients</h2>
-  <div class="row g-4">
-    <div class="col-md-4">
-      <div class="card h-100 shadow-sm">
-        <div class="card-body">
-          <h5 class="card-title">Sophie L.</h5>
-          <p class="card-text">"Un service impeccable et des plats délicieux ! Vite & Gourmand est devenu notre adresse incontournable pour les repas de famille."</p>
-        </div>
-      </div>
+  <h2 class="text-center mb-4">Retours de nos clients</h2>
+    <div class="row">
+        <?php if (empty($avisValides)): ?>
+            <p class="text-center">Aucun avis pour le moment.</p>
+        <?php else: ?>
+            <?php foreach ($avisValides as $avis): ?>
+                <div class="col-md-4 mb-3">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title"><?= htmlspecialchars($avis['nom_client']) ?></h5>
+                            <div class="text-warning mb-2">
+                                <?= str_repeat('★', (int)$avis['note']) ?><?= str_repeat('☆', 5 - (int)$avis['note']) ?>
+                            </div>
+                            <p class="card-text">"<?= htmlspecialchars($avis['commentaire']) ?>"</p>
+                        </div>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        <?php endif; ?>
     </div>
 </section>

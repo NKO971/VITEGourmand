@@ -1,4 +1,7 @@
 <?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 // Définir le chemin absolu de l'application
 define('ROOT_PATH', dirname(__DIR__) . '/');
 
@@ -104,34 +107,28 @@ switch ($page) {
 
     case 'traitement_avis':
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            require_once ROOT_PATH . 'app/config/mongo.php';
+            require_once ROOT_PATH . 'app/models/AvisModel.php';
             
-            $commandeId  = $_POST['commande_id'] ?? '';
+            $commandeId  = (int)($_POST['commande_id'] ?? 0);
             $commentaire = isset($_POST['commentaire']) ? trim(htmlspecialchars($_POST['commentaire'])) : '';
             $userId      = $_SESSION['user_id'] ?? null;
+            $nomClient   = $_SESSION['user_name'] ?? 'Client'; // Ajuster selon ta variable de session
             
             $hasNote = isset($_POST['note']) && $_POST['note'] !== '';
             $note    = $hasNote ? (int) $_POST['note'] : null;
             
             if ($commandeId && $userId && $note !== null && $note >= 1 && $note <= 5 && !empty($commentaire)) {
-                try {
-                    $collection = $db->avis;
-                    $collection->insertOne([
-                        'commande_id' => $commandeId,
-                        'user_id'     => $userId,
-                        'note'        => $note,
-                        'commentaire' => $commentaire,
-                        'date'        => new MongoDB\BSON\UTCDateTime()
-                    ]);
-                    
+                $avisModel = new AvisModel();
+                $success = $avisModel->createAvis($nomClient, $note, $commentaire, $commandeId);
+                
+                if ($success) {
                     header('Location: ?page=profile');
                     exit();
-                    
-                } catch (Exception $e) {
-                    die("Erreur MongoDB : " . $e->getMessage());
+                } else {
+                    die("Erreur lors de l'enregistrement de l'avis.");
                 }
             } else {
-                die("Erreur : Données manquantes, note invalide (1 à 5) ou utilisateur non connecté.");
+                die("Erreur : Données manquantes ou note invalide (1 à 5).");
             }
         } else {
             header("Location: ?page=profile");
@@ -148,6 +145,52 @@ switch ($page) {
         }
         require_once ROOT_PATH . 'app/controllers/employee_controller.php';
         employeeController($pdo);
+        break;
+
+    // Modération des avis ( Employé & Admin )
+    case 'reviews':
+    case 'employee_reviews': // Alias pour la compatibilité des liens
+        if (!isset($_SESSION['user_id']) || !in_array($_SESSION['role_id'], [1, 2])) {
+            header('Location: ?page=connexion');
+            exit();
+        }
+        require_once ROOT_PATH . 'app/controllers/ReviewController.php';
+        $reviewController = new ReviewController();
+        $reviewController->index();
+        break;
+
+    case 'reviews_process':
+        if (!isset($_SESSION['user_id']) || !in_array($_SESSION['role_id'], [1, 2])) {
+            header('Location: ?page=connexion');
+            exit();
+        }
+        require_once ROOT_PATH . 'app/controllers/ReviewController.php';
+        $reviewController = new ReviewController();
+        $reviewController->process();
+        break;
+
+    // Route AJAX pour valider ou refuser un avis (MongoDB)
+    case 'update_avis_status':
+        header('Content-Type: application/json');
+        if (!isset($_SESSION['user_id']) || !in_array($_SESSION['role_id'], [1, 2])) {
+            echo json_encode(['success' => false, 'message' => 'Accès non autorisé']);
+            exit();
+        }
+        
+        require_once ROOT_PATH . 'app/models/AvisModel.php';
+        $data = json_decode(file_get_contents('php://input'), true) ?? $_POST;
+        
+        $id = $data['id'] ?? null;
+        $statut = $data['statut'] ?? null; // 'valide' ou 'refuse'
+        
+        if ($id && in_array($statut, ['valide', 'refuse'])) {
+            $avisModel = new AvisModel();
+            $updated = $avisModel->updateStatut($id, $statut);
+            echo json_encode(['success' => $updated]);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Données invalides']);
+        }
+        exit();
         break;
 
     case 'get_orders':

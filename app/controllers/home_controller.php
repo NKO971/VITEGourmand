@@ -1,16 +1,21 @@
 <?php 
 require_once ROOT_PATH . 'app/models/AvisModel.php';
 
-$avisModel = new AvisModel();
-$avisValides = $avisModel->getAvisByStatut('valide');
+function homeController() 
+{ 
+    // Récupération des avis validés
+    $avisModel = new AvisModel();
+    $avisValides = $avisModel->getAvisByStatut('valide');
 
-function homeController() { 
-     require_once(__DIR__ . '/baseController.php');
+    // Chargement de la vue via le layout Front-Office
     BaseController::render( 
         "Accueil",
         "home.view.php",
-        ["custom.css"],  
-
+        ["css/custom.css"],
+        [],                 
+        [                   
+            'avisValides' => $avisValides
+        ],
+        'front'            
     );       
-
 }

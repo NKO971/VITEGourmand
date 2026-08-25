@@ -1,6 +1,6 @@
 <?php
-require_once __DIR__ . '/../models/user.php';
-require_once __DIR__ . '/../models/Commande.php';
+require_once ROOT_PATH . 'app/models/user.php';
+require_once ROOT_PATH . 'app/models/Commande.php';
 
 function profileController($pdo)
 {
@@ -50,18 +50,12 @@ function profileController($pdo)
         }
     }
 
-    // Récupération des données MongoDB (S'exécute TOUT LE TEMPS, en GET et en POST)
-    require_once __DIR__ . '/../config/mongo.php';
-    $collection = $db->avis;
+    // Récupération des données MongoDB
+    require_once ROOT_PATH . 'app/models/AvisModel.php';
+    $avisModel = new AvisModel();
 
-    // Récupération de tous les avis de l'utilisateur connecté
-    $listeAvis = $collection->find(['user_id' => $_SESSION['user_id']]);
-
-    // Création d'un tableau pour stocker les IDs des commandes évaluées
-    $commandesAvecAvis = [];
-    foreach ($listeAvis as $avis) {
-        $commandesAvecAvis[] = $avis['commande_id'];
-    }
+    // Récupération directe du tableau d'IDs des commandes déjà évaluées
+    $commandesAvecAvis = $avisModel->getCommandesIdsByUser($_SESSION['user_id']);
 
     // Récupération des commandes de l'utilisateur (SQL)
     $orders = $commandeModel->getOrdersByUserId($_SESSION['user_id']);

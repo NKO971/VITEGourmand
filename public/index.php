@@ -110,7 +110,7 @@ switch ($page) {
             require_once ROOT_PATH . 'app/models/AvisModel.php';
             
             $commandeId  = (int)($_POST['commande_id'] ?? 0);
-            $commentaire = isset($_POST['commentaire']) ? trim(htmlspecialchars($_POST['commentaire'])) : '';
+            $commentaire = isset($_POST['commentaire']) ? trim($_POST['commentaire']) : '';
             $userId      = $_SESSION['user_id'] ?? null;
             $nomClient   = $_SESSION['user_name'] ?? 'Client'; // Ajuster selon ta variable de session
             
@@ -119,7 +119,7 @@ switch ($page) {
             
             if ($commandeId && $userId && $note !== null && $note >= 1 && $note <= 5 && !empty($commentaire)) {
                 $avisModel = new AvisModel();
-                $success = $avisModel->createAvis($nomClient, $note, $commentaire, $commandeId);
+                $success = $avisModel->createAvis($userId, $nomClient, $note, $commentaire, $commandeId);
                 
                 if ($success) {
                     header('Location: ?page=profile');

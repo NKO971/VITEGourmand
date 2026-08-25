@@ -43,9 +43,10 @@ class AvisModel
     }
 
     // Ajouter un nouvel avis
-    public function createAvis(string $nomClient, int $note, string $commentaire, int $commandeId): bool 
+    public function createAvis(int $userId, string $nomClient, int $note, string $commentaire, int $commandeId): bool 
     {
         $result = $this->collection->insertOne([
+            'user_id'       => $userId,
             'commande_id'   => $commandeId,
             'nom_client'    => $nomClient,
             'note'          => $note,
@@ -54,5 +55,23 @@ class AvisModel
             'date_creation' => date('Y-m-d H:i:s')
         ]);
         return $result->getInsertedCount() > 0;
+    }
+
+    // Récupérer les IDs de commandes ayant déjà un avis
+    public function getCommandesIdsByUser($userId): array 
+    {
+        $cursor = $this->collection->find(
+            ['user_id' => $userId], 
+            ['projection' => ['commande_id' => 1]]
+        );
+
+        $ids = [];
+        foreach ($cursor as $doc) {
+            if (isset($doc['commande_id'])) {
+                $ids[] = (int) $doc['commande_id'];
+            }
+        }
+
+        return array_unique($ids);
     }
 }

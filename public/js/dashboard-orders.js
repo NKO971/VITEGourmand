@@ -14,9 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Mémoire locale globale pour stocker la liste des commandes
     let cachedOrders = [];
 
-    /**
-     * Fonction principale : Charger les commandes depuis l'API
-     */
+    // Fonction principale : Charger les commandes depuis l'API
     async function loadOrders() {
         const params = new URLSearchParams({
             search: searchInput ? searchInput.value.trim() : '',
@@ -60,9 +58,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    /**
-     * Gestion des commandes en attente 
-     */
+    // Gestion des commandes en attente
     function renderPendingOrdersZone(allOrders) {
         const pendingContainer = document.getElementById('pending-orders-container');
         const pendingTbody     = document.getElementById('pending-orders-tbody');
@@ -90,17 +86,18 @@ document.addEventListener('DOMContentLoaded', () => {
                     <button class="btn btn-sm btn-success me-2 btn-quick-accept" data-id="${order.commande_id}">
                         <i class="bi bi-check-circle me-1"></i> Accepter
                     </button>
-                    <button class="btn btn-sm btn-outline-danger btn-edit-status" data-id="${order.commande_id}" data-status="Annulée">
-                        <i class="bi bi-x-circle me-1"></i> Refuser / Annuler
+                    <button class="btn btn-sm btn-outline-danger open-cancel-modal" 
+                    data-id="${order.commande_id}" 
+                    data-bs-toggle="modal" 
+                    data-bs-target="#modalAnnulation">
+                    <i class="bi bi-x-circle me-1"></i> Refuser / Annuler
                     </button>
                 </td>
             </tr>
         `).join('');
     }
 
-    /**
-     * Rendu du tableau HTML principal (Zone 2)
-     */
+    // Rendu du tableau HTML principal (Zone 2)
     function renderOrdersTable(orders) {
         if (!ordersTbody || !ordersCount) return;
 
@@ -136,9 +133,8 @@ document.addEventListener('DOMContentLoaded', () => {
         `).join('');
     }
 
-    /**
-     * Utilitaires de formatage et sécurité
-     */
+    // Utilitaires de formatage et sécurité
+    
     function getStatusBadgeClass() {
         return 'bg-light text-dark border fw-normal px-2 py-1';
     }
@@ -186,8 +182,26 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // ÉCOUTE DES ÉVÉNEMENTS (FILTRES ET BOUTONS)
+    function getReturnDeadline(dateStr, workingDays = 10) {
+        if (!dateStr || dateStr === '0000-00-00') return 'Non définie';
+        let date = new Date(dateStr.replace(' ', 'T'));
+        if (isNaN(date.getTime())) return 'Non définie';
 
+        let addedDays = 0;
+        while (addedDays < workingDays) {
+            date.setDate(date.getDate() + 1);
+            if (date.getDay() !== 0 && date.getDay() !== 6) {
+                addedDays++;
+            }
+        }
+
+        return date.toLocaleDateString('fr-FR', {
+            day: '2-digit', month: '2-digit', year: 'numeric'
+        });
+    }
+
+    // ÉCOUTE DES ÉVÉNEMENTS (FILTRES ET BOUTONS)
+    
     // Recherche textuelle avec anti-rebond (300ms)
     if (searchInput) {
         searchInput.addEventListener('input', () => {
@@ -209,6 +223,17 @@ document.addEventListener('DOMContentLoaded', () => {
             loadOrders();
         });
     }
+
+    // ÉCOUTEUR : Clic sur le bouton d'ouverture de la modale d'annulation
+    document.addEventListener('click', (e) => {
+        const btnCancel = e.target.closest('.open-cancel-modal');
+        if (!btnCancel) return;
+
+        const cancelInputId = document.getElementById('cancel_commande_id');
+        if (cancelInputId) {
+            cancelInputId.value = btnCancel.getAttribute('data-id');
+        }
+    });
 
     // ÉCOUTEUR : Clic sur le bouton "Accepter" dans la Zone 1
     document.addEventListener('click', async (e) => {
@@ -244,11 +269,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const orderId = parseInt(btnDetail.dataset.id, 10);
         
-        // Recherche dans la mémoire cachedOrders
         const order = cachedOrders.find(o => parseInt(o.commande_id, 10) === orderId);
         if (!order) return;
 
-        // Remplissage des champs de base
         const modalOrderId = document.getElementById('modal-order-id');
         if (modalOrderId) modalOrderId.value = order.commande_id;
 
@@ -273,7 +296,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const modalOrderGuests = document.getElementById('modal-order-guests');
         if (modalOrderGuests) modalOrderGuests.textContent = `${order.nombre_personne || 0} convives`;
 
-        // Gestion de l'alerte de matériel prêté
         const equipmentAlert    = document.getElementById('modal-equipment-alert');
         const equipmentTitle    = document.getElementById('equipment-alert-title');
         const equipmentDesc     = document.getElementById('equipment-alert-desc');
@@ -288,19 +310,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 equipmentAlert.classList.remove('d-none');
                 
                 if (isRestitue) {
-                    // Matériel déjà rendu
                     equipmentAlert.className = "alert alert-success border-success d-flex align-items-start mb-3";
                     if (equipmentTitle) equipmentTitle.textContent = "Matériel restitué";
                     if (equipmentDesc) equipmentDesc.textContent = "Le matériel prêté pour cette commande a bien été retourné par le client.";
                     if (penaltyNotice) penaltyNotice.classList.add('d-none');
                 } else {
-                    // Matériel à rendre (Alerte + Calcul de la date limite)
                     equipmentAlert.className = "alert alert-warning border-warning d-flex align-items-start mb-3";
                     if (equipmentTitle) equipmentTitle.textContent = "Prêt de matériel associé";
                     if (equipmentDesc) equipmentDesc.textContent = "Du matériel a été mis à disposition du client pour cette prestation.";
                     if (penaltyNotice) penaltyNotice.classList.remove('d-none');
 
-                    // Calcul dynamique de la date limite (10 jours ouvrés après la prestation)
                     const deadlineStr = getReturnDeadline(order.date_prestation || order.date_commande, 10);
                     if (equipmentDeadline) equipmentDeadline.textContent = deadlineStr;
                 }
@@ -309,11 +328,9 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        // Sélection du statut actuel dans le déroulant
         const statusSelectElem = document.getElementById('modal-status-select');
         if (statusSelectElem) statusSelectElem.value = order.statut;
 
-        // Réinitialisation des champs d'annulation
         const contactModeElem = document.getElementById('modal-contact-mode');
         const cancelReasonElem = document.getElementById('modal-cancel-reason');
         if (contactModeElem) contactModeElem.value = order.mode_contact || '';
@@ -321,7 +338,6 @@ document.addEventListener('DOMContentLoaded', () => {
         
         toggleCancellationFields(order.statut === 'Annulée');
 
-        // Ouverture de la modale Bootstrap
         const modalEl = document.getElementById('orderModal');
         if (modalEl) {
             const modalInstance = bootstrap.Modal.getOrCreateInstance(modalEl);
@@ -337,7 +353,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // ÉCOUTEUR : Soumission du formulaire de la Modale
+    // ÉCOUTEUR : Soumission du formulaire de la Modale de modification
     const formUpdateOrder = document.getElementById('form-update-order');
     if (formUpdateOrder) {
         formUpdateOrder.addEventListener('submit', async (e) => {
@@ -363,12 +379,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 const data = await response.json();
                 if (!response.ok) throw new Error(data.error || 'Erreur lors de la mise à jour.');
 
-                // Fermer la modale
                 const modalEl = document.getElementById('orderModal');
                 const modalInstance = bootstrap.Modal.getInstance(modalEl);
                 if (modalInstance) modalInstance.hide();
 
-                // Rafraîchir les données à l'écran
                 loadOrders();
 
             } catch (error) {
@@ -377,27 +391,47 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    /**
- * Calcule la date limite de restitution (+10 jours ouvrés à partir de la date de prestation)
- */
-function getReturnDeadline(dateStr, workingDays = 10) {
-    if (!dateStr || dateStr === '0000-00-00') return 'Non définie';
-    let date = new Date(dateStr.replace(' ', 'T'));
-    if (isNaN(date.getTime())) return 'Non définie';
+    // ÉCOUTEUR : Soumission du formulaire de la Modale d'annulation
+    const formCancelOrder = document.getElementById('form-cancel-order');
+    if (formCancelOrder) {
+        formCancelOrder.addEventListener('submit', async (e) => {
+            e.preventDefault();
 
-    let addedDays = 0;
-    while (addedDays < workingDays) {
-        date.setDate(date.getDate() + 1);
-        // Exclure le samedi (6) et le dimanche (0)
-        if (date.getDay() !== 0 && date.getDay() !== 6) {
-            addedDays++;
-        }
+            const commandeId  = document.getElementById('cancel_commande_id').value;
+            const modeContact = document.querySelector('input[name="mode_contact"]:checked')?.value;
+            const motif       = document.getElementById('motif_annulation').value;
+
+            try {
+                const response = await fetch('index.php?page=cancel_order', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        commande_id: commandeId,
+                        statut: 'Annulée',
+                        mode_contact: modeContact,
+                        motif_annulation: motif
+                    })
+                });
+
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.error || 'Erreur lors de l\'annulation.');
+
+                // Fermeture de la modale d'annulation
+                const modalEl = document.getElementById('modalAnnulation');
+                const modalInstance = bootstrap.Modal.getInstance(modalEl);
+                if (modalInstance) modalInstance.hide();
+
+                // Réinitialisation du formulaire
+                formCancelOrder.reset();
+
+                // Rechargement dynamique du tableau
+                loadOrders();
+
+            } catch (error) {
+                alert("Attention : " + error.message);
+            }
+        });
     }
-
-    return date.toLocaleDateString('fr-FR', {
-        day: '2-digit', month: '2-digit', year: 'numeric'
-    });
-}
 
     // Chargement initial au démarrage de la page
     loadOrders();

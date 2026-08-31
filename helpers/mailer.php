@@ -75,3 +75,59 @@ function sendEquipmentReturnNotification(string $toEmail, string $clientName, st
         return false;
     }
 }
+
+function sendOrderCancellationNotification(string $toEmail, string $clientName, string $orderNumber, string $motif): bool {
+    $mail = new PHPMailer(true);
+
+    try {
+        // Configuration du serveur SMTP (Mailtrap)
+        $mail->isSMTP();
+        $mail->Host       = 'sandbox.smtp.mailtrap.io';
+        $mail->SMTPAuth   = true;
+        $mail->Username   = '6b2a318f09623a';
+        $mail->Password   = '473a4af677f3ae';
+        $mail->Port       = 2525;
+        $mail->CharSet    = 'UTF-8';
+
+        // Expéditeur et Destinataire
+        $mail->setFrom('no-reply@vitegourmand.fr', 'VITEGourmand - Service Client');
+        $mail->addAddress($toEmail, $clientName);
+
+        // Contenu de l'e-mail
+        $mail->isHTML(true);
+        $mail->Subject = "Annulation de votre commande N° " . $orderNumber;
+
+        // Template HTML
+        $mail->Body = "
+        <div style='font-family: Arial, sans-serif; color: #333; line-height: 1.6; max-width: 600px; margin: 0 auto; border: 1px solid #ddd; padding: 20px; border-radius: 8px;'>
+            <h2 style='color: #c9302c; border-bottom: 2px solid #c9302c; padding-bottom: 10px;'>
+                Information concernant votre commande
+            </h2>
+            <p>Bonjour <strong>" . htmlspecialchars($clientName) . "</strong>,</p>
+            <p>Nous vous informons que votre commande <strong>N° {$orderNumber}</strong> a été annulée.</p>
+            <p><strong>Motif de l'annulation :</strong></p>
+            
+            <div style='background-color: #f8f9fa; border-left: 4px solid #c9302c; padding: 12px 15px; margin: 15px 0; font-style: italic;'>
+                " . nl2br(htmlspecialchars($motif)) . "
+            </div>
+
+            <p>Si vous avez des questions, n'hésitez pas à nous contacter.</p>
+            
+            <hr style='border: none; border-top: 1px solid #eee; margin: 20px 0;'>
+            <p style='font-size: 12px; color: #777;'>
+                Cet e-mail est généré automatiquement par l'application VITEGourmand.
+            </p>
+        </div>
+        ";
+
+        // Version Texte brut
+        $mail->AltBody = "Bonjour {$clientName},\n\nVotre commande N° {$orderNumber} a été annulée.\nMotif d'annulation : {$motif}\n\nCordialement,\nL'équipe VITEGourmand";
+
+        $mail->send();
+        return true;
+
+    } catch (Exception $e) {
+        error_log("Échec envoi mail annulation N° {$orderNumber} : " . $mail->ErrorInfo);
+        return false;
+    }
+}

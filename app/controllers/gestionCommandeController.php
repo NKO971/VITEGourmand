@@ -1,9 +1,8 @@
 <?php
 require_once ROOT_PATH . 'helpers/mailer.php';
 
-/**
- * Contrôleur de gestion des statuts de commande (Back-office Employé / Admin)
- */
+// Contrôleur de gestion des statuts de commande (Back-office Employé / Admin)
+ 
 function updateOrderStatusController($pdo) {
     // Contrôle d'accès (Employé = 2, Admin = 1)
     if (!isset($_SESSION['user_id']) || !in_array($_SESSION['role_id'], [1, 2])) {
@@ -25,13 +24,13 @@ function updateOrderStatusController($pdo) {
         return $date->format('d/m/Y');
     };
 
-    // Récupération des données JSON envoyées par la requête fetch
-    $data = json_decode(file_get_contents('php://input'), true);
+    // Récupération des données (compatible JSON Fetch + Formulaire HTML POST)
+    $data = json_decode(file_get_contents('php://input'), true) ?? [];
 
-    $commandeId  = $data['commande_id'] ?? null;
-    $newStatus   = $data['statut'] ?? null;
-    $modeContact = $data['mode_contact'] ?? null;
-    $motif       = $data['motif_annulation'] ?? null;
+   $commandeId = $data['commande_id'] ?? $_POST['commande_id'] ?? $_POST['cancel_commande_id'] ?? null;
+   $newStatus = $data['statut'] ?? $_POST['statut'] ?? (($_GET['page'] ?? '') === 'cancel_order' ? 'Annulée' : null);
+   $modeContact = $data['mode_contact'] ?? $_POST['mode_contact'] ?? null;
+   $motif       = $data['motif_annulation'] ?? $_POST['motif_annulation'] ?? null;
 
     if (!$commandeId || !$newStatus) {
         http_response_code(400);
@@ -123,12 +122,20 @@ function updateOrderStatusController($pdo) {
             $refDate = $order['date_prestation'] ?? date('Y-m-d');
             $deadlineStr = $calculateWorkingDaysDeadline($refDate, 10);
 
-            // Appel de la fonction définie dans ton helper mailer.php
+            // Appel du mail de retour matériel
             $mailSent = sendEquipmentReturnNotification(
                 $order['email'], 
                 $order['prenom'], 
                 (string)$order['numero_commande'], 
                 $deadlineStr
+            );
+        } elseif ($newStatus === 'Annulée' && $modeContact === 'Mail') {
+            // Appel du mail d'annulation
+            $mailSent = sendOrderCancellationNotification(
+                $order['email'],
+                $order['prenom'],
+                (string)$order['numero_commande'],
+                $motif
             );
         }
 
@@ -149,9 +156,8 @@ function updateOrderStatusController($pdo) {
     }
 }
 
-/**
- * Récupère la liste des commandes avec filtres pour le dashboard employé (AJAX)
- */
+//Récupère la liste des commandes avec filtres pour le dashboard employé (AJAX)
+
 function getOrdersController($pdo) {
     // Contrôle d'accès (Employé = 2, Admin = 1)
     if (!isset($_SESSION['user_id']) || !in_array($_SESSION['role_id'], [1, 2])) {

@@ -200,6 +200,7 @@ switch ($page) {
         exit();
         break;
     
+    case 'cancel_order' :
     case 'update_order_status':
         header('Content-Type: application/json');
         require_once ROOT_PATH . 'app/controllers/gestionCommandeController.php';

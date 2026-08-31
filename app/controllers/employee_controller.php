@@ -1,6 +1,6 @@
 <?php
-require_once __DIR__ . '/baseController.php';
-require_once __DIR__ . '/../models/AvisModel.php';
+require_once ROOT_PATH . 'app/controllers/baseController.php';
+require_once ROOT_PATH . 'app/models/AvisModel.php';
 
 function employeeController($pdo) 
 {
@@ -14,21 +14,19 @@ function employeeController($pdo)
     $avisModel = new AvisModel();
     $avisEnAttente = $avisModel->getAvisByStatut('en_attente');
 
-    // Transmissions des données à la vue
+    // Transmission des données à la vue
     $data = [
-        'pageTitle' => 'Espace Employé - Gestion des Commandes et Modération',
-        'avisEnAttente' => $avisEnAttente
+        'pageTitle'     => 'Espace Employé - Gestion des Commandes et Modération',
+        'avisEnAttente' => $avisEnAttente,
+        'currentPage'   => 'employee'
     ];
 
-    // Chargement de la vue via le layout Back-Office
-$data['currentPage'] = 'employee';
-
-BaseController::render(
-    "Tableau de bord Employé - VITEGourmand",
-    "employee_dashboard.view.php",
-    [],
-    ['js/dashboard-orders.js', 'js/dashboard-avis.js'],
-    $data,
-    'back'
-);
+    BaseController::render(
+        "Tableau de bord Employé - VITEGourmand",
+        "employee_dashboard.view.php",
+        [],
+        ['js/dashboard-orders.js', 'js/dashboard-avis.js'],
+        $data,
+        'back'
+    );
 }

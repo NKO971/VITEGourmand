@@ -70,7 +70,7 @@
   <div class="row g-4">
 
     <?php foreach ($menus as $menu):
-      $composition = json_decode($menu['composition'], true);
+      $composition = json_decode($menu['composition'] ?? '[]', true);
     ?>
       <div class="col-12 col-md-6 col-lg-4 menu-item-card"
         data-prix="<?php echo $menu['prix_par_personne']; ?>"

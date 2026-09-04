@@ -50,3 +50,6 @@ INSERT INTO suivi_commande (commande_id, statut, date_suivi) VALUES
 (6, 'Acceptée', '2026-06-19 11:00:00'),
 (6, 'En préparation', '2026-06-19 11:30:00'),
 (6, 'Terminée', '2026-06-19 12:24:00');
+
+// Ajout une colonne a la table plat
+ALTER TABLE plat ADD COLUMN IF NOT EXISTS actif TINYINT(1) DEFAULT 1; 

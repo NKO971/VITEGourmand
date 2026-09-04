@@ -208,6 +208,45 @@ switch ($page) {
         exit();
         break;
 
+    // Gestion de la carte (Employé & Admin)
+    case 'employee_menus':
+        if (!isset($_SESSION['user_id']) || !in_array($_SESSION['role_id'], [1, 2])) {
+            header('Location: ?page=connexion');
+            exit();
+        }
+        require_once ROOT_PATH . 'app/controllers/gestionCarteController.php';
+        renderGestionCarteController($pdo);
+        break;
+
+    case 'toggle_menu_status':
+        header('Content-Type: application/json');
+        require_once ROOT_PATH . 'app/controllers/gestionCarteController.php';
+        toggleMenuStatusController($pdo);
+        exit();
+        break;
+
+    case 'update_menu':
+        header('Content-Type: application/json');
+        require_once ROOT_PATH . 'app/controllers/gestionCarteController.php';
+        updateMenuController($pdo);
+        exit();
+        break;
+
+    case 'toggle_plat_status':
+        header('Content-Type: application/json');
+        require_once ROOT_PATH . 'app/controllers/gestionCarteController.php';
+        togglePlatStatusController($pdo);
+        exit();
+        break;
+
+    case 'update_plat':
+        header('Content-Type: application/json');
+        require_once ROOT_PATH . 'app/controllers/gestionCarteController.php';
+        updatePlatController($pdo);
+        exit();
+        break;
+
+
     default:
         header("Location: ?page=home");
         exit();

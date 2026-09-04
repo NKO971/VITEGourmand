@@ -1,24 +1,25 @@
 <?php
-function menusController() { 
+function menusController()
+{
     global $pdo;
 
     $stmtTheme = $pdo->query("SELECT * FROM " . TABLE_THEME);
     $themes = $stmtTheme->fetchAll();
 
     $regimes = $pdo->query("SELECT * FROM " . TABLE_REGIME)->fetchAll();
-    
-    $menusQuery = "select
-        m.*,
-        t.libelle as theme_libelle,
-        r.libelle as regime_libelle
-    from " . TABLE_MENU . " m
-    left join " . TABLE_THEME . " t on m.theme_id = t.theme_id
-    left join " . TABLE_REGIME . " r on m.regime_id = r.regime_id";
-    $menus = $pdo->query($menusQuery)->fetchAll();
+
+    $menusQuery = "SELECT
+    m.*,
+    t.libelle AS theme_libelle,
+    r.libelle AS regime_libelle
+    FROM " . TABLE_MENU . " m
+    LEFT JOIN " . TABLE_THEME . " t ON m.theme_id = t.theme_id
+    LEFT JOIN " . TABLE_REGIME . " r ON m.regime_id = r.regime_id
+    WHERE m.actif = 1";
 
     require_once(__DIR__ . '/baseController.php');
 
-    BaseController::render( 
+    BaseController::render(
         "Nos Menus",
         "menus.view.php",
         ["css/page-menu.css"],
@@ -28,5 +29,5 @@ function menusController() {
             'regimes' => $regimes,
             'menus' => $menus
         ]
-    );       
+    );
 }

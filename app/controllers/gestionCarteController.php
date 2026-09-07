@@ -272,7 +272,7 @@ function renderGestionCarteController($pdo) {
     "Gestion de la Carte",
     "gestion_carte_plats.view.php",
     [],
-    ['js/gestion-carte.js'],
+    ['js/dashboard_menus_plats.js'],
     [
         'menus'       => $menus,
         'plats'       => $plats,

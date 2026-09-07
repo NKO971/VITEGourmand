@@ -45,7 +45,7 @@
         <?php endif; ?>
 
         <?php
-        $conditions = json_decode($menu['conditions_stockage'], true);
+        $conditions = json_decode($menu['conditions_stockage'] ?? '[]', true);
         ?>
 
         <?php if (!empty($conditions)): ?>

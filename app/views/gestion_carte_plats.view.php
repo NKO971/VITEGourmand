@@ -1,4 +1,4 @@
-<div class="container-fluid my-4">
+<div class="container-fluid my-4 moderation-menus-plats">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1 class="h3 text-dark fw-bold mb-0">Gestion de la Carte (Menus & Plats)</h1>
     </div>
@@ -52,19 +52,17 @@
                                         <span class="badge bg-outline-dark text-dark border"><?= htmlspecialchars($menu['regime_libelle'] ?? 'N/A') ?></span>
                                     </td>
                                     <td>
-                                        <?php if (($menu['actif'] ?? 1) == 1): ?>
-                                            <span class="badge bg-success">Actif</span>
-                                        <?php else: ?>
-                                            <span class="badge bg-danger">Masqué</span>
-                                        <?php endif; ?>
+                                        <span class="badge badge-status <?= ($menu['actif'] ?? 1) == 1 ? 'bg-success' : 'bg-danger' ?>">
+                                            <?= ($menu['actif'] ?? 1) == 1 ? 'Actif' : 'Masqué' ?>
+                                        </span>
                                     </td>
                                     <td class="text-end">
                                         <button class="btn btn-sm btn-outline-primary me-1 btn-edit-menu" data-id="<?= $menu['menu_id'] ?>">
                                             <i class="bi bi-pencil"></i> Modifier
                                         </button>
-                                        <button class="btn btn-sm <?= ($menu['actif'] ?? 1) == 1 ? 'btn-outline-danger' : 'btn-outline-success' ?> btn-toggle-menu" 
-                                                data-id="<?= $menu['menu_id'] ?>" 
-                                                data-actif="<?= ($menu['actif'] ?? 1) == 1 ? 0 : 1 ?>">
+                                        <button class="btn btn-sm <?= ($menu['actif'] ?? 1) == 1 ? 'btn-outline-danger' : 'btn-outline-success' ?> btn-toggle-menu"
+                                            data-id="<?= $menu['menu_id'] ?>"
+                                            data-actif="<?= ($menu['actif'] ?? 1) == 1 ? 0 : 1 ?>">
                                             <i class="bi <?= ($menu['actif'] ?? 1) == 1 ? 'bi-eye-slash' : 'bi-eye' ?>"></i>
                                             <?= ($menu['actif'] ?? 1) == 1 ? 'Masquer' : 'Activer' ?>
                                         </button>
@@ -105,19 +103,17 @@
                                     <td><strong>#<?= htmlspecialchars((string)$plat['plat_id']) ?></strong></td>
                                     <td><?= htmlspecialchars($plat['titre_plat'] ?? '') ?></td>
                                     <td>
-                                        <?php if (($plat['actif'] ?? 1) == 1): ?>
-                                            <span class="badge bg-success">Actif</span>
-                                        <?php else: ?>
-                                            <span class="badge bg-danger">Masqué</span>
-                                        <?php endif; ?>
+                                        <span class="badge badge-status <?= ($plat['actif'] ?? 1) == 1 ? 'bg-success' : 'bg-danger' ?>">
+                                            <?= ($plat['actif'] ?? 1) == 1 ? 'Actif' : 'Masqué' ?>
+                                        </span>
                                     </td>
                                     <td class="text-end">
                                         <button class="btn btn-sm btn-outline-primary me-1 btn-edit-plat" data-id="<?= $plat['plat_id'] ?>">
                                             <i class="bi bi-pencil"></i> Modifier
                                         </button>
-                                        <button class="btn btn-sm <?= ($plat['actif'] ?? 1) == 1 ? 'btn-outline-danger' : 'btn-outline-success' ?> btn-toggle-plat" 
-                                                data-id="<?= $plat['plat_id'] ?>" 
-                                                data-actif="<?= ($plat['actif'] ?? 1) == 1 ? 0 : 1 ?>">
+                                        <button class="btn btn-sm <?= ($plat['actif'] ?? 1) == 1 ? 'btn-outline-danger' : 'btn-outline-success' ?> btn-toggle-plat"
+                                            data-id="<?= $plat['plat_id'] ?>"
+                                            data-actif="<?= ($plat['actif'] ?? 1) == 1 ? 0 : 1 ?>">
                                             <i class="bi <?= ($plat['actif'] ?? 1) == 1 ? 'bi-eye-slash' : 'bi-eye' ?>"></i>
                                             <?= ($plat['actif'] ?? 1) == 1 ? 'Masquer' : 'Activer' ?>
                                         </button>
@@ -130,4 +126,5 @@
             </div>
         </div>
     </div>
+    <?php require_once ROOT_PATH . 'app/views/partials/_modal_edit_plat.php'; ?>
 </div>

@@ -53,3 +53,8 @@ INSERT INTO suivi_commande (commande_id, statut, date_suivi) VALUES
 
 // Ajout une colonne a la table plat
 ALTER TABLE plat ADD COLUMN IF NOT EXISTS actif TINYINT(1) DEFAULT 1; 
+
+// Insertion de quelques plats de test
+INSERT INTO plat (titre_plat, actif) VALUES 
+('Foie gras de canard maison', 1),
+('Croustade aux pommes et Armagnac', 1);

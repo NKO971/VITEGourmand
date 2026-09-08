@@ -46,7 +46,7 @@
                                 <tr>
                                     <td><strong>#<?= htmlspecialchars((string)$menu['menu_id']) ?></strong></td>
                                     <td><?= htmlspecialchars($menu['titre'] ?? '') ?></td>
-                                    <td><?= number_format((float)($menu['prix'] ?? 0), 2, ',', ' ') ?> €</td>
+                                    <td><?= number_format((float)($menu['prix_par_personne'] ?? $menu['prix'] ?? 0), 2, ',', ' ') ?> €</td>
                                     <td>
                                         <span class="badge bg-secondary"><?= htmlspecialchars($menu['theme_libelle'] ?? 'N/A') ?></span>
                                         <span class="badge bg-outline-dark text-dark border"><?= htmlspecialchars($menu['regime_libelle'] ?? 'N/A') ?></span>
@@ -57,15 +57,22 @@
                                         </span>
                                     </td>
                                     <td class="text-end">
+                                        <?php
+                                        $rawComp = $menu['composition'] ?? '{}';
+                                        $jsonComposition = is_array($rawComp) ? json_encode($rawComp, JSON_UNESCAPED_UNICODE) : $rawComp;
+                                        $rawCond = $menu['conditions_stockage'] ?? '{}';
+                                        $jsonConditions = is_array($rawCond) ? json_encode($rawCond, JSON_UNESCAPED_UNICODE) : $rawCond;
+                                        ?>
                                         <button class="btn btn-sm btn-outline-primary me-1 btn-edit-menu"
                                             data-id="<?= $menu['menu_id'] ?>"
                                             data-titre="<?= htmlspecialchars($menu['titre'] ?? '', ENT_QUOTES) ?>"
-                                            data-prix="<?= $menu['prix'] ?? 0 ?>"
-                                            data-stock="<?= $menu['stock'] ?? 0 ?>"
+                                            data-description="<?= htmlspecialchars($menu['description'] ?? '', ENT_QUOTES) ?>"
+                                            data-prix="<?= $menu['prix_par_personne'] ?? $menu['prix'] ?? 0 ?>"
+                                            data-stock="<?= $menu['quantite_restante'] ?? $menu['stock'] ?? 0 ?>"
                                             data-theme="<?= $menu['theme_id'] ?? '' ?>"
                                             data-regime="<?= $menu['regime_id'] ?? '' ?>"
-                                            data-composition='<?= htmlspecialchars($menu['composition'] ?? '[]', ENT_QUOTES) ?>'
-                                            data-conditions='<?= htmlspecialchars($menu['conditions_stockage'] ?? '[]', ENT_QUOTES) ?>'>
+                                            data-composition='<?= htmlspecialchars($jsonComposition, ENT_QUOTES, 'UTF-8') ?>'
+                                            data-conditions='<?= htmlspecialchars($jsonConditions, ENT_QUOTES, 'UTF-8') ?>'>
                                             <i class="bi bi-pencil"></i> Modifier
                                         </button>
                                         <button class="btn btn-sm <?= ($menu['actif'] ?? 1) == 1 ? 'btn-outline-danger' : 'btn-outline-success' ?> btn-toggle-menu"

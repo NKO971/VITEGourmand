@@ -98,55 +98,132 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // OUVERTURE MODAL MODIFICATION MENU
-    container.addEventListener('click', (e) => {
-        const btnEditMenu = e.target.closest('.btn-edit-menu');
-        if (!btnEditMenu) return;
+// Fonction de corespondnace entre les noms et les IDs des plats pour la sélection dans les dropdowns
+// Normalisation avancée (suppression des accents, apostrophes et espaces superflus)
+const normalizeStr = (str) => {
+    if (!str) return '';
+    return str
+        .toString()
+        .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // Supprime les accents (é -> e)
+        .toLowerCase()
+        .replace(/['’`]/g, "'")                          // Unifie les apostrophes
+        .replace(/[^a-z0-9']/g, ' ')                      // Ne garde que caractères alfanumériques
+        .replace(/\s+/g, ' ')                             // Condense les espaces
+        .trim();
+};
 
-        const ds = btnEditMenu.dataset;
+const selectOptionInDropdown = (selectEl, itemData, fieldLabel) => {
+    if (!selectEl || !itemData) return;
 
-        document.getElementById('edit_menu_id').value = ds.id;
-        document.getElementById('edit_menu_titre').value = ds.titre;
-        document.getElementById('edit_menu_prix').value = ds.prix;
-        document.getElementById('edit_menu_stock').value = ds.stock;
-        document.getElementById('edit_menu_theme').value = ds.theme;
-        document.getElementById('edit_menu_regime').value = ds.regime;
+    // Affichage texte brut des options disponibles dans la console
+    const availableOptions = Array.from(selectEl.options).map(o => ({
+        value: o.value,
+        text: o.text,
+        dataNom: o.dataset.nom || ''
+    }));
+    console.log(`[${fieldLabel}] Options BDD dans le select :`, JSON.stringify(availableOptions));
 
-        // Décodage du JSON de composition
-        let composition = {};
-        try {
-            composition = JSON.parse(ds.composition || '{}');
-        } catch (err) {
-            composition = {};
+    let targetId = typeof itemData === 'object' ? (itemData.plat_id || itemData.id) : null;
+    let targetNom = typeof itemData === 'object' ? (itemData.nom || itemData.titre || itemData.titre_plat) : itemData;
+
+    // Recherche par ID
+    if (targetId) {
+        const optById = Array.from(selectEl.options).find(o => o.value == targetId);
+        if (optById) {
+            selectEl.value = optById.value;
+            console.log(`✅ [${fieldLabel}] Sélectionné par ID (${targetId})`);
+            return;
         }
+    }
 
-        // Remise à zéro des sélecteurs
-        document.getElementById('edit_menu_entree').value = '';
-        document.getElementById('edit_menu_plat_principal').value = '';
-        document.getElementById('edit_menu_dessert').value = '';
+    // Recherche par Nom avec tolérance d'accents et de correspondance partielle
+    if (targetNom) {
+        const cleanTarget = normalizeStr(targetNom);
 
-        // Pré-remplissage des sélecteurs
-        if (composition && typeof composition === 'object') {
-            if (composition.entree) setSelectByNomOrId('edit_menu_entree', composition.entree);
-            if (composition.plat) setSelectByNomOrId('edit_menu_plat_principal', composition.plat);
-            if (composition.dessert) setSelectByNomOrId('edit_menu_dessert', composition.dessert);
+        const optByNom = Array.from(selectEl.options).find(o => {
+            if (!o.value) return false;
+
+            const cleanDataNom = normalizeStr(o.dataset.nom);
+            const cleanTextNom = normalizeStr(o.text);
+
+            // Match si l'un contient l'autre ou s'ils sont égaux sans accents
+            return (cleanDataNom && (cleanDataNom === cleanTarget || cleanDataNom.includes(cleanTarget) || cleanTarget.includes(cleanDataNom))) ||
+                   (cleanTextNom && (cleanTextNom === cleanTarget || cleanTextNom.includes(cleanTarget) || cleanTarget.includes(cleanTextNom)));
+        });
+
+        if (optByNom) {
+            selectEl.value = optByNom.value;
+            console.log(`[${fieldLabel}] Sélectionné par Nom : "${targetNom}" -> Option ID ${optByNom.value}`);
+        } else {
+            console.warn(`[${fieldLabel}] Aucun plat trouvé pour : "${targetNom}" (clean: "${cleanTarget}")`);
         }
+    }
+};
 
-        // Décodage des conditions de stockage
-        let conditions = {};
-        try {
-            conditions = JSON.parse(ds.conditions || '{}');
-        } catch (err) {
-            conditions = {};
+// Gestion de l'ouverture du modal d'édition de menu
+document.addEventListener('click', (e) => {
+    const btnEditMenu = e.target.closest('.btn-edit-menu');
+    if (!btnEditMenu) return;
+
+    const ds = btnEditMenu.dataset;
+
+    // --- CONTRÔLE CONSOLE ---
+    console.log("JSON Composition reçu du dataset :", ds.composition);
+
+    // Pré-remplissage des champs simples
+    document.getElementById('edit_menu_id').value = ds.id || '';
+    document.getElementById('edit_menu_titre').value = ds.titre || '';
+    document.getElementById('edit_menu_description').value = ds.description || '';
+    document.getElementById('edit_menu_prix').value = ds.prix || 0;
+    document.getElementById('edit_menu_stock').value = ds.stock || 0;
+    document.getElementById('edit_menu_theme').value = ds.theme || '';
+    document.getElementById('edit_menu_regime').value = ds.regime || '';
+
+    // Traitement du JSON de composition
+    let composition = {};
+    try {
+        let rawComp = ds.composition || '{}';
+        if (typeof rawComp === 'string') {
+            composition = JSON.parse(rawComp);
+            if (typeof composition === 'string') composition = JSON.parse(composition); // Sécurité double encodage
+        } else {
+            composition = rawComp;
         }
+    } catch (err) {
+        console.error('Erreur de parsing de la composition :', err);
+        composition = {};
+    }
 
-        document.getElementById('edit_delai_commande').value = conditions.delai_commande || '';
-        document.getElementById('edit_conservation').value = conditions.conservation || '';
-        document.getElementById('edit_menu_description').value = ds.description || '';
+    // Réinitialisation des sélecteurs
+    const selectEntree = document.getElementById('edit_menu_entree');
+    const selectPlat = document.getElementById('edit_menu_plat_principal');
+    const selectDessert = document.getElementById('edit_menu_dessert');
 
-        const modalEl = document.getElementById('modalEditMenu');
-        const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
-        modal.show();
-    });
+    if (selectEntree) selectEntree.value = '';
+    if (selectPlat) selectPlat.value = '';
+    if (selectDessert) selectDessert.value = '';
+
+    // Application de la sélection avec les libellés pour les logs console
+    if (composition && typeof composition === 'object') {
+    if (composition.entree) selectOptionInDropdown(selectEntree, composition.entree, 'Entrée');
+    if (composition.plat) selectOptionInDropdown(selectPlat, composition.plat, 'Plat');
+    if (composition.dessert) selectOptionInDropdown(selectDessert, composition.dessert, 'Dessert');
+    }
+
+    // Conditions de stockage & livraison
+    let conditions = {};
+    try {
+        conditions = typeof ds.conditions === 'string' ? JSON.parse(ds.conditions) : (ds.conditions || {});
+    } catch (err) {
+        conditions = {};
+    }
+    document.getElementById('edit_delai_commande').value = conditions.delai_commande || '';
+    document.getElementById('edit_conservation').value = conditions.conservation || '';
+
+    // Ouverture de la modal Bootstrap
+    const modalEl = document.getElementById('modalEditMenu');
+    bootstrap.Modal.getOrCreateInstance(modalEl).show();
+});
 
     // SOUMISSION FORMULAIRE PLAT (FormData)
     const formEditPlat = document.getElementById('formEditPlat');

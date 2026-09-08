@@ -74,7 +74,7 @@
                                     <?php if (!empty($plats)): ?>
                                         <?php foreach ($plats as $plat): ?>
                                             <?php if (($plat['actif'] ?? 1) == 1): ?>
-                                                <option value="<?= $plat['plat_id'] ?>" data-nom="<?= htmlspecialchars($plat['titre_plat']) ?>">
+                                                <option value="<?= $plat['plat_id'] ?>" data-nom="<?= htmlspecialchars($plat['titre_plat'], ENT_QUOTES) ?>">
                                                     <?= htmlspecialchars($plat['titre_plat']) ?>
                                                 </option>
                                             <?php endif; ?>
@@ -91,7 +91,7 @@
                                     <?php if (!empty($plats)): ?>
                                         <?php foreach ($plats as $plat): ?>
                                             <?php if (($plat['actif'] ?? 1) == 1): ?>
-                                                <option value="<?= $plat['plat_id'] ?>" data-nom="<?= htmlspecialchars($plat['titre_plat']) ?>">
+                                                <option value="<?= $plat['plat_id'] ?>" data-nom="<?= htmlspecialchars($plat['titre_plat'], ENT_QUOTES) ?>">
                                                     <?= htmlspecialchars($plat['titre_plat']) ?>
                                                 </option>
                                             <?php endif; ?>
@@ -108,7 +108,7 @@
                                     <?php if (!empty($plats)): ?>
                                         <?php foreach ($plats as $plat): ?>
                                             <?php if (($plat['actif'] ?? 1) == 1): ?>
-                                                <option value="<?= $plat['plat_id'] ?>" data-nom="<?= htmlspecialchars($plat['titre_plat']) ?>">
+                                                <option value="<?= $plat['plat_id'] ?>" data-nom="<?= htmlspecialchars($plat['titre_plat'], ENT_QUOTES) ?>">
                                                     <?= htmlspecialchars($plat['titre_plat']) ?>
                                                 </option>
                                             <?php endif; ?>

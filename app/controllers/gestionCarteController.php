@@ -1,4 +1,5 @@
 <?php
+
 function toggleMenuStatusController($pdo) {
     if (!isset($_SESSION['user_id']) || !in_array($_SESSION['role_id'], [1, 2])) {
         http_response_code(403); // 403 = Interdit / Accès refusé
@@ -41,7 +42,7 @@ function toggleMenuStatusController($pdo) {
     } catch (PDOException $e) {
         error_log("Erreur PDO toggleMenuStatus : " . $e->getMessage());
         http_response_code(500); // 500 = Erreur interne du serveur
-        echo json_encode(['error' => 'Erreur lors de la mise à jour en base de données.']);
+        echo json_encode(['error' => 'Erreur BDD SQL : ' . $e->getMessage()]);
         exit();
     }
 }
@@ -49,77 +50,91 @@ function toggleMenuStatusController($pdo) {
 function updateMenuController($pdo) {
     if (!isset($_SESSION['user_id']) || !in_array($_SESSION['role_id'], [1, 2])) {
         http_response_code(403);
-        echo json_encode(['error' => 'Accès refusé.']);
+        echo json_encode(['success' => false, 'error' => 'Accès refusé.']);
         exit();
     }
 
-    // Récupération et extraction des données POST
-    $menuId      = $_POST['menu_id'] ?? null;
-    $titre       = trim(strip_tags($_POST['titre'] ?? '')); // Nettoyage des balises HTML
-    $description = trim(strip_tags($_POST['description'] ?? ''));
-    $prix        = filter_var($_POST['prix'] ?? null, FILTER_VALIDATE_FLOAT);
-
-    // Validation des champs obligatoires
-    if (!$menuId || empty($titre) || $prix === false || $prix <= 0) {
-        http_response_code(400);
-        echo json_encode(['error' => 'Champs invalides ou incomplets (le prix doit être un nombre positif).']);
-        exit();
-    }
-
-    // Gestion de l'image uploadée
-    $imagePath = null;
-    if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
-        
-        // Sécurité Fichier 
-        $allowedMimeTypes = ['image/jpeg', 'image/png', 'image/webp'];
-        $fileMimeType     = mime_content_type($_FILES['image']['tmp_name']);
-
-        if (!in_array($fileMimeType, $allowedMimeTypes)) {
-            http_response_code(400);
-            echo json_encode(['error' => 'Format d\'image non autorisé (Seuls JPG, PNG et WEBP sont acceptés).']);
-            exit();
-        }
-
-        // Génération d'un nom de fichier unique
-        $extension  = pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION);
-        $fileName   = 'menu_' . uniqid() . '.' . $extension;
-        $uploadDir  = ROOT_PATH . 'public/assets/images/';
-        $targetPath = $uploadDir . $fileName;
-
-        if (!move_uploaded_file($_FILES['image']['tmp_name'], $targetPath)) {
-            http_response_code(500);
-            echo json_encode(['error' => 'Échec du transfert de l\'image sur le serveur.']);
-            exit();
-        }
-
-        $imagePath = 'assets/images/' . $fileName;
-    }
-
-    // Préparation et exécution de la requête SQL pour la mise à jour
     try {
+        $json = file_get_contents('php://input');
+        $data = json_decode($json, true);
+
+        if (!$data) {
+            $data = $_POST;
+        }
+
+        $menuId      = filter_var($data['menu_id'] ?? null, FILTER_VALIDATE_INT);
+        $titre       = trim(strip_tags($data['titre'] ?? ''));
+        $prix        = filter_var($data['prix'] ?? null, FILTER_VALIDATE_FLOAT);
+        $stock       = filter_var($data['stock'] ?? null, FILTER_VALIDATE_INT);
+        $themeId     = filter_var($data['theme_id'] ?? null, FILTER_VALIDATE_INT);
+        $regimeId    = filter_var($data['regime_id'] ?? null, FILTER_VALIDATE_INT);
+        $description = trim(strip_tags($data['description'] ?? ''));
+
+        $compositions       = $data['composition'] ?? null;
+        $conditionsStockage = $data['conditions_stockage'] ?? null;
+
+        if (!$menuId || empty($titre) || $prix === false || $prix <= 0 || $stock === false || $stock < 0 || !$themeId || !$regimeId) {
+            http_response_code(400);
+            echo json_encode([
+                'success' => false,
+                'error'   => 'Champs invalides ou incomplets (Vérifiez le titre, le prix, le stock, le thème et le régime).'
+            ]);
+            exit();
+        }
+
+        // Gestion de l'image uploadée si présente
+        $imagePath = null;
+        if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
+            $allowedMimeTypes = ['image/jpeg', 'image/png', 'image/webp'];
+            $fileMimeType     = mime_content_type($_FILES['image']['tmp_name']);
+
+            if (!in_array($fileMimeType, $allowedMimeTypes)) {
+                http_response_code(400);
+                echo json_encode(['success' => false, 'error' => 'Format d\'image non autorisé (Seuls JPG, PNG et WEBP sont acceptés).']);
+                exit();
+            }
+
+            $extension  = pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION);
+            $fileName   = 'menu_' . uniqid() . '.' . $extension;
+            $uploadDir  = ROOT_PATH . 'public/assets/images/';
+            $targetPath = $uploadDir . $fileName;
+
+            if (!move_uploaded_file($_FILES['image']['tmp_name'], $targetPath)) {
+                http_response_code(500);
+                echo json_encode(['success' => false, 'error' => 'Échec du transfert de l\'image sur le serveur.']);
+                exit();
+            }
+
+            $imagePath = 'assets/images/' . $fileName;
+        }
+
+        // Préparation de la requête SQL avec gestion conditionnelle de l'image
+        $sql = "UPDATE menu 
+                SET titre = :titre, 
+                    description = :description, 
+                    prix_par_personne = :prix, 
+                    quantite_restante = :stock, 
+                    theme_id = :theme_id, 
+                    regime_id = :regime_id, 
+                    composition = :composition, 
+                    conditions_stockage = :conditions_stockage"
+                . ($imagePath ? ", image = :image" : "") . " 
+                WHERE menu_id = :id";
+
+        $params = [
+            ':titre'               => $titre,
+            ':description'         => $description,
+            ':prix'                => $prix,
+            ':stock'               => $stock,
+            ':theme_id'            => $themeId,
+            ':regime_id'           => $regimeId,
+            ':composition'         => $compositions,
+            ':conditions_stockage' => $conditionsStockage,
+            ':id'                  => $menuId
+        ];
+
         if ($imagePath) {
-            // Si une nouvelle image est uploadée mise a jour du chemin de l'image dans la base de données
-            $sql = "UPDATE menu 
-                    SET titre = :titre, description = :description, prix = :prix, image = :image 
-                    WHERE menu_id = :id";
-            $params = [
-                ':titre'       => $titre,
-                ':description' => $description,
-                ':prix'        => $prix,
-                ':image'       => $imagePath,
-                ':id'          => $menuId
-            ];
-        } else {
-            // Sinon on conserve l'ancienne image
-            $sql = "UPDATE menu 
-                    SET titre = :titre, description = :description, prix = :prix 
-                    WHERE menu_id = :id";
-            $params = [
-                ':titre'       => $titre,
-                ':description' => $description,
-                ':prix'        => $prix,
-                ':id'          => $menuId
-            ];
+            $params[':image'] = $imagePath;
         }
 
         $stmt = $pdo->prepare($sql);
@@ -135,10 +150,22 @@ function updateMenuController($pdo) {
     } catch (PDOException $e) {
         error_log("Erreur PDO updateMenu : " . $e->getMessage());
         http_response_code(500);
-        echo json_encode(['error' => 'Erreur lors de la mise à jour du menu.']);
+        echo json_encode([
+            'success' => false, 
+            'error'   => 'Erreur BDD SQL : ' . $e->getMessage()
+        ]);
+        exit();
+    } catch (Throwable $e) {
+        error_log("Erreur Serveur updateMenu : " . $e->getMessage());
+        http_response_code(500);
+        echo json_encode([
+            'success' => false, 
+            'error'   => 'Erreur Serveur PHP : ' . $e->getMessage()
+        ]);
         exit();
     }
 }
+
 
 function togglePlatStatusController($pdo) {
     if (!isset($_SESSION['user_id']) || !in_array($_SESSION['role_id'], [1, 2])) {
@@ -151,7 +178,6 @@ function togglePlatStatusController($pdo) {
     $platId = $data['plat_id'] ?? null;
     $actif  = isset($data['actif']) ? (int)$data['actif'] : null;
 
-    // 3. Validation
     if (!$platId || !in_array($actif, [0, 1], true)) {
         http_response_code(400);
         echo json_encode(['error' => 'Données invalides.']);
@@ -174,7 +200,7 @@ function togglePlatStatusController($pdo) {
     } catch (PDOException $e) {
         error_log("Erreur togglePlatStatus : " . $e->getMessage());
         http_response_code(500);
-        echo json_encode(['error' => 'Erreur lors de la mise à jour en BDD.']);
+        echo json_encode(['error' => 'Erreur BDD SQL : ' . $e->getMessage()]);
         exit();
     }
 }
@@ -197,7 +223,6 @@ function updatePlatController($pdo) {
 
     $photoData = null;
     if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
-        // Validation du type MIME réel
         $allowedMimes = ['image/jpeg', 'image/png', 'image/webp'];
         $fileMime     = mime_content_type($_FILES['photo']['tmp_name']);
 
@@ -207,7 +232,6 @@ function updatePlatController($pdo) {
             exit();
         }
 
-        // Lecture du flux binaire pour insertion BDD
         $photoData = file_get_contents($_FILES['photo']['tmp_name']);
     }
 
@@ -216,7 +240,7 @@ function updatePlatController($pdo) {
             $sql = "UPDATE plat SET titre_plat = :titre, photo = :photo WHERE plat_id = :id";
             $stmt = $pdo->prepare($sql);
             $stmt->bindValue(':titre', $titrePlat);
-            $stmt->bindValue(':photo', $photoData, PDO::PARAM_LOB); // Spécifique au stockage BLOB
+            $stmt->bindValue(':photo', $photoData, PDO::PARAM_LOB);
             $stmt->bindValue(':id', $platId, PDO::PARAM_INT);
             $stmt->execute();
         } else {
@@ -234,7 +258,7 @@ function updatePlatController($pdo) {
     } catch (PDOException $e) {
         error_log("Erreur updatePlat : " . $e->getMessage());
         http_response_code(500);
-        echo json_encode(['error' => 'Erreur lors de la modification du plat.']);
+        echo json_encode(['error' => 'Erreur BDD SQL : ' . $e->getMessage()]);
         exit();
     }
 }
@@ -245,7 +269,6 @@ function renderGestionCarteController($pdo) {
         exit();
     }
 
-    // Récupération de TOUS les menus et plats (y compris ceux avec actif = 0)
     try {
         $stmtMenus = $pdo->query("
             SELECT m.*, t.libelle AS theme_libelle, r.libelle AS regime_libelle 
@@ -259,25 +282,35 @@ function renderGestionCarteController($pdo) {
         $stmtPlats = $pdo->query("SELECT * FROM plat ORDER BY plat_id DESC");
         $plats = $stmtPlats->fetchAll(PDO::FETCH_ASSOC);
 
+        $stmtThemes = $pdo->query("SELECT * FROM theme ORDER BY libelle ASC");
+        $themes = $stmtThemes->fetchAll(PDO::FETCH_ASSOC);
+
+        $stmtRegimes = $pdo->query("SELECT * FROM regime ORDER BY libelle ASC");
+        $regimes = $stmtRegimes->fetchAll(PDO::FETCH_ASSOC);
+
     } catch (PDOException $e) {
         error_log("Erreur chargement carte back-office : " . $e->getMessage());
         $menus = [];
         $plats = [];
+        $themes = [];
+        $regimes = [];
     }
 
     $currentPage = 'employee_menus';
 
     require_once ROOT_PATH . 'app/controllers/baseController.php';
     BaseController::render(
-    "Gestion de la Carte",
-    "gestion_carte_plats.view.php",
-    [],
-    ['js/dashboard_menus_plats.js'],
-    [
-        'menus'       => $menus,
-        'plats'       => $plats,
-        'currentPage' => 'employee_menus'
-    ],
-    'back'
-);
+        "Gestion de la Carte",
+        "gestion_carte_plats.view.php",
+        [],
+        ['js/dashboard_menus_plats.js'],
+        [
+            'menus'       => $menus,
+            'plats'       => $plats,
+            'themes'      => $themes,
+            'regimes'     => $regimes,
+            'currentPage' => 'employee_menus'
+        ],
+        'back'
+    );
 }

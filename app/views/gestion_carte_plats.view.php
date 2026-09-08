@@ -57,7 +57,15 @@
                                         </span>
                                     </td>
                                     <td class="text-end">
-                                        <button class="btn btn-sm btn-outline-primary me-1 btn-edit-menu" data-id="<?= $menu['menu_id'] ?>">
+                                        <button class="btn btn-sm btn-outline-primary me-1 btn-edit-menu"
+                                            data-id="<?= $menu['menu_id'] ?>"
+                                            data-titre="<?= htmlspecialchars($menu['titre'] ?? '', ENT_QUOTES) ?>"
+                                            data-prix="<?= $menu['prix'] ?? 0 ?>"
+                                            data-stock="<?= $menu['stock'] ?? 0 ?>"
+                                            data-theme="<?= $menu['theme_id'] ?? '' ?>"
+                                            data-regime="<?= $menu['regime_id'] ?? '' ?>"
+                                            data-composition='<?= htmlspecialchars($menu['composition'] ?? '[]', ENT_QUOTES) ?>'
+                                            data-conditions='<?= htmlspecialchars($menu['conditions_stockage'] ?? '[]', ENT_QUOTES) ?>'>
                                             <i class="bi bi-pencil"></i> Modifier
                                         </button>
                                         <button class="btn btn-sm <?= ($menu['actif'] ?? 1) == 1 ? 'btn-outline-danger' : 'btn-outline-success' ?> btn-toggle-menu"
@@ -127,4 +135,5 @@
         </div>
     </div>
     <?php require_once ROOT_PATH . 'app/views/partials/_modal_edit_plat.php'; ?>
+    <?php require_once ROOT_PATH . 'app/views/partials/_modal_edit_menu.php'; ?>
 </div>

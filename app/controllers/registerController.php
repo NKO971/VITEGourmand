@@ -32,7 +32,7 @@ function registerController($pdo)
         } elseif (!preg_match('/[!@#$%^&*(),.?":{}|<>]/', $password)) {
             $error = 'Le mot de passe doit contenir au moins un caractère spécial.';
         } else {
-            require_once __DIR__ . '/../models/user.php';
+            require_once __DIR__ . '/../models/User.php';
             $userModel = new User($pdo);
 
             $result = $userModel->register($nom, $prenom, $email, $gsm, $adresse, $password);

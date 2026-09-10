@@ -23,12 +23,12 @@ $page = $_GET['page'] ?? 'home';
 switch ($page) {
 
     case 'home':
-        require_once ROOT_PATH . 'app/controllers/home_controller.php';
+        require_once ROOT_PATH . 'app/controllers/homeController.php';
         homeController();
         break;
 
     case 'menus':
-        require_once ROOT_PATH . 'app/controllers/menus_controller.php';
+        require_once ROOT_PATH . 'app/controllers/menusController.php';
         menusController();
         break;
 
@@ -38,7 +38,7 @@ switch ($page) {
         break;
 
     case 'deconnexion':
-        require_once ROOT_PATH . 'app/controllers/logout_controller.php';
+        require_once ROOT_PATH . 'app/controllers/logoutController.php';
         break;
 
     case 'inscription':
@@ -147,7 +147,7 @@ switch ($page) {
             header('Location: ?page=connexion');
             exit();
         }
-        require_once ROOT_PATH . 'app/controllers/employee_controller.php';
+        require_once ROOT_PATH . 'app/controllers/employeeController.php';
         employeeController($pdo);
         break;
 

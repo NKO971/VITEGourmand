@@ -1,5 +1,5 @@
 <?php
-require_once ROOT_PATH . 'app/models/user.php';
+require_once ROOT_PATH . 'app/models/User.php';
 require_once ROOT_PATH . 'app/models/Commande.php';
 
 function profileController($pdo)

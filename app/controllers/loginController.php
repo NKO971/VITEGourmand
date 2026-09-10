@@ -4,7 +4,7 @@ function loginController($pdo) {
     $error = '';
 
     $specificCss = ['css/auth.css']; 
-    $specificJS = ['public/js/connexion.js'];
+    $specificJS = ['js/connexion.js'];
 
     // On vérifie si le formulaire a été soumis
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -15,7 +15,7 @@ function loginController($pdo) {
             $error = "Veuillez remplir tous les champs.";
         } else {
             // On charge le modèle User
-            require_once __DIR__ . '/../models/user.php';
+            require_once __DIR__ . '/../models/User.php';
             $userModel = new User($pdo);
 
             // On cherche l'utilisateur par son email

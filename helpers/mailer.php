@@ -5,6 +5,22 @@ use PHPMailer\PHPMailer\Exception;
 require_once ROOT_PATH . 'vendor/autoload.php';
 
 /**
+ * Configure la connexion SMTP (Mailtrap) sur une instance PHPMailer,
+ * à partir des variables d'environnement (voir .env / .env.example).
+ * Mutualisé pour éviter la duplication entre les différentes fonctions d'envoi.
+ */
+function configureMailerSmtp(PHPMailer $mail): void {
+    $mail->isSMTP();
+    $mail->Host       = getenv('MAILTRAP_HOST') ?: 'sandbox.smtp.mailtrap.io';
+    $mail->SMTPAuth   = true;
+    $mail->Username   = getenv('MAILTRAP_USERNAME');
+    $mail->Password   = getenv('MAILTRAP_PASSWORD');
+    $mail->Port       = (int)(getenv('MAILTRAP_PORT') ?: 2525);
+    $mail->CharSet    = 'UTF-8';
+    $mail->setFrom('no-reply@vitegourmand.fr', 'VITEGourmand - Service Client');
+}
+
+/**
  * Notification par e-mail pour le retour de matériel sous 10 jours ouvrés.
  *
  * @param string $toEmail      Adresse e-mail du client
@@ -14,28 +30,15 @@ require_once ROOT_PATH . 'vendor/autoload.php';
  * @return bool True si envoyé, False si échec
  */
 function sendEquipmentReturnNotification(string $toEmail, string $clientName, string $orderNumber, string $deadlineDate): bool {
-    // Instanciation avec 'true' pour activer la levée d'exceptions en cas d'erreur
     $mail = new PHPMailer(true);
 
     try {
-        // Configuration du serveur SMTP (Mailtrap)
-        $mail->isSMTP();
-        $mail->Host       = 'sandbox.smtp.mailtrap.io';
-        $mail->SMTPAuth   = true;
-        $mail->Username   = '6b2a318f09623a';
-        $mail->Password   = '473a4af677f3ae';
-        $mail->Port       = 2525;
-        $mail->CharSet    = 'UTF-8';
-
-        // Expéditeur et Destinataire
-        $mail->setFrom('no-reply@vitegourmand.fr', 'VITEGourmand - Service Client');
+        configureMailerSmtp($mail);
         $mail->addAddress($toEmail, $clientName);
 
-        // Contenu de l'e-mail
         $mail->isHTML(true);
         $mail->Subject = "Restitution de matériel - Commande N° " . $orderNumber;
 
-        // Template HTML
         $mail->Body = "
         <div style='font-family: Arial, sans-serif; color: #333; line-height: 1.6; max-width: 600px; margin: 0 auto; border: 1px solid #ddd; padding: 20px; border-radius: 8px;'>
             <h2 style='color: #c9302c; border-bottom: 2px solid #c9302c; padding-bottom: 10px;'>
@@ -64,7 +67,6 @@ function sendEquipmentReturnNotification(string $toEmail, string $clientName, st
         </div>
         ";
 
-        // Version texte pour les clients qui ne peuvent pas lire les e-mails HTML
         $mail->AltBody = "Bonjour {$clientName},\n\nVotre commande N° {$orderNumber} contient du matériel prêté.\nDate limite de restitution : {$deadlineDate} (10 jours ouvrés).\nPassé ce délai, une pénalité de 600,00 € s'applique (CGV).\n\nCordialement,\nL'équipe VITEGourmand";
 
         $mail->send();
@@ -80,24 +82,12 @@ function sendOrderCancellationNotification(string $toEmail, string $clientName, 
     $mail = new PHPMailer(true);
 
     try {
-        // Configuration du serveur SMTP (Mailtrap)
-        $mail->isSMTP();
-        $mail->Host       = 'sandbox.smtp.mailtrap.io';
-        $mail->SMTPAuth   = true;
-        $mail->Username   = '6b2a318f09623a';
-        $mail->Password   = '473a4af677f3ae';
-        $mail->Port       = 2525;
-        $mail->CharSet    = 'UTF-8';
-
-        // Expéditeur et Destinataire
-        $mail->setFrom('no-reply@vitegourmand.fr', 'VITEGourmand - Service Client');
+        configureMailerSmtp($mail);
         $mail->addAddress($toEmail, $clientName);
 
-        // Contenu de l'e-mail
         $mail->isHTML(true);
         $mail->Subject = "Annulation de votre commande N° " . $orderNumber;
 
-        // Template HTML
         $mail->Body = "
         <div style='font-family: Arial, sans-serif; color: #333; line-height: 1.6; max-width: 600px; margin: 0 auto; border: 1px solid #ddd; padding: 20px; border-radius: 8px;'>
             <h2 style='color: #c9302c; border-bottom: 2px solid #c9302c; padding-bottom: 10px;'>
@@ -120,7 +110,6 @@ function sendOrderCancellationNotification(string $toEmail, string $clientName, 
         </div>
         ";
 
-        // Version Texte brut
         $mail->AltBody = "Bonjour {$clientName},\n\nVotre commande N° {$orderNumber} a été annulée.\nMotif d'annulation : {$motif}\n\nCordialement,\nL'équipe VITEGourmand";
 
         $mail->send();

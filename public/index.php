@@ -10,6 +10,10 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+// Charger les variables d'environnement depuis le fichier .env
+require_once ROOT_PATH . 'app/config/env.php';
+loadEnv(ROOT_PATH . '.env');
+
 // Chargement de la BDD et du contrôleur de base
 require_once ROOT_PATH . 'app/config/db.php';
 require_once ROOT_PATH . 'app/controllers/baseController.php';
@@ -222,6 +226,20 @@ switch ($page) {
         header('Content-Type: application/json');
         require_once ROOT_PATH . 'app/controllers/gestionCarteController.php';
         toggleMenuStatusController($pdo);
+        exit();
+        break;
+
+    case 'create_plat':
+        header('Content-Type: application/json');
+        require_once ROOT_PATH . 'app/controllers/gestionCarteController.php';
+        createPlatController($pdo);
+        exit();
+        break;
+
+    case 'create_menu':
+        header('Content-Type: application/json');
+        require_once ROOT_PATH . 'app/controllers/gestionCarteController.php';
+        createMenuController($pdo);
         exit();
         break;
 

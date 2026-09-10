@@ -20,8 +20,9 @@
 
     <!-- SECTION 1 : GESTION DES MENUS -->
     <div class="card shadow-sm mb-5">
-        <div class="card-header bg-white py-3">
+        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
             <h5 class="card-title text-primary mb-0"><i class="bi bi-egg-fried me-2"></i>Liste des Menus</h5>
+            <button class="btn btn-sm btn-outline-primary" id="btn-add-menu"><i class="bi bi-plus-circle me-1"></i> Ajouter menu</button>
         </div>
         <div class="card-body p-0">
             <div class="table-responsive">
@@ -93,8 +94,9 @@
 
     <!-- SECTION 2 : GESTION DES PLATS -->
     <div class="card shadow-sm">
-        <div class="card-header bg-white py-3">
+        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
             <h5 class="card-title text-primary mb-0"><i class="bi bi-disc me-2"></i>Liste des Plats</h5>
+            <button class="btn btn-sm btn-outline-primary" id="btn-add-plat"><i class="bi bi-plus-circle me-1"></i> Ajouter un plat</button>
         </div>
         <div class="card-body p-0">
             <div class="table-responsive">
@@ -143,4 +145,5 @@
     </div>
     <?php require_once ROOT_PATH . 'app/views/partials/_modal_edit_plat.php'; ?>
     <?php require_once ROOT_PATH . 'app/views/partials/_modal_edit_menu.php'; ?>
+    <?php require_once ROOT_PATH . 'app/views/partials/_modal_create_plat.php'; ?>
 </div>

@@ -51,10 +51,11 @@ class User {
                 WHERE utilisateur_id = ?";
         $stmt = $this->pdo->prepare($sql);
         $result = $stmt->execute([$nom, $prenom, $gsm, $adresse, $userId]);
+        
         if (!$result) {
-        var_dump($stmt->errorInfo()); // Affiche l'erreur SQL à l'écran
-        die(); 
-    }
+        error_log("Erreur updateProfile (user_id={$userId}) : " . implode(' | ', $stmt->errorInfo()));
+        }
+
     return $result;
     }
 }

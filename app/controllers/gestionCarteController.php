@@ -47,6 +47,41 @@ function toggleMenuStatusController($pdo) {
     }
 }
 
+// Crétation d'un nouveau plat
+function createPlatController(PDO $pdo): void {
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        http_response_code(405);
+        echo json_encode(['success' => false, 'error' => 'Méthode non autorisée.']);
+        return;
+    }
+
+    $titrePlat = isset($_POST['titre_plat']) ? trim(strip_tags($_POST['titre_plat'])) : '';
+    $actif = isset($_POST['actif']) ? (int)$_POST['actif'] : 1;
+
+    if (empty($titrePlat)) {
+        http_response_code(400);
+        echo json_encode(['success' => false, 'error' => 'Le titre du plat est obligatoire.']);
+        return;
+    }
+
+    try {
+        $stmt = $pdo->prepare('INSERT INTO plat (titre_plat, actif) VALUES (:titre, :actif)');
+        $stmt->execute([
+            ':titre' => $titrePlat,
+            ':actif' => $actif
+        ]);
+
+        echo json_encode([
+            'success' => true,
+            'message' => 'Plat créé avec succès.',
+            'plat_id' => $pdo->lastInsertId()
+        ]);
+    } catch (PDOException $e) {
+        http_response_code(500);
+        echo json_encode(['success' => false, 'error' => 'Erreur lors de la création du plat en base de données.']);
+    }
+}
+
 function updateMenuController($pdo) {
     if (!isset($_SESSION['user_id']) || !in_array($_SESSION['role_id'], [1, 2])) {
         http_response_code(403);

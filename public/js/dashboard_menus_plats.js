@@ -79,8 +79,24 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // OUVERTURE MODAL CRÉATION PLAT
+const btnAddPlat = document.getElementById('btn-add-plat');
+if (btnAddPlat) 
+    {
+    btnAddPlat.addEventListener('click', () => 
+        {
+        const modalEl = document.getElementById('modalCreatePlat');
+        if (modalEl) 
+            {
+            const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+            modal.show();
+            }
+        });
+    }
+
     // OUVERTURE MODAL MODIFICATION PLAT
-    container.addEventListener('click', (e) => {
+    container.addEventListener('click', (e) => 
+        {
         const btnEditPlat = e.target.closest('.btn-edit-plat');
         if (!btnEditPlat) return;
 
@@ -88,19 +104,29 @@ document.addEventListener('DOMContentLoaded', () => {
         const platId = btnEditPlat.dataset.id;
         const titrePlat = row.children[1].textContent.trim();
 
+        // Récupération de l'état actif depuis le bouton de toggle de la même ligne
+        const btnToggle = row.querySelector('.btn-toggle-plat');
+        const isActif = btnToggle ? btnToggle.dataset.actif === '1' : true;
+
         document.getElementById('edit_plat_id').value = platId;
         document.getElementById('edit_titre_plat').value = titrePlat;
-        document.getElementById('edit_photo_plat').value = '';
+        
+        // Mise à jour du switch "Actif"
+        const inputActif = document.getElementById('edit_plat_actif');
+        if (inputActif) {
+            inputActif.checked = isActif;
+        }
 
         const modalEl = document.getElementById('modalEditPlat');
         const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
         modal.show();
-    });
+        });
 
     // OUVERTURE MODAL MODIFICATION MENU
 // Fonction de corespondnace entre les noms et les IDs des plats pour la sélection dans les dropdowns
 // Normalisation avancée (suppression des accents, apostrophes et espaces superflus)
-const normalizeStr = (str) => {
+const normalizeStr = (str) => 
+    {
     if (!str) return '';
     return str
         .toString()
@@ -110,7 +136,7 @@ const normalizeStr = (str) => {
         .replace(/[^a-z0-9']/g, ' ')                      // Ne garde que caractères alfanumériques
         .replace(/\s+/g, ' ')                             // Condense les espaces
         .trim();
-};
+    };
 
 const selectOptionInDropdown = (selectEl, itemData, fieldLabel) => {
     if (!selectEl || !itemData) return;

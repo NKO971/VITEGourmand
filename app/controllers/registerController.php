@@ -55,10 +55,9 @@ function registerController($pdo)
                 $_POST = [];
                 header("refresh:2;url=index.php?page=connexion");
             } else {
-                // On récupère le message d'erreur qui a été stocké temporairement en session par le modèle
-                $error = $_SESSION['error_sql'] ?? "Cette adresse email est déjà utilisée ou erreur lors de l'inscription.";
-                unset($_SESSION['error_sql']); // On nettoie après affichage
-            }
+        // Message générique uniquement, jamais l'erreur SQL réelle
+                    $error = "Cette adresse email est déjà utilisée ou une erreur est survenue lors de l'inscription.";
+                    }
         }
     }
     require_once __DIR__ . '/../views/register.view.php';

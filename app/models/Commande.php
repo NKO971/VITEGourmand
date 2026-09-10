@@ -10,8 +10,8 @@ class Commande
 
     public function enregistrerCommande($data)
     {
-        $sql = "INSERT INTO commande (numero_commande, date_commande, date_prestation, heure_livraison,  prix_menu, nombre_personne, prix_livraison, statut, utilisateur_id, menu_id) 
-            VALUES (:num, :date_cmd, :date_prest, :heure, :prix_m, :nb_p, :prix_l, :statut, :u_id, :m_id)";
+        $sql = "INSERT INTO commande (numero_commande, date_commande, date_prestation, heure_livraison, adresse_livraison, code_postal_livraison, prix_menu, nombre_personne, prix_livraison, statut, utilisateur_id, menu_id) 
+        VALUES (:num, :date_cmd, :date_prest, :heure, :adresse, :cp, :prix_m, :nb_p, :prix_l, :statut, :u_id, :m_id)";
 
         $stmt = $this->pdo->prepare($sql);
         return $stmt->execute([
@@ -19,11 +19,13 @@ class Commande
             ':date_cmd'   => $data['date_commande'],
             ':date_prest' => $data['date_prestation'],
             ':heure'      => $data['heure_livraison'],
+            ':adresse'    => $data['adresse_livraison'],
+            ':cp'         => $data['code_postal_livraison'],
             ':prix_m'     => $data['prix_menu'],
             ':nb_p'       => $data['nombre_personne'],
             ':prix_l'     => $data['prix_livraison'],
             ':statut'     => $data['statut'],
-            ':u_id'       => $data['user_id'],
+            ':u_id'       => $data['utilisateur_id'],
             ':m_id'       => $data['menu_id']
         ]);
     }
@@ -37,9 +39,9 @@ class Commande
 
     public function canModifyOrder($orderId, $userId)
     {
-       $stmt = $this->pdo->prepare("SELECT statut FROM commande WHERE commande_id = :c_id AND utilisateur_id = :u_id");
-       $stmt->execute(['c_id' => $orderId, 'u_id' => $userId]);
-       $order = $stmt->fetch(PDO::FETCH_ASSOC);
+        $stmt = $this->pdo->prepare("SELECT statut FROM commande WHERE commande_id = :c_id AND utilisateur_id = :u_id");
+        $stmt->execute(['c_id' => $orderId, 'u_id' => $userId]);
+        $order = $stmt->fetch(PDO::FETCH_ASSOC);
 
         return $order && $order['statut'] === 'En attente';
     }
@@ -73,7 +75,7 @@ class Commande
             ]);
 
             $stmt2 = $this->pdo->prepare("INSERT INTO suivi_commande (commande_id, statut, date_suivi) VALUES (:c_id, :statut, NOW())");
-        $stmt2->execute([
+            $stmt2->execute([
                 ':c_id'   => $orderId,
                 ':statut' => $nouveauStatut
             ]);

@@ -20,6 +20,49 @@ function configureMailerSmtp(PHPMailer $mail): void {
     $mail->setFrom('no-reply@vitegourmand.fr', 'VITEGourmand - Service Client');
 }
 
+function sendOrderConfirmationNotification(string $toEmail, string $clientName, string $orderNumber, string $dateDate, string $totalPrice): bool {
+    $mail = new PHPMailer(true);
+
+    try {
+        configureMailerSmtp($mail);
+        $mail->addAddress($toEmail, $clientName);
+
+        $mail->isHTML(true);
+        $mail->Subject = "Confirmation de votre commande N° " . $orderNumber;
+
+        $mail->Body = "
+        <div style='font-family: Arial, sans-serif; color: #333; line-height: 1.6; max-width: 600px; margin: 0 auto; border: 1px solid #ddd; padding: 20px; border-radius: 8px;'>
+            <h2 style='color: #28a745; border-bottom: 2px solid #28a745; padding-bottom: 10px;'>
+                Commande confirmée !
+            </h2>
+            <p>Bonjour <strong>" . htmlspecialchars($clientName) . "</strong>,</p>
+            <p>Votre commande <strong>N° {$orderNumber}</strong> a bien été enregistrée.</p>
+            
+            <div style='background-color: #f8f9fa; border-left: 4px solid #28a745; padding: 12px 15px; margin: 15px 0;'>
+                <p style='margin: 0;'><strong>Date de la prestation :</strong> {$dateDate}</p>
+                <p style='margin: 0;'><strong>Montant total :</strong> {$totalPrice} €</p>
+            </div>
+
+            <p>Vous pouvez suivre l'état de votre commande depuis votre espace client.</p>
+            
+            <hr style='border: none; border-top: 1px solid #eee; margin: 20px 0;'>
+            <p style='font-size: 12px; color: #777;'>
+                Cet e-mail est généré automatiquement par l'application VITEGourmand.
+            </p>
+        </div>
+        ";
+
+        $mail->AltBody = "Bonjour {$clientName},\n\nVotre commande N° {$orderNumber} a bien été enregistrée.\nDate de la prestation : {$dateDate}\nMontant total : {$totalPrice} €\n\nCordialement,\nL'équipe VITEGourmand";
+
+        $mail->send();
+        return true;
+
+    } catch (Exception $e) {
+        error_log("Échec envoi mail confirmation commande N° {$orderNumber} : " . $mail->ErrorInfo);
+        return false;
+    }
+}
+
 /**
  * Notification par e-mail pour le retour de matériel sous 10 jours ouvrés.
  *

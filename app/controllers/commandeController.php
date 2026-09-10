@@ -102,71 +102,77 @@ function enregistrerCommande($pdo, $menuModel, $commandeModel, $dataPost)
     $resultat = calculerTotalCommande(
         $menu['prix_par_personne'],
         $dataPost['nb_personnes'],
-        $menu['min_personnes'],
+        $menu['nombre_personne_minimun'],
         $distance
     );
 
+    $numeroCommande = 'CMD-' . uniqid();
+
     $success = $commandeModel->enregistrerCommande([
-        'numero_commande' => 'CMD-' . uniqid(), // NOT NULL
-        'date_commande'   => date('Y-m-d'), // NOT NULL
-        'date_prestation' => $dataPost['date_prestation'],
-        'heure_livraison' => $dataPost['heure_livraison'],
-        'prix_menu'       => $resultat['total_menu'],
-        'nombre_personne' => $dataPost['nb_personnes'],
-        'prix_livraison'  => $resultat['frais_livraison'],
-        'utilisateur_id'  => $_SESSION['user_id'],
-        'menu_id'         => $dataPost['menu_id'],
-        'statut'          => 'En attente'
+        'numero_commande'       => $numeroCommande,
+        'date_commande'         => date('Y-m-d'),
+        'date_prestation'       => $dataPost['date_prestation'],
+        'heure_livraison'       => $dataPost['heure_livraison'],
+        'adresse_livraison'     => $dataPost['lieu_livraison'],
+        'code_postal_livraison' => $dataPost['code_postal'],
+        'prix_menu'             => $resultat['total_menu'],
+        'nombre_personne'       => $dataPost['nb_personnes'],
+        'prix_livraison'        => $resultat['frais_livraison'],
+        'utilisateur_id'        => $_SESSION['user_id'],
+        'menu_id'               => $dataPost['menu_id'],
+        'statut'                => 'En attente'
     ]);
 
     if ($success) {
-        $to = $_SESSION['email'];
-        $subject = "Confirmation de votre commande - VITEGourmand";
-        $message = "Bonjour " . $_SESSION['nom'] . ", votre commande a été enregistrée avec succès !";
-        $headers = "From: no-reply@vitegourmand.fr\r\nReply-To: no-reply@vitegourmand.fr";
+        require_once ROOT_PATH . 'helpers/mailer.php';
 
-        $mailSent = mail($to, $subject, $message, $headers);
+        $mailSent = sendOrderConfirmationNotification(
+            $_SESSION['email'],
+            $_SESSION['nom'],
+            $numeroCommande,
+            $dataPost['date_prestation'],
+            number_format($resultat['total_general'], 2, ',', ' ')
+        );
 
-        error_log("Tentative d'envoi de mail à : " . $to . " - Résultat : " . ($mailSent ? "Succès" : "Échec"));
+        error_log("Tentative d'envoi de mail à : " . $_SESSION['email'] . " - Résultat : " . ($mailSent ? "Succès" : "Échec"));
 
         header("Location: ?page=confirmation");
         exit();
     } else {
         throw new Exception("Erreur lors de l'enregistrement de la commande.");
     }
-
 }
 
 function annulerCommandeController($pdo)
-    {
-        require_once __DIR__ . '/../models/Commande.php';
-        
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
+{
+    require_once __DIR__ . '/../models/Commande.php';
 
-        if (!isset($_SESSION['user_id'])) {
-            header("Location: ?page=connexion");
-            exit();
-        }
+    if (session_status() === PHP_SESSION_NONE) {
+        session_start();
+    }
 
-        $commandeId = $_GET['id'] ?? null;
+    if (!isset($_SESSION['user_id'])) {
+        header("Location: ?page=connexion");
+        exit();
+    }
 
-        if (!$commandeId) {
-            header("Location: ?page=profile");
-            exit();
-        }
+    $commandeId = $_GET['id'] ?? null;
 
-        $commandeModel = new Commande($pdo);
-
-        $succes = $commandeModel->cancelOrder($commandeId, $_SESSION['user_id'], 'Annulée');
-
-        if ($succes) {
-            $_SESSION['flash_message'] = "Commande annulée avec succès.";
-        } else {
-            $_SESSION['flash_message'] = "Impossible d'annuler cette commande (déjà acceptée ou inexistante).";
-        }
-
+    if (!$commandeId) {
         header("Location: ?page=profile");
         exit();
     }
+
+    $commandeModel = new Commande($pdo);
+
+    $succes = $commandeModel->cancelOrder($commandeId, $_SESSION['user_id'], 'Annulée');
+
+    if ($succes) {
+        $_SESSION['flash_message'] = "Commande annulée avec succès.";
+    } else {
+        $_SESSION['flash_message'] = "Impossible d'annuler cette commande (déjà acceptée ou inexistante).";
+    }
+
+    header("Location: ?page=profile");
+    exit();
+}

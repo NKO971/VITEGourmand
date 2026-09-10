@@ -1,22 +1,10 @@
 <?php
 
-
 function registerController($pdo)
 {
+    $error = '';
+    $success = '';
 
-    BaseController::render(
-        "Créer un compte - VITEGourmand",
-        "register.view.php",
-        ["css/auth.css"],
-        [],
-        [
-            'error' => $error ?? '',
-            'success' => $success ?? ''
-        ]
-    );
-
-
-    // On vérifie si le formulaire a été soumis
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $nom = trim($_POST['nom'] ?? '');
@@ -27,7 +15,6 @@ function registerController($pdo)
         $password = $_POST['password'] ?? '';
         $password_confirm = $_POST['password_confirm'] ?? '';
 
-        // Vérifications côté serveur
         if (empty($nom) || empty($prenom) || empty($email) || empty($gsm) || empty($adresse) || empty($password) || empty($password_confirm)) {
             $error = 'Vous avez oublié un champ.';
         } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
@@ -55,10 +42,19 @@ function registerController($pdo)
                 $_POST = [];
                 header("refresh:2;url=index.php?page=connexion");
             } else {
-        // Message générique uniquement, jamais l'erreur SQL réelle
-                    $error = "Cette adresse email est déjà utilisée ou une erreur est survenue lors de l'inscription.";
-                    }
+                $error = "Cette adresse email est déjà utilisée ou une erreur est survenue lors de l'inscription.";
+            }
         }
     }
-    require_once __DIR__ . '/../views/register.view.php';
+
+    BaseController::render(
+        "Créer un compte - VITEGourmand",
+        "register.view.php",
+        ["css/auth.css"],
+        [],
+        [
+            'error' => $error,
+            'success' => $success
+        ]
+    );
 }

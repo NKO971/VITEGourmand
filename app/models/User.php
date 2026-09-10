@@ -28,9 +28,8 @@ class User {
             return $insert->execute([$nom, $prenom, $email, $gsm, $adresse, $hashedPassword, $role_id]);
 
         } catch (PDOException $e) {
-            // Étape de diagnostic : On stocke l'erreur réelle en session pour que le contrôleur l'affiche
-            if (session_status() === PHP_SESSION_NONE) { session_start(); }
-            $_SESSION['error_sql'] = "Erreur DB : " . $e->getMessage();
+            // DEBUG: Ont loge l'erreur sans afficher de détails sensibles à l'utilisateur
+            error_log("Erreur register() : " . $e->getMessage());
             return false;
         }
     }

@@ -58,3 +58,13 @@ ALTER TABLE plat ADD COLUMN IF NOT EXISTS actif TINYINT(1) DEFAULT 1;
 INSERT INTO plat (titre_plat, actif) VALUES 
 ('Foie gras de canard maison', 1),
 ('Croustade aux pommes et Armagnac', 1);
+
+// Insertion des horraires 
+INSERT INTO `horaire` (`jour`, `heure_ouverture`, `heure_fermeture`) VALUES
+('Lundi', 'Fermé', 'Fermé'),
+('Mardi', '10:00', '22:00'),
+('Mercredi', '10:00', '22:00'),
+('Jeudi', '10:00', '22:00'),
+('Vendredi', '10:00', '22:00'),
+('Samedi', '10:00', '22:00'),
+('Dimanche', '10:00', '14:00');

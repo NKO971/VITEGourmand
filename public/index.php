@@ -173,6 +173,22 @@ switch ($page) {
         $reviewController->process();
         break;
 
+    case 'employee_schedules':
+        if (!isset($_SESSION['user_id']) || !in_array($_SESSION['role_id'], [1, 2])) {
+        header('Location: ?page=connexion');
+        exit();
+        }
+        require_once ROOT_PATH . 'app/controllers/gestionCarteController.php';
+        renderHorairesController($pdo);
+        break;
+
+    case 'update_horaire':
+         header('Content-Type: application/json');
+         require_once ROOT_PATH . 'app/controllers/gestionCarteController.php';
+         updateHoraireController($pdo);
+         exit();
+         break;
+
     // Route AJAX pour valider ou refuser un avis (MongoDB)
     case 'update_avis_status':
         header('Content-Type: application/json');

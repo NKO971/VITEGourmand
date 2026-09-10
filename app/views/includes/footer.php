@@ -13,9 +13,21 @@
             <div class="col-12 col-sm-6 col-md-4">
                 <h6 class="text-uppercase fw-bold font-poppins letter-spacing-1 mb-3 text-white-50 small">Horaires d'ouverture</h6>
                 <ul class="list-unstyled text-muted small lh-lg">
-                    <li class="d-flex justify-content-between"><span>Mardi - Samedi :</span> <span class="text-white">10h00 - 22h00</span></li>
-                    <li class="d-flex justify-content-between"><span>Dimanche :</span> <span class="text-white">10h00 - 14h00</span></li>
-                    <li class="d-flex justify-content-between text-danger-soft"><span>Lundi :</span> <span class="badge bg-danger-soft">Fermé</span></li>
+                    <?php if (!empty($horairesFooter)): ?>
+                        <?php foreach ($horairesFooter as $h): ?>
+                            <?php $ferme = (strtolower($h['heure_ouverture']) === 'fermé'); ?>
+                            <li class="d-flex justify-content-between <?= $ferme ? 'text-danger-soft' : '' ?>">
+                                <span><?= htmlspecialchars($h['jour']) ?> :</span>
+                                <?php if ($ferme): ?>
+                                    <span class="badge bg-danger-soft">Fermé</span>
+                                <?php else: ?>
+                                    <span class="text-white"><?= htmlspecialchars($h['heure_ouverture']) ?> - <?= htmlspecialchars($h['heure_fermeture']) ?></span>
+                                <?php endif; ?>
+                            </li>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <li class="text-muted">Horaires non disponibles.</li>
+                    <?php endif; ?>
                 </ul>
             </div>
 
@@ -39,9 +51,10 @@
     </div>
 </footer>
 <?php if (isset($specificJs)): ?>
-        <?php foreach ($specificJs as $js): ?>
-            <script src="<?= $js; ?>"></script>
-        <?php endforeach; ?>
+    <?php foreach ($specificJs as $js): ?>
+        <script src="<?= $js; ?>"></script>
+    <?php endforeach; ?>
 <?php endif; ?>
 </body>
+
 </html>

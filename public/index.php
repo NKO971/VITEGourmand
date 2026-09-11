@@ -34,7 +34,7 @@ switch ($page) {
 
     case 'connexion':
         require_once ROOT_PATH . 'app/controllers/loginController.php';
-        loginController($pdo); 
+        loginController($pdo);
         break;
 
     case 'deconnexion':
@@ -43,30 +43,30 @@ switch ($page) {
 
     case 'inscription':
         require_once ROOT_PATH . 'app/controllers/registerController.php';
-        registerController($pdo); 
+        registerController($pdo);
         break;
-        
+
     case 'commander':
         require_once ROOT_PATH . 'app/models/Menu.php';
         require_once ROOT_PATH . 'app/controllers/commandeController.php';
         $menuModel = new Menu($pdo);
         commandeController($menuModel);
         break;
-    
+
     case 'api_zone':
         require_once ROOT_PATH . 'app/controllers/commandeController.php';
         getZoneDistance($pdo);
         exit();
         break;
-    
+
     case 'enregistrer_commande':
         require_once ROOT_PATH . 'app/models/Menu.php';
         require_once ROOT_PATH . 'app/models/Commande.php';
         require_once ROOT_PATH . 'app/controllers/commandeController.php';
-        
-        $menuModel = new Menu($pdo); 
-        $commandeModel = new Commande($pdo);      
-        
+
+        $menuModel = new Menu($pdo);
+        $commandeModel = new Commande($pdo);
+
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             try {
                 enregistrerCommande($pdo, $menuModel, $commandeModel, $_POST);
@@ -84,16 +84,45 @@ switch ($page) {
             "Confirmation - VITEGourmand",
             "confirmation.view.php",
             [],
-            [], 
-            []  
+            [],
+            []
         );
         break;
-    
+
+    // Gestion des commandes coté client (Modification, Annulation, Suivi)
+
     case 'profile':
         require_once ROOT_PATH . 'app/controllers/profileController.php';
         profileController($pdo);
         break;
-        
+
+    case 'modifier_commande':
+        require_once ROOT_PATH . 'app/models/Menu.php';
+        require_once ROOT_PATH . 'app/models/Commande.php';
+        require_once ROOT_PATH . 'app/controllers/commandeController.php';
+        $menuModel = new Menu($pdo);
+        $commandeModel = new Commande($pdo);
+        modifierCommandeController($pdo, $menuModel, $commandeModel);
+        break;
+
+    case 'update_commande':
+        require_once ROOT_PATH . 'app/models/Menu.php';
+        require_once ROOT_PATH . 'app/models/Commande.php';
+        require_once ROOT_PATH . 'app/controllers/commandeController.php';
+        $menuModel = new Menu($pdo);
+        $commandeModel = new Commande($pdo);
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            try {
+                updateCommandeController($pdo, $menuModel, $commandeModel, $_POST);
+            } catch (Exception $e) {
+                echo "Une erreur est survenue : " . htmlspecialchars($e->getMessage());
+            }
+        } else {
+            header("Location: ?page=profile");
+            exit();
+        }
+        break;
+
     case 'annuler':
         require_once ROOT_PATH . 'app/controllers/commandeController.php';
         annulerCommandeController($pdo);
@@ -104,27 +133,27 @@ switch ($page) {
             "Donner un avis - VITEGourmand",
             "donner_avis.view.php",
             [],
-            [], 
-            []  
+            [],
+            []
         );
         break;
 
     case 'traitement_avis':
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             require_once ROOT_PATH . 'app/models/AvisModel.php';
-            
+
             $commandeId  = (int)($_POST['commande_id'] ?? 0);
             $commentaire = isset($_POST['commentaire']) ? trim($_POST['commentaire']) : '';
             $userId      = $_SESSION['user_id'] ?? null;
             $nomClient   = $_SESSION['user_name'] ?? 'Client'; // Ajuster selon ta variable de session
-            
+
             $hasNote = isset($_POST['note']) && $_POST['note'] !== '';
             $note    = $hasNote ? (int) $_POST['note'] : null;
-            
+
             if ($commandeId && $userId && $note !== null && $note >= 1 && $note <= 5 && !empty($commentaire)) {
                 $avisModel = new AvisModel();
                 $success = $avisModel->createAvis($userId, $nomClient, $note, $commentaire, $commandeId);
-                
+
                 if ($success) {
                     header('Location: ?page=profile');
                     exit();
@@ -175,19 +204,19 @@ switch ($page) {
 
     case 'employee_schedules':
         if (!isset($_SESSION['user_id']) || !in_array($_SESSION['role_id'], [1, 2])) {
-        header('Location: ?page=connexion');
-        exit();
+            header('Location: ?page=connexion');
+            exit();
         }
         require_once ROOT_PATH . 'app/controllers/gestionCarteController.php';
         renderHorairesController($pdo);
         break;
 
     case 'update_horaire':
-         header('Content-Type: application/json');
-         require_once ROOT_PATH . 'app/controllers/gestionCarteController.php';
-         updateHoraireController($pdo);
-         exit();
-         break;
+        header('Content-Type: application/json');
+        require_once ROOT_PATH . 'app/controllers/gestionCarteController.php';
+        updateHoraireController($pdo);
+        exit();
+        break;
 
     // Route AJAX pour valider ou refuser un avis (MongoDB)
     case 'update_avis_status':
@@ -196,13 +225,13 @@ switch ($page) {
             echo json_encode(['success' => false, 'message' => 'Accès non autorisé']);
             exit();
         }
-        
+
         require_once ROOT_PATH . 'app/models/AvisModel.php';
         $data = json_decode(file_get_contents('php://input'), true) ?? $_POST;
-        
+
         $id = $data['id'] ?? null;
         $statut = $data['statut'] ?? null; // 'valide' ou 'refuse'
-        
+
         if ($id && in_array($statut, ['valide', 'refuse'])) {
             $avisModel = new AvisModel();
             $updated = $avisModel->updateStatut($id, $statut);
@@ -219,8 +248,8 @@ switch ($page) {
         getOrdersController($pdo);
         exit();
         break;
-    
-    case 'cancel_order' :
+
+    case 'cancel_order':
     case 'update_order_status':
         header('Content-Type: application/json');
         require_once ROOT_PATH . 'app/controllers/gestionCommandeController.php';

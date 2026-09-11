@@ -51,7 +51,9 @@ document.addEventListener('DOMContentLoaded', () => {
                         txtLivraison.textContent = "Zone non desservie";
                         txtLivraison.classList.add('text-danger');
                         fraisLivraisonActuels = 0;
+                        document.querySelector('button[type="submit"]').disabled = true;
                     } else {
+                        document.querySelector('button[type="submit"]').disabled = false;
                         txtLivraison.classList.remove('text-danger');
                         const distance = data.distance_km;
                         // Formule de Julie

@@ -85,6 +85,7 @@
                                             <?php $statutNormalise = mb_strtolower(trim($order['statut'])); ?>
 
                                             <?php if ($statutNormalise === 'en attente'): ?>
+                                                <a href="?page=modifier_commande&id=<?= $order['commande_id'] ?>" class="btn btn-sm btn-primary me-1">Modifier</a>
                                                 <a href="?page=annuler&id=<?= $order['commande_id'] ?>" class="btn btn-sm btn-danger">Annuler</a>
 
                                             <?php elseif ($statutNormalise === 'terminée' || $statutNormalise === 'terminee'): ?>

@@ -96,4 +96,38 @@ class Commande
         $stmt->execute([':c_id' => $orderId]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    public function getOrderById($orderId, $userId)
+    {
+        $stmt = $this->pdo->prepare("SELECT * FROM commande WHERE commande_id = :c_id AND utilisateur_id = :u_id");
+        $stmt->execute(['c_id' => $orderId, 'u_id' => $userId]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    public function updateOrder($orderId, $userId, $data)
+    {
+        // Double vérification : la commande appartient à l'utilisateur et le statut est 'En attente'
+        $sql = "UPDATE commande 
+            SET date_prestation = :date_prest,
+                heure_livraison = :heure,
+                adresse_livraison = :adresse,
+                code_postal_livraison = :cp,
+                nombre_personne = :nb_p,
+                prix_menu = :prix_m,
+                prix_livraison = :prix_l
+            WHERE commande_id = :c_id AND utilisateur_id = :u_id AND statut = 'En attente'";
+
+        $stmt = $this->pdo->prepare($sql);
+        return $stmt->execute([
+            ':date_prest' => $data['date_prestation'],
+            ':heure'      => $data['heure_livraison'],
+            ':adresse'    => $data['adresse_livraison'],
+            ':cp'         => $data['code_postal_livraison'],
+            ':nb_p'       => $data['nombre_personne'],
+            ':prix_m'     => $data['prix_menu'],
+            ':prix_l'     => $data['prix_livraison'],
+            ':c_id'       => $orderId,
+            ':u_id'       => $userId
+        ]);
+    }
 }

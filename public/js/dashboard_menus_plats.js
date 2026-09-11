@@ -94,6 +94,18 @@ if (btnAddPlat)
         });
     }
 
+// OUVERTURE MODAL CRÉATION MENU
+const btnAddMenu = document.getElementById('btn-add-menu');
+if (btnAddMenu) {
+    btnAddMenu.addEventListener('click', () => {
+        const modalEl = document.getElementById('modalCreateMenu');
+        if (modalEl) {
+            const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+            modal.show();
+        }
+    });
+}
+
     // OUVERTURE MODAL MODIFICATION PLAT
     container.addEventListener('click', (e) => 
         {
@@ -104,19 +116,9 @@ if (btnAddPlat)
         const platId = btnEditPlat.dataset.id;
         const titrePlat = row.children[1].textContent.trim();
 
-        // Récupération de l'état actif depuis le bouton de toggle de la même ligne
-        const btnToggle = row.querySelector('.btn-toggle-plat');
-        const isActif = btnToggle ? btnToggle.dataset.actif === '1' : true;
-
         document.getElementById('edit_plat_id').value = platId;
         document.getElementById('edit_titre_plat').value = titrePlat;
         
-        // Mise à jour du switch "Actif"
-        const inputActif = document.getElementById('edit_plat_actif');
-        if (inputActif) {
-            inputActif.checked = isActif;
-        }
-
         const modalEl = document.getElementById('modalEditPlat');
         const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
         modal.show();
@@ -202,6 +204,7 @@ document.addEventListener('click', (e) => {
     document.getElementById('edit_menu_description').value = ds.description || '';
     document.getElementById('edit_menu_prix').value = ds.prix || 0;
     document.getElementById('edit_menu_stock').value = ds.stock || 0;
+    document.getElementById('edit_menu_min_personnes').value = ds.minPersonnes || 1;
     document.getElementById('edit_menu_theme').value = ds.theme || '';
     document.getElementById('edit_menu_regime').value = ds.regime || '';
 
@@ -340,6 +343,7 @@ document.addEventListener('click', (e) => {
                 titre: document.getElementById('edit_menu_titre').value.trim(),
                 prix: isNaN(prixFormate) ? 0 : prixFormate, // Sécurité si le champ est vide
                 stock: parseInt(document.getElementById('edit_menu_stock').value, 10) || 0,
+                min_personnes: parseInt(document.getElementById('edit_menu_min_personnes').value, 10) || 1,
                 theme_id: document.getElementById('edit_menu_theme').value,
                 regime_id: document.getElementById('edit_menu_regime').value,
                 description: document.getElementById('edit_menu_description').value,
@@ -378,4 +382,124 @@ document.addEventListener('click', (e) => {
             }
         });
     }
+    // SOUMISSION FORMULAIRE CRÉATION PLAT
+const formCreatePlat = document.getElementById('formCreatePlat');
+if (formCreatePlat) {
+    formCreatePlat.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const btnSubmit = document.getElementById('btnSubmitCreatePlat');
+        btnSubmit.disabled = true;
+
+        const formData = new FormData(formCreatePlat);
+
+        try {
+            const response = await fetch('index.php?page=create_plat', {
+                method: 'POST',
+                body: formData
+            });
+
+            const result = await response.json();
+
+            if (!response.ok) {
+                throw new Error(result.error || 'Erreur lors de la création du plat.');
+            }
+
+            if (result.success) {
+                const modalEl = document.getElementById('modalCreatePlat');
+                const modal = bootstrap.Modal.getInstance(modalEl);
+                if (modal) modal.hide();
+
+                alert(result.message);
+                window.location.reload();
+            }
+        } catch (error) {
+            console.error('Erreur create_plat :', error);
+            alert(error.message);
+        } finally {
+            btnSubmit.disabled = false;
+        }
+    });
+}
+// SOUMISSION FORMULAIRE CRÉATION MENU (JSON)
+const formCreateMenu = document.getElementById('formCreateMenu');
+if (formCreateMenu) {
+    formCreateMenu.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const btnSave = document.getElementById('btnCreateMenu');
+        btnSave.disabled = true;
+
+        const getPlatData = (selectId) => {
+            const select = document.getElementById(selectId);
+            if (!select || !select.value) return null;
+            const selectedOption = select.options[select.selectedIndex];
+            return {
+                plat_id: parseInt(select.value, 10),
+                nom: selectedOption.dataset.nom || selectedOption.text
+            };
+        };
+
+        const compositionObj = {};
+        const entreeData = getPlatData('create_menu_entree');
+        if (entreeData) compositionObj.entree = entreeData;
+
+        const platData = getPlatData('create_menu_plat_principal');
+        if (platData) compositionObj.plat = platData;
+
+        const dessertData = getPlatData('create_menu_dessert');
+        if (dessertData) compositionObj.dessert = dessertData;
+
+        const conditionsObj = {
+            delai_commande: document.getElementById('create_delai_commande').value.trim(),
+            conservation: document.getElementById('create_conservation').value.trim()
+        };
+
+        const rawPrix = document.getElementById('create_menu_prix').value.toString().replace(',', '.').trim();
+        const prixFormate = parseFloat(rawPrix);
+
+        const payload = {
+            titre: document.getElementById('create_menu_titre').value.trim(),
+            prix: isNaN(prixFormate) ? 0 : prixFormate,
+            stock: parseInt(document.getElementById('create_menu_stock').value, 10) || 0,
+            min_personnes: parseInt(document.getElementById('create_menu_min_personnes').value, 10) || 1,
+            theme_id: document.getElementById('create_menu_theme').value,
+            regime_id: document.getElementById('create_menu_regime').value,
+            description: document.getElementById('create_menu_description').value,
+            composition: JSON.stringify(compositionObj),
+            conditions_stockage: JSON.stringify(conditionsObj)
+        };
+
+        try {
+            const response = await fetch('index.php?page=create_menu', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify(payload)
+            });
+
+            const result = await response.json();
+
+            if (!response.ok) {
+                throw new Error(result.error || 'Erreur lors de la création du menu.');
+            }
+
+            if (result.success) {
+                const modalEl = document.getElementById('modalCreateMenu');
+                const modal = bootstrap.Modal.getInstance(modalEl);
+                if (modal) modal.hide();
+
+                window.location.reload();
+            }
+        } catch (error) {
+            console.error('Erreur create_menu :', error);
+            alert(error.message);
+        } finally {
+            btnSave.disabled = false;
+        }
+    });
+}
+
 });

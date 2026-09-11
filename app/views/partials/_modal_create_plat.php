@@ -9,7 +9,7 @@
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fermer"></button>
             </div>
             
-            <form id="formCreatePlat" action="index.php?action=create_plat" method="POST">
+            <form id="formCreatePlat" action="index.php?page=create_plat" method="POST">
                 <div class="modal-body">
                     
                     <!-- Nom / Titre du Plat -->

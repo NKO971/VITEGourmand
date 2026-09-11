@@ -58,7 +58,7 @@
 
                             <hr>
 
-                            <input type="hidden" id="min_personnes_hidden" value="<?= $menu['nombre_personne_minimun'] ?? 1 ?>">
+                            <input type="hidden" id="min_personnes_hidden" value="<?= $menu['nombre_personne_minimum'] ?? 1 ?>">
                             <input type="hidden" id="min_personnes_hidden" value="<?= $menu['min_personnes'] ?? 1 ?>">
 
                             <div class="d-flex justify-content-between mb-2">

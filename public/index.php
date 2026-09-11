@@ -207,13 +207,13 @@ switch ($page) {
             header('Location: ?page=connexion');
             exit();
         }
-        require_once ROOT_PATH . 'app/controllers/gestionCarteController.php';
+        require_once ROOT_PATH . 'app/controllers/gestionHoraireController.php';
         renderHorairesController($pdo);
         break;
 
     case 'update_horaire':
         header('Content-Type: application/json');
-        require_once ROOT_PATH . 'app/controllers/gestionCarteController.php';
+        require_once ROOT_PATH . 'app/controllers/gestionHoraireController.php';
         updateHoraireController($pdo);
         exit();
         break;
@@ -263,48 +263,48 @@ switch ($page) {
             header('Location: ?page=connexion');
             exit();
         }
-        require_once ROOT_PATH . 'app/controllers/gestionCarteController.php';
-        renderGestionCarteController($pdo);
+        require_once ROOT_PATH . 'app/controllers/gestionMenuController.php';
+        renderGestionMenuController($pdo);
         break;
 
     case 'toggle_menu_status':
         header('Content-Type: application/json');
-        require_once ROOT_PATH . 'app/controllers/gestionCarteController.php';
+        require_once ROOT_PATH . 'app/controllers/gestionMenuController.php';
         toggleMenuStatusController($pdo);
         exit();
         break;
 
     case 'create_plat':
         header('Content-Type: application/json');
-        require_once ROOT_PATH . 'app/controllers/gestionCarteController.php';
+        require_once ROOT_PATH . 'app/controllers/gestionPlatController.php';
         createPlatController($pdo);
         exit();
         break;
 
     case 'create_menu':
         header('Content-Type: application/json');
-        require_once ROOT_PATH . 'app/controllers/gestionCarteController.php';
+        require_once ROOT_PATH . 'app/controllers/gestionMenuController.php';
         createMenuController($pdo);
         exit();
         break;
 
     case 'update_menu':
         header('Content-Type: application/json');
-        require_once ROOT_PATH . 'app/controllers/gestionCarteController.php';
+        require_once ROOT_PATH . 'app/controllers/gestionMenuController.php';
         updateMenuController($pdo);
         exit();
         break;
 
     case 'toggle_plat_status':
         header('Content-Type: application/json');
-        require_once ROOT_PATH . 'app/controllers/gestionCarteController.php';
+        require_once ROOT_PATH . 'app/controllers/gestionPlatController.php';
         togglePlatStatusController($pdo);
         exit();
         break;
 
     case 'update_plat':
         header('Content-Type: application/json');
-        require_once ROOT_PATH . 'app/controllers/gestionCarteController.php';
+        require_once ROOT_PATH . 'app/controllers/gestionPlatController.php';
         updatePlatController($pdo);
         exit();
         break;

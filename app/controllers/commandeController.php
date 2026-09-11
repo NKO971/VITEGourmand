@@ -119,7 +119,7 @@ function enregistrerCommande($pdo, $menuModel, $commandeModel, $dataPost)
     $resultat = calculerTotalCommande(
         $menu['prix_par_personne'],
         $dataPost['nb_personnes'],
-        $menu['nombre_personne_minimun'],
+        $menu['nombre_personne_minimum'],
         $distance
     );
 
@@ -232,7 +232,7 @@ function updateCommandeController($pdo, $menuModel, $commandeModel, $dataPost)
     $resultat = calculerTotalCommande(
         $menu['prix_par_personne'],
         $dataPost['nb_personnes'],
-        $menu['nombre_personne_minimun'],
+        $menu['nombre_personne_minimum'],
         $distance
     );
 

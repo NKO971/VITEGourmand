@@ -19,12 +19,6 @@
                         <label for="edit_titre_plat" class="form-label fw-semibold">Titre du plat <span class="text-danger">*</span></label>
                         <input type="text" class="form-control" id="edit_titre_plat" name="titre_plat" required>
                     </div>
-
-                    <!-- Statut Actif -->
-                    <div class="form-check form-switch mb-3">
-                        <input class="form-check-input" type="checkbox" id="edit_plat_actif" name="actif" value="1">
-                        <label class="form-check-label fw-semibold" for="edit_plat_actif">Plat actif</label>
-                    </div>
                 </div>
 
                 <div class="modal-footer bg-light">

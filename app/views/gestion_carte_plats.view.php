@@ -32,6 +32,7 @@
                             <th>ID</th>
                             <th>Titre</th>
                             <th>Prix</th>
+                            <th>Min. pers.</th>
                             <th>Thème / Régime</th>
                             <th>Statut</th>
                             <th class="text-end">Actions</th>
@@ -40,7 +41,7 @@
                     <tbody>
                         <?php if (empty($menus)): ?>
                             <tr>
-                                <td colspan="6" class="text-center py-3 text-muted">Aucun menu enregistré.</td>
+                                <td colspan="7" class="text-center py-3 text-muted">Aucun menu enregistré.</td>
                             </tr>
                         <?php else: ?>
                             <?php foreach ($menus as $menu): ?>
@@ -48,6 +49,7 @@
                                     <td><strong>#<?= htmlspecialchars((string)$menu['menu_id']) ?></strong></td>
                                     <td><?= htmlspecialchars($menu['titre'] ?? '') ?></td>
                                     <td><?= number_format((float)($menu['prix_par_personne'] ?? $menu['prix'] ?? 0), 2, ',', ' ') ?> €</td>
+                                    <td><?= htmlspecialchars((string)($menu['nombre_personne_minimum'] ?? '—')) ?></td>
                                     <td>
                                         <span class="badge bg-secondary"><?= htmlspecialchars($menu['theme_libelle'] ?? 'N/A') ?></span>
                                         <span class="badge bg-outline-dark text-dark border"><?= htmlspecialchars($menu['regime_libelle'] ?? 'N/A') ?></span>
@@ -70,6 +72,7 @@
                                             data-description="<?= htmlspecialchars($menu['description'] ?? '', ENT_QUOTES) ?>"
                                             data-prix="<?= $menu['prix_par_personne'] ?? $menu['prix'] ?? 0 ?>"
                                             data-stock="<?= $menu['quantite_restante'] ?? $menu['stock'] ?? 0 ?>"
+                                            data-min-personnes="<?= $menu['nombre_personne_minimum'] ?? 1 ?>"
                                             data-theme="<?= $menu['theme_id'] ?? '' ?>"
                                             data-regime="<?= $menu['regime_id'] ?? '' ?>"
                                             data-composition='<?= htmlspecialchars($jsonComposition, ENT_QUOTES, 'UTF-8') ?>'
@@ -119,13 +122,15 @@
                                 <tr>
                                     <td><strong>#<?= htmlspecialchars((string)$plat['plat_id']) ?></strong></td>
                                     <td><?= htmlspecialchars($plat['titre_plat'] ?? '') ?></td>
+                                    <!-- Affiche le statut du plat -->
                                     <td>
                                         <span class="badge badge-status <?= ($plat['actif'] ?? 1) == 1 ? 'bg-success' : 'bg-danger' ?>">
                                             <?= ($plat['actif'] ?? 1) == 1 ? 'Actif' : 'Masqué' ?>
                                         </span>
                                     </td>
                                     <td class="text-end">
-                                        <button class="btn btn-sm btn-outline-primary me-1 btn-edit-plat" data-id="<?= $plat['plat_id'] ?>">
+                                        <button class="btn btn-sm btn-outline-primary me-1 btn-edit-plat"
+                                            data-id="<?= $plat['plat_id'] ?>">
                                             <i class="bi bi-pencil"></i> Modifier
                                         </button>
                                         <button class="btn btn-sm <?= ($plat['actif'] ?? 1) == 1 ? 'btn-outline-danger' : 'btn-outline-success' ?> btn-toggle-plat"
@@ -146,4 +151,5 @@
     <?php require_once ROOT_PATH . 'app/views/partials/_modal_edit_plat.php'; ?>
     <?php require_once ROOT_PATH . 'app/views/partials/_modal_edit_menu.php'; ?>
     <?php require_once ROOT_PATH . 'app/views/partials/_modal_create_plat.php'; ?>
+    <?php require_once ROOT_PATH . 'app/views/partials/_modal_create_menu.php'; ?>
 </div>

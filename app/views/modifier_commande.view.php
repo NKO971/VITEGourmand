@@ -66,7 +66,7 @@
                             <hr>
 
                             <input type="hidden" id="prix_menu_hidden" value="<?= $menu['prix_par_personne'] ?? 0 ?>">
-                            <input type="hidden" id="min_personnes_hidden" value="<?= $menu['nombre_personne_minimun'] ?? 1 ?>">
+                            <input type="hidden" id="min_personnes_hidden" value="<?= $menu['nombre_personne_minimum'] ?? 1 ?>">
 
                             <div class="d-flex justify-content-between mb-2">
                                 <span>Sous-total Menu (<span id="affichage_nb_personnes">1</span> pers.) :</span>

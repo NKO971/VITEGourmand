@@ -1,7 +1,7 @@
 <?php
 /** @var array $pendingReviews */
 ?>
-<div class="container my-4">
+<div class="container my-4 moderation-avis">
     <h1 class="mb-4">Modération des avis clients</h1>
 
     <?php if (isset($_SESSION['flash_success'])): ?>
@@ -26,11 +26,10 @@
         <div class="row">
             <?php foreach ($pendingReviews as $review): ?>
                 <?php 
-                    // Conversion sécurisée de l'ObjectId MongoDB en chaîne de caractères
                     $reviewId = (string) $review['_id'];
                     $note = (int) ($review['note'] ?? 0);
                 ?>
-                <div class="col-md-6 mb-4">
+                <div class="col-md-4 mb-4" id="avis-<?= $reviewId ?>">
                     <div class="card h-100 shadow-sm">
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-center mb-2">
@@ -48,19 +47,12 @@
                             </p>
                         </div>
                         <div class="card-footer bg-transparent d-flex justify-content-end gap-2">
-                            <!-- Formulaire de Refus -->
-                            <form action="?page=reviews_process" method="POST" onsubmit="return confirm('Refuser cet avis ?');">
-                                <input type="hidden" name="review_id" value="<?= $reviewId ?>">
-                                <input type="hidden" name="action" value="reject">
-                                <button type="submit" class="btn btn-outline-danger btn-sm">Refuser</button>
-                            </form>
-
-                            <!-- Formulaire de Validation -->
-                            <form action="?page=reviews_process" method="POST">
-                                <input type="hidden" name="review_id" value="<?= $reviewId ?>">
-                                <input type="hidden" name="action" value="validate">
-                                <button type="submit" class="btn btn-success btn-sm">Valider & Publier</button>
-                            </form>
+                            <button type="button" class="btn btn-outline-danger btn-sm btn-refuser" data-id="<?= $reviewId ?>">
+                                Refuser
+                            </button>
+                            <button type="button" class="btn btn-success btn-sm btn-valider" data-id="<?= $reviewId ?>">
+                                Valider &amp; Publier
+                            </button>
                         </div>
                     </div>
                 </div>

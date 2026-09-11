@@ -31,7 +31,7 @@ class ReviewController
             "Modération des avis - VITEGourmand", 
             "reviews.view.php",                   
             [],                                   
-            [],                                   
+            ['js/dashboard-avis.js'],                                   
             [                                     
                 'pendingReviews' => $pendingReviews,
                 'currentPage'    => 'employee_reviews'

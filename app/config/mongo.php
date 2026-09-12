@@ -2,9 +2,16 @@
 require_once __DIR__ . '/../../vendor/autoload.php';
 
 try {
-    $uri = "mongodb+srv://luidginicolas_db_user:ufV3RPQVSGe1HbBH@clustervitegourmand.2nvuuct.mongodb.net/?appName=ClusterViteGourmand";
+    $mongoUsername = getenv('MONGO_USERNAME');
+    $mongoPassword = getenv('MONGO_PASSWORD');
+    $mongoCluster  = getenv('MONGO_CLUSTER');
+    $mongoAppName  = getenv('MONGO_APPNAME');
+    $mongoDbName   = getenv('MONGO_DB_NAME');
+
+    $uri = "mongodb+srv://{$mongoUsername}:{$mongoPassword}@{$mongoCluster}/?appName={$mongoAppName}";
+
     $client = new MongoDB\Client($uri);
-    $db = $client->selectDataBase('ViteGourmand');
+    $db = $client->selectDatabase($mongoDbName);
 } catch (Exception $e) {
     die("Erreur de connexion MongoDB : " . $e->getMessage());
 }

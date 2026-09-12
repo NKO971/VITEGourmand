@@ -63,6 +63,45 @@ function sendOrderConfirmationNotification(string $toEmail, string $clientName, 
     }
 }
 
+// Notification par e-mail pour la création d'un compte employé (sans le mot de passe pour des raisons de sécurité)
+function sendEmployeeAccountCreatedNotification(string $toEmail): bool {
+    $mail = new PHPMailer(true);
+
+    try {
+        configureMailerSmtp($mail);
+        $mail->addAddress($toEmail);
+
+        $mail->isHTML(true);
+        $mail->Subject = "Votre compte VITEGourmand a été créé";
+
+        $mail->Body = "
+        <div style='font-family: Arial, sans-serif; color: #333; line-height: 1.6; max-width: 600px; margin: 0 auto; border: 1px solid #ddd; padding: 20px; border-radius: 8px;'>
+            <h2 style='color: #28a745; border-bottom: 2px solid #28a745; padding-bottom: 10px;'>
+                Bienvenue dans l'équipe VITEGourmand
+            </h2>
+            <p>Bonjour,</p>
+            <p>Un compte employé a été créé pour vous sur l'espace de gestion VITEGourmand.</p>
+            <p><strong>Identifiant de connexion :</strong> " . htmlspecialchars($toEmail) . "</p>
+            <p>Pour obtenir votre mot de passe, merci de vous rapprocher de votre administrateur.</p>
+            
+            <hr style='border: none; border-top: 1px solid #eee; margin: 20px 0;'>
+            <p style='font-size: 12px; color: #777;'>
+                Cet e-mail est généré automatiquement par l'application VITEGourmand.
+            </p>
+        </div>
+        ";
+
+        $mail->AltBody = "Bonjour,\n\nUn compte employé a été créé pour vous.\nIdentifiant : {$toEmail}\nMerci de vous rapprocher de votre administrateur pour obtenir votre mot de passe.\n\nCordialement,\nL'équipe VITEGourmand";
+
+        $mail->send();
+        return true;
+
+    } catch (Exception $e) {
+        error_log("Échec envoi mail création employé : " . $mail->ErrorInfo);
+        return false;
+    }
+}
+
 /**
  * Notification par e-mail pour le retour de matériel sous 10 jours ouvrés.
  *

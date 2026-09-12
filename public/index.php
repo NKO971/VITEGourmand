@@ -169,6 +169,26 @@ switch ($page) {
         }
         break;
 
+    // Gestion des employés (Admin uniquement)
+    case 'admin_employes':
+        require_once ROOT_PATH . 'app/controllers/adminController.php';
+        renderAdminEmployesController($pdo);
+        break;
+
+    case 'create_employe':
+        header('Content-Type: application/json');
+        require_once ROOT_PATH . 'app/controllers/adminController.php';
+        createEmployeController($pdo);
+        exit();
+        break;
+
+    case 'toggle_user_active':
+        header('Content-Type: application/json');
+        require_once ROOT_PATH . 'app/controllers/adminController.php';
+        toggleUserActiveController($pdo);
+        exit();
+        break;
+
     // Dashboard Employé & Admin
     case 'employee':
     case 'employee_dashboard':

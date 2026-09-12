@@ -54,8 +54,14 @@
                                 <i class="bi bi-chat-left-text"></i> Modération Avis
                             </a>
                         </li>
+                        <?php if (($_SESSION['role_id'] ?? null) == 1): ?>
+                            <li class="nav-item">
+                                <a class="nav-link <?= (($currentPage ?? '') === 'admin_employes') ? 'bg-primary text-white' : 'text-white-50' ?> rounded px-3 py-2 d-flex align-items-center gap-2" href="?page=admin_employes">
+                                    <i class="bi bi-people"></i> Gestion Employés
+                                </a>
+                            </li>
+                        <?php endif; ?>
                     </ul>
-
                     <hr class="text-muted mt-4">
 
                     <!-- Liens de sortie -->

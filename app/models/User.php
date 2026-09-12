@@ -1,19 +1,22 @@
 <?php
-class User {
+class User
+{
     private $pdo;
 
-    public function __construct($pdo) {
+    public function __construct($pdo)
+    {
         $this->pdo = $pdo;
     }
 
     /* On s'assure que l'utilisateur a un rôle 'utilisateur' (ID 3) et que son email n'existe pas déjà en DB */
-    public function register($nom, $prenom, $email, $gsm, $adresse, $password) {
+    public function register($nom, $prenom, $email, $gsm, $adresse, $password)
+    {
         try {
             $stmt = $this->pdo->prepare("SELECT utilisateur_id FROM utilisateur WHERE email = ?");
             $stmt->execute([$email]);
             if ($stmt->fetch()) {
                 // L'email existe déjà, on stoppe et on renvoie false
-                return false; 
+                return false;
             }
 
             $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
@@ -22,11 +25,10 @@ class User {
 
             $sql = "INSERT INTO utilisateur (nom, prenom, email, gsm, adresse, password, role_id) 
                     VALUES (?, ?, ?, ?, ?, ?, ?)";
-            
-            $insert = $this->pdo->prepare($sql);
-            
-            return $insert->execute([$nom, $prenom, $email, $gsm, $adresse, $hashedPassword, $role_id]);
 
+            $insert = $this->pdo->prepare($sql);
+
+            return $insert->execute([$nom, $prenom, $email, $gsm, $adresse, $hashedPassword, $role_id]);
         } catch (PDOException $e) {
             // DEBUG: Ont loge l'erreur sans afficher de détails sensibles à l'utilisateur
             error_log("Erreur register() : " . $e->getMessage());
@@ -34,7 +36,8 @@ class User {
         }
     }
 
-    public function getUserByEmail($email) {
+    public function getUserByEmail($email)
+    {
         try {
             $stmt = $this->pdo->prepare("SELECT * FROM utilisateur WHERE email = ?");
             $stmt->execute([$email]);
@@ -44,17 +47,55 @@ class User {
         }
     }
 
-    public function updateProfile($userId, $nom, $prenom, $gsm, $adresse) {
+    public function updateProfile($userId, $nom, $prenom, $gsm, $adresse)
+    {
         $sql = "UPDATE utilisateur 
                 SET nom = ?, prenom = ?, gsm = ?, adresse = ? 
                 WHERE utilisateur_id = ?";
         $stmt = $this->pdo->prepare($sql);
         $result = $stmt->execute([$nom, $prenom, $gsm, $adresse, $userId]);
-        
+
         if (!$result) {
-        error_log("Erreur updateProfile (user_id={$userId}) : " . implode(' | ', $stmt->errorInfo()));
+            error_log("Erreur updateProfile (user_id={$userId}) : " . implode(' | ', $stmt->errorInfo()));
         }
 
-    return $result;
+        return $result;
+    }
+
+    public function createEmploye($email, $password)
+    {
+        try {
+            $stmt = $this->pdo->prepare("SELECT utilisateur_id FROM utilisateur WHERE email = ?");
+            $stmt->execute([$email]);
+            if ($stmt->fetch()) {
+                // L'email existe déjà, on stoppe et on renvoie false
+                return false;
+            }
+
+            $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+
+            $role_id = 2; // ID pour le rôle 'employé'
+
+            $sql = "INSERT INTO utilisateur (email, password, role_id, is_active) 
+                    VALUES (?, ?, ?, 1)";
+
+            $insert = $this->pdo->prepare($sql);
+
+            return $insert->execute([$email, $hashedPassword, $role_id]);
+        } catch (PDOException $e) {
+            // DEBUG: Ont loge l'erreur sans afficher de détails sensibles à l'utilisateur
+            error_log("Erreur createEmploye() : " . $e->getMessage());
+            return false;
+        }
+    }
+
+    public function toggleActive($userId, $isActive)
+    {
+        $sql = "UPDATE utilisateur SET is_active = :is_active WHERE utilisateur_id = :id";
+        $stmt = $this->pdo->prepare($sql);
+        return $stmt->execute([
+            ':is_active' => $isActive,
+            ':id'        => $userId
+        ]);
     }
 }

@@ -1,6 +1,12 @@
 <?php
 
 function createPlatController(PDO $pdo): void {
+     if (!isset($_SESSION['user_id']) || !in_array($_SESSION['role_id'], [1, 2])) {
+        http_response_code(403);
+        echo json_encode(['success' => false, 'error' => 'Accès refusé.']);
+        return;
+    }
+
     if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
         http_response_code(405);
         echo json_encode(['success' => false, 'error' => 'Méthode non autorisée.']);

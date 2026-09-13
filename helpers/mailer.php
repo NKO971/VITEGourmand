@@ -245,3 +245,46 @@ function sendPasswordResetEmail(string $toEmail, string $clientName, string $res
         return false;
     }
 }
+
+// Mail de réponse a la prise de contact du formulaire de contact
+function sendContactRequest(string $titre, string $description, string $emailVisiteur): bool {
+    $mail = new PHPMailer(true);
+
+    try {
+        configureMailerSmtp($mail);
+        // L'entreprise reçoit le message (adresse à définir selon ton besoin réel)
+        $mail->addAddress('contact@vitegourmand.fr');
+        // Permet de répondre directement au visiteur depuis la boîte mail de l'entreprise
+        $mail->addReplyTo($emailVisiteur);
+
+        $mail->isHTML(true);
+        $mail->Subject = "Nouveau message de contact : " . $titre;
+
+        $mail->Body = "
+        <div style='font-family: Arial, sans-serif; color: #333; line-height: 1.6; max-width: 600px; margin: 0 auto; border: 1px solid #ddd; padding: 20px; border-radius: 8px;'>
+            <h2 style='color: #0d6efd; border-bottom: 2px solid #0d6efd; padding-bottom: 10px;'>
+                Nouveau message de contact
+            </h2>
+            <p><strong>De :</strong> " . htmlspecialchars($emailVisiteur) . "</p>
+            <p><strong>Titre :</strong> " . htmlspecialchars($titre) . "</p>
+            <div style='background-color: #f8f9fa; border-left: 4px solid #0d6efd; padding: 12px 15px; margin: 15px 0;'>
+                " . nl2br(htmlspecialchars($description)) . "
+            </div>
+            
+            <hr style='border: none; border-top: 1px solid #eee; margin: 20px 0;'>
+            <p style='font-size: 12px; color: #777;'>
+                Ce message a été envoyé depuis le formulaire de contact du site VITEGourmand.
+            </p>
+        </div>
+        ";
+
+        $mail->AltBody = "Nouveau message de contact\nDe : {$emailVisiteur}\nTitre : {$titre}\n\n{$description}";
+
+        $mail->send();
+        return true;
+
+    } catch (Exception $e) {
+        error_log("Échec envoi mail de contact : " . $mail->ErrorInfo);
+        return false;
+    }
+}

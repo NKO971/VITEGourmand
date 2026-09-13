@@ -352,6 +352,12 @@ switch ($page) {
         resetMotDePasseController($pdo);
         break;
 
+    // Gestion du formulaire de contact
+    case 'contact':
+        require_once ROOT_PATH . 'app/controllers/contactController.php';
+        contactController($pdo);
+        break;
+
     default:
         header("Location: ?page=home");
         exit();

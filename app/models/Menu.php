@@ -89,4 +89,27 @@ class Menu
         ]);
         return $stmt->rowCount();
     }
+
+    public function getMenusByIds(array $menuIds): array
+    {
+        if (empty($menuIds)) {
+            return [];
+        }
+
+        $placeholders = implode(',', array_fill(0, count($menuIds), '?'));
+        $stmt = $this->pdo->prepare("SELECT menu_id, titre FROM menu WHERE menu_id IN ($placeholders)");
+        $stmt->execute($menuIds);
+
+        $result = [];
+        foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $row) {
+            $result[$row['menu_id']] = $row['titre'];
+        }
+        return $result;
+    }
+
+    public function getAllMenusTitres(): array
+    {
+        $stmt = $this->pdo->query("SELECT menu_id, titre FROM menu ORDER BY titre ASC");
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }

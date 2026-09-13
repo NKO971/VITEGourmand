@@ -145,6 +145,17 @@ function enregistrerCommande($pdo, $menuModel, $commandeModel, $dataPost)
     ]);
 
     if ($success) {
+        // Synchronisation MongoDB pour les statistiques (dashboard admin)
+        require_once ROOT_PATH . 'app/models/StatsCommandeModel.php';
+        $statsModel = new StatsCommandeModel();
+        $statsModel->upsertStats(
+            (int)$pdo->lastInsertId(),
+            (int)$dataPost['menu_id'],
+            $resultat['total_general'],
+            'En attente',
+            date('Y-m-d')
+        );
+
         require_once ROOT_PATH . 'helpers/mailer.php';
 
         $mailSent = sendOrderConfirmationNotification(

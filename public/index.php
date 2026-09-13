@@ -238,6 +238,18 @@ switch ($page) {
         exit();
         break;
 
+    case 'admin_dashboard':
+        require_once ROOT_PATH . 'app/controllers/adminDashboardController.php';
+        renderAdminDashboardController($pdo);
+        break;
+
+    case 'get_chiffre_affaires':
+        header('Content-Type: application/json');
+        require_once ROOT_PATH . 'app/controllers/adminDashboardController.php';
+        getChiffreAffairesController($pdo);
+        exit();
+        break;
+
     // Route AJAX pour valider ou refuser un avis (MongoDB)
     case 'update_avis_status':
         header('Content-Type: application/json');

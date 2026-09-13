@@ -202,3 +202,46 @@ function sendOrderCancellationNotification(string $toEmail, string $clientName, 
         return false;
     }
 }
+
+// Notification par e-mail pour la réinitialisation de mot de passe
+function sendPasswordResetEmail(string $toEmail, string $clientName, string $resetLink): bool {
+    $mail = new PHPMailer(true);
+
+    try {
+        configureMailerSmtp($mail);
+        $mail->addAddress($toEmail, $clientName);
+
+        $mail->isHTML(true);
+        $mail->Subject = "Réinitialisation de votre mot de passe - VITEGourmand";
+
+        $mail->Body = "
+        <div style='font-family: Arial, sans-serif; color: #333; line-height: 1.6; max-width: 600px; margin: 0 auto; border: 1px solid #ddd; padding: 20px; border-radius: 8px;'>
+            <h2 style='color: #0d6efd; border-bottom: 2px solid #0d6efd; padding-bottom: 10px;'>
+                Réinitialisation de mot de passe
+            </h2>
+            <p>Bonjour " . htmlspecialchars($clientName) . ",</p>
+            <p>Vous avez demandé la réinitialisation de votre mot de passe. Cliquez sur le lien ci-dessous pour en choisir un nouveau :</p>
+            
+            <div style='text-align: center; margin: 25px 0;'>
+                <a href='{$resetLink}' style='background-color: #0d6efd; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; display: inline-block;'>Réinitialiser mon mot de passe</a>
+            </div>
+
+            <p style='font-size: 13px; color: #777;'>Ce lien est valable 60 minutes. Si vous n'êtes pas à l'origine de cette demande, ignorez simplement cet e-mail.</p>
+            
+            <hr style='border: none; border-top: 1px solid #eee; margin: 20px 0;'>
+            <p style='font-size: 12px; color: #777;'>
+                Cet e-mail est généré automatiquement par l'application VITEGourmand.
+            </p>
+        </div>
+        ";
+
+        $mail->AltBody = "Bonjour {$clientName},\n\nVous avez demandé la réinitialisation de votre mot de passe. Copiez ce lien dans votre navigateur pour en choisir un nouveau (valable 60 minutes) :\n{$resetLink}\n\nSi vous n'êtes pas à l'origine de cette demande, ignorez cet e-mail.\n\nCordialement,\nL'équipe VITEGourmand";
+
+        $mail->send();
+        return true;
+
+    } catch (Exception $e) {
+        error_log("Échec envoi mail reset mot de passe : " . $mail->ErrorInfo);
+        return false;
+    }
+}

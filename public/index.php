@@ -341,6 +341,16 @@ switch ($page) {
         exit();
         break;
 
+    // Gestion de la réinitialisation du mot de passe
+    case 'oubli-mot-de-passe':
+        require_once ROOT_PATH . 'app/controllers/passwordResetController.php';
+        demandeResetController($pdo);
+        break;
+
+    case 'reset-mot-de-passe':
+        require_once ROOT_PATH . 'app/controllers/passwordResetController.php';
+        resetMotDePasseController($pdo);
+        break;
 
     default:
         header("Location: ?page=home");

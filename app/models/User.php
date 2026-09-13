@@ -98,4 +98,16 @@ class User
             ':id'        => $userId
         ]);
     }
+
+    // Met à jour le mot de passe d'un utilisateur donné par son ID.
+    public function updatePasswordById(int $userId, string $newPassword): bool
+{
+    $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
+    $sql = "UPDATE utilisateur SET password = :password WHERE utilisateur_id = :id";
+    $stmt = $this->pdo->prepare($sql);
+    return $stmt->execute([
+        ':password' => $hashedPassword,
+        ':id'       => $userId
+    ]);
+}
 }

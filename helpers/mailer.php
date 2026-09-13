@@ -288,3 +288,44 @@ function sendContactRequest(string $titre, string $description, string $emailVis
         return false;
     }
 }
+
+// Mail de notification pour la création d'un compte client
+function sendWelcomeEmail(string $toEmail, string $prenom): bool {
+    $mail = new PHPMailer(true);
+
+    try {
+        configureMailerSmtp($mail);
+        $mail->addAddress($toEmail, $prenom);
+
+        $mail->isHTML(true);
+        $mail->Subject = "Bienvenue chez VITEGourmand !";
+
+        $mail->Body = "
+        <div style='font-family: Arial, sans-serif; color: #333; line-height: 1.6; max-width: 600px; margin: 0 auto; border: 1px solid #ddd; padding: 20px; border-radius: 8px;'>
+            <h2 style='color: #0d6efd; border-bottom: 2px solid #0d6efd; padding-bottom: 10px;'>
+                Bienvenue " . htmlspecialchars($prenom) . " !
+            </h2>
+            <p>Votre compte VITEGourmand a bien été créé.</p>
+            <p>Vous pouvez dès à présent parcourir nos menus et passer votre première commande.</p>
+            
+            <div style='text-align: center; margin: 25px 0;'>
+                <a href='http://localhost/VITEGourmand/public/?page=menus' style='background-color: #0d6efd; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; display: inline-block;'>Découvrir nos menus</a>
+            </div>
+
+            <hr style='border: none; border-top: 1px solid #eee; margin: 20px 0;'>
+            <p style='font-size: 12px; color: #777;'>
+                Cet e-mail est généré automatiquement par l'application VITEGourmand.
+            </p>
+        </div>
+        ";
+
+        $mail->AltBody = "Bienvenue {$prenom} !\n\nVotre compte VITEGourmand a bien été créé.\nVous pouvez dès à présent parcourir nos menus et passer votre première commande.\n\nCordialement,\nL'équipe VITEGourmand";
+
+        $mail->send();
+        return true;
+
+    } catch (Exception $e) {
+        error_log("Échec envoi mail de bienvenue : " . $mail->ErrorInfo);
+        return false;
+    }
+}

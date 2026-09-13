@@ -358,6 +358,17 @@ switch ($page) {
         contactController($pdo);
         break;
 
+    // Gestion des pages légales
+    case 'mentions-legales':
+        require_once ROOT_PATH . 'app/controllers/legalController.php';
+        mentionsLegalesController();
+        break;
+
+    case 'cgv':
+        require_once ROOT_PATH . 'app/controllers/legalController.php';
+        cgvController();
+        break;
+
     default:
         header("Location: ?page=home");
         exit();

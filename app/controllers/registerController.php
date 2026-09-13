@@ -38,6 +38,9 @@ function registerController($pdo)
             $result = $userModel->register($nom, $prenom, $email, $gsm, $adresse, $password);
 
             if ($result) {
+                require_once ROOT_PATH . 'helpers/mailer.php';
+                sendWelcomeEmail($email, $prenom);
+
                 $success = "Inscription réussie ! Vous pouvez maintenant vous connecter.";
                 $_POST = [];
                 header("refresh:2;url=index.php?page=connexion");

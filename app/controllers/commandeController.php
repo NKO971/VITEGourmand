@@ -1,16 +1,8 @@
 <?php
 
-// Vérification centralisée de connexion — évite la duplication du même bloc dans chaque fonction
-function requireLogin()
-{
-    if (!isset($_SESSION['user_id'])) {
-        header("Location: ?page=connexion");
-        exit();
-    }
-}
-
 function commandeController($menuModel)
 {
+    require_once ROOT_PATH . 'helpers/auth.php';
     requireLogin();
 
     $menuId = $_GET['menu_id'] ?? null;
@@ -83,29 +75,20 @@ function getZoneDistance($pdo)
         return;
     }
 
-    $stmt = $pdo->prepare("SELECT distance_km FROM zone_livraison WHERE code_postal = :code_postal");
-    $stmt->execute(['code_postal' => $codePostal]);
-    $zone = $stmt->fetch(PDO::FETCH_ASSOC);
+    require_once ROOT_PATH . 'app/models/ZoneLivraison.php';
+    $zoneModel = new ZoneLivraison($pdo);
+    $distance = $zoneModel->getDistanceByCodePostal($codePostal);
 
-    if ($zone) {
-        echo json_encode(['distance_km' => $zone['distance_km']]);
+    if ($distance !== null) {
+        echo json_encode(['distance_km' => $distance]);
     } else {
         echo json_encode(['error' => 'Zone de livraison non trouvée']);
     }
 }
 
-function getDistanceByCodePostal($pdo, $codePostal)
-{
-    $stmt = $pdo->prepare("SELECT distance_km FROM zone_livraison WHERE code_postal = :cp");
-    $stmt->execute(['cp' => $codePostal]);
-    $zone = $stmt->fetch(PDO::FETCH_ASSOC);
-
-    // null = zone introuvable != 0 km, car certaines zones peuvent être à 0 km (ex: centre-ville)
-    return $zone ? (float)$zone['distance_km'] : null;
-}
-
 function enregistrerCommande($pdo, $menuModel, $commandeModel, $dataPost)
 {
+    require_once ROOT_PATH . 'helpers/auth.php';
     requireLogin();
 
     $menu = $menuModel->getMenuById($dataPost['menu_id']);
@@ -114,7 +97,9 @@ function enregistrerCommande($pdo, $menuModel, $commandeModel, $dataPost)
         throw new Exception("Menu non trouvé ");
     }
 
-    $distance = getDistanceByCodePostal($pdo, $dataPost['code_postal']);
+    require_once ROOT_PATH . 'app/models/ZoneLivraison.php';
+    $zoneModel = new ZoneLivraison($pdo);
+    $distance = $zoneModel->getDistanceByCodePostal($dataPost['code_postal']);
 
     $resultat = calculerTotalCommande(
         $menu['prix_par_personne'],
@@ -145,7 +130,6 @@ function enregistrerCommande($pdo, $menuModel, $commandeModel, $dataPost)
     ]);
 
     if ($success) {
-        // Synchronisation MongoDB pour les statistiques (dashboard admin)
         require_once ROOT_PATH . 'app/models/StatsCommandeModel.php';
         $statsModel = new StatsCommandeModel();
         $statsModel->upsertStats(
@@ -177,6 +161,7 @@ function enregistrerCommande($pdo, $menuModel, $commandeModel, $dataPost)
 
 function modifierCommandeController($pdo, $menuModel, $commandeModel)
 {
+    require_once ROOT_PATH . 'helpers/auth.php';
     requireLogin();
 
     $commandeId = $_GET['id'] ?? null;
@@ -217,6 +202,7 @@ function modifierCommandeController($pdo, $menuModel, $commandeModel)
 
 function updateCommandeController($pdo, $menuModel, $commandeModel, $dataPost)
 {
+    require_once ROOT_PATH . 'helpers/auth.php';
     requireLogin();
 
     $commandeId = $dataPost['commande_id'] ?? null;
@@ -238,7 +224,9 @@ function updateCommandeController($pdo, $menuModel, $commandeModel, $dataPost)
         throw new Exception("Menu introuvable pour cette commande.");
     }
 
-    $distance = getDistanceByCodePostal($pdo, $dataPost['code_postal']);
+    require_once ROOT_PATH . 'app/models/ZoneLivraison.php';
+    $zoneModel = new ZoneLivraison($pdo);
+    $distance = $zoneModel->getDistanceByCodePostal($dataPost['code_postal']);
 
     $resultat = calculerTotalCommande(
         $menu['prix_par_personne'],
@@ -276,6 +264,7 @@ function updateCommandeController($pdo, $menuModel, $commandeModel, $dataPost)
 function annulerCommandeController($pdo)
 {
     require_once __DIR__ . '/../models/Commande.php';
+    require_once ROOT_PATH . 'helpers/auth.php';
 
     if (session_status() === PHP_SESSION_NONE) {
         session_start();

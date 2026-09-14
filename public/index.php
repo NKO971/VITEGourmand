@@ -181,7 +181,7 @@ switch ($page) {
             header('Location: ?page=connexion');
             exit();
         }
-        require_once ROOT_PATH . 'app/controllers/ReviewController.php';
+        require_once ROOT_PATH . 'app/controllers/reviewController.php';
         $reviewController = new ReviewController();
         $reviewController->index();
         break;
@@ -191,7 +191,7 @@ switch ($page) {
             header('Location: ?page=connexion');
             exit();
         }
-        require_once ROOT_PATH . 'app/controllers/ReviewController.php';
+        require_once ROOT_PATH . 'app/controllers/reviewController.php';
         $reviewController = new ReviewController();
         $reviewController->process();
         break;

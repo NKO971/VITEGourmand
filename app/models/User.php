@@ -101,13 +101,20 @@ class User
 
     // Met à jour le mot de passe d'un utilisateur donné par son ID.
     public function updatePasswordById(int $userId, string $newPassword): bool
-{
-    $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
-    $sql = "UPDATE utilisateur SET password = :password WHERE utilisateur_id = :id";
-    $stmt = $this->pdo->prepare($sql);
-    return $stmt->execute([
-        ':password' => $hashedPassword,
-        ':id'       => $userId
-    ]);
-}
+    {
+        $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
+        $sql = "UPDATE utilisateur SET password = :password WHERE utilisateur_id = :id";
+        $stmt = $this->pdo->prepare($sql);
+        return $stmt->execute([
+            ':password' => $hashedPassword,
+            ':id'       => $userId
+        ]);
+    }
+
+    public function getEmployes(): array
+    {
+        $stmt = $this->pdo->prepare("SELECT utilisateur_id, email, is_active FROM utilisateur WHERE role_id = 2 ORDER BY utilisateur_id DESC");
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }

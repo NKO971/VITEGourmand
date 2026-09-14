@@ -10,8 +10,7 @@ function renderAdminEmployesController($pdo)
     $userModel = new User($pdo);
 
     try {
-        $stmt = $pdo->query("SELECT utilisateur_id, email, is_active FROM utilisateur WHERE role_id = 2 ORDER BY utilisateur_id DESC");
-        $employes = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $employes = $userModel->getEmployes();
     } catch (PDOException $e) {
         error_log("Erreur chargement liste employés : " . $e->getMessage());
         $employes = [];

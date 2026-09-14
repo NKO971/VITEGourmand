@@ -31,7 +31,7 @@ switch ($page) {
         require_once ROOT_PATH . 'app/controllers/menusController.php';
         menusController($pdo);
         break;
-        
+
     case 'connexion':
         require_once ROOT_PATH . 'app/controllers/loginController.php';
         loginController($pdo);
@@ -139,34 +139,8 @@ switch ($page) {
         break;
 
     case 'traitement_avis':
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            require_once ROOT_PATH . 'app/models/AvisModel.php';
-
-            $commandeId  = (int)($_POST['commande_id'] ?? 0);
-            $commentaire = isset($_POST['commentaire']) ? trim($_POST['commentaire']) : '';
-            $userId      = $_SESSION['user_id'] ?? null;
-            $nomClient   = $_SESSION['user_name'] ?? 'Client'; // Ajuster selon ta variable de session
-
-            $hasNote = isset($_POST['note']) && $_POST['note'] !== '';
-            $note    = $hasNote ? (int) $_POST['note'] : null;
-
-            if ($commandeId && $userId && $note !== null && $note >= 1 && $note <= 5 && !empty($commentaire)) {
-                $avisModel = new AvisModel();
-                $success = $avisModel->createAvis($userId, $nomClient, $note, $commentaire, $commandeId);
-
-                if ($success) {
-                    header('Location: ?page=profile');
-                    exit();
-                } else {
-                    die("Erreur lors de l'enregistrement de l'avis.");
-                }
-            } else {
-                die("Erreur : Données manquantes ou note invalide (1 à 5).");
-            }
-        } else {
-            header("Location: ?page=profile");
-            exit();
-        }
+        require_once ROOT_PATH . 'app/controllers/avisController.php';
+        traitementAvisController($pdo);
         break;
 
     // Gestion des employés (Admin uniquement)

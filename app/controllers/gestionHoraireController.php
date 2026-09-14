@@ -1,11 +1,9 @@
 <?php
 
-function renderHorairesController($pdo) {
-    if (!isset($_SESSION['user_id']) || !in_array($_SESSION['role_id'], [1, 2])) {
-        header('Location: ?page=login');
-        exit();
-    }
-
+function renderHorairesController($pdo)
+{
+    require_once ROOT_PATH . 'helpers/auth.php';
+    requireRole([1, 2]);
     require_once ROOT_PATH . 'app/models/Horaire.php';
     $horaireModel = new Horaire($pdo);
 
@@ -30,12 +28,10 @@ function renderHorairesController($pdo) {
     );
 }
 
-function updateHoraireController($pdo) {
-    if (!isset($_SESSION['user_id']) || !in_array($_SESSION['role_id'], [1, 2])) {
-        http_response_code(403);
-        echo json_encode(['success' => false, 'error' => 'Accès refusé.']);
-        exit();
-    }
+function updateHoraireController($pdo)
+{
+    require_once ROOT_PATH . 'helpers/auth.php';
+    requireRole([1, 2], true);
 
     $json = file_get_contents('php://input');
     $data = json_decode($json, true) ?? $_POST;

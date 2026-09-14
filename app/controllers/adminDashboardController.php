@@ -2,10 +2,9 @@
 
 function renderAdminDashboardController($pdo)
 {
-    if (!isset($_SESSION['user_id']) || $_SESSION['role_id'] != 1) {
-        header('Location: ?page=connexion');
-        exit();
-    }
+    // Accès strictement réservé à l'admin (role_id = 1), pas aux employés (role_id = 2)
+    require_once ROOT_PATH . 'helpers/auth.php';
+    requireRole([1]);
 
     require_once ROOT_PATH . 'app/models/StatsCommandeModel.php';
     require_once ROOT_PATH . 'app/models/Menu.php';
@@ -47,11 +46,8 @@ function renderAdminDashboardController($pdo)
 
 function getChiffreAffairesController($pdo)
 {
-    if (!isset($_SESSION['user_id']) || $_SESSION['role_id'] != 1) {
-        http_response_code(403);
-        echo json_encode(['success' => false, 'error' => 'Accès réservé à l\'administrateur.']);
-        exit();
-    }
+    require_once ROOT_PATH . 'helpers/auth.php';
+    requireRole([1], true);
 
     $menuId    = !empty($_GET['menu_id']) ? (int)$_GET['menu_id'] : null;
     $dateDebut = !empty($_GET['date_debut']) ? trim($_GET['date_debut']) : null;

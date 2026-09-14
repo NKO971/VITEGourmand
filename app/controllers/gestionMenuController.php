@@ -2,10 +2,8 @@
 
 function renderGestionMenuController($pdo)
 {
-    if (!isset($_SESSION['user_id']) || !in_array($_SESSION['role_id'], [1, 2])) {
-        header('Location: ?page=login');
-        exit();
-    }
+    require_once ROOT_PATH . 'helpers/auth.php';
+    requireRole([1, 2]);
 
     try {
         $stmtMenus = $pdo->query("
@@ -54,11 +52,8 @@ function renderGestionMenuController($pdo)
 
 function createMenuController($pdo)
 {
-    if (!isset($_SESSION['user_id']) || !in_array($_SESSION['role_id'], [1, 2])) {
-        http_response_code(403);
-        echo json_encode(['success' => false, 'error' => 'Accès refusé.']);
-        exit();
-    }
+    require_once ROOT_PATH . 'helpers/auth.php';
+    requireRole([1, 2], true);
 
     try {
         $json = file_get_contents('php://input');
@@ -150,11 +145,9 @@ function createMenuController($pdo)
 
 function updateMenuController($pdo)
 {
-    if (!isset($_SESSION['user_id']) || !in_array($_SESSION['role_id'], [1, 2])) {
-        http_response_code(403);
-        echo json_encode(['success' => false, 'error' => 'Accès refusé.']);
-        exit();
-    }
+    require_once ROOT_PATH . 'helpers/auth.php';
+    requireRole([1, 2], true);
+
 
     try {
         $json = file_get_contents('php://input');
@@ -254,11 +247,8 @@ function updateMenuController($pdo)
 
 function toggleMenuStatusController($pdo)
 {
-    if (!isset($_SESSION['user_id']) || !in_array($_SESSION['role_id'], [1, 2])) {
-        http_response_code(403);
-        echo json_encode(['error' => 'Accès refusé. Droits insuffisants.']);
-        exit();
-    }
+    require_once ROOT_PATH . 'helpers/auth.php';
+    requireRole([1, 2], true);
 
     $rawInput = file_get_contents('php://input');
     $data = json_decode($rawInput, true) ?? [];

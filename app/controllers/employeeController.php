@@ -2,13 +2,11 @@
 require_once ROOT_PATH . 'app/controllers/baseController.php';
 require_once ROOT_PATH . 'app/models/AvisModel.php';
 
-function employeeController($pdo) 
+function employeeController($pdo)
 {
-    // Sécurité (Rôle Employé / Admin)
-    if (!isset($_SESSION['user_id']) || !in_array($_SESSION['role_id'], [1, 2])) {
-        header('Location: ?page=home');
-        exit();
-    }
+    // Sécurité vérification du rôle employé et admin (Rôle 1 / 2)
+    require_once ROOT_PATH . 'helpers/auth.php';
+    requireRole([1, 2]);
 
     // Récupération des avis en attente depuis MongoDB
     $avisModel = new AvisModel();

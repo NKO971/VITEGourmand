@@ -1,11 +1,10 @@
 <?php
 
-function createPlatController(PDO $pdo): void {
-     if (!isset($_SESSION['user_id']) || !in_array($_SESSION['role_id'], [1, 2])) {
-        http_response_code(403);
-        echo json_encode(['success' => false, 'error' => 'Accès refusé.']);
-        return;
-    }
+function createPlatController(PDO $pdo): void
+{
+    // Vérifie que l'utilisateur est connecté et a le rôle approprié
+    require_once ROOT_PATH . 'helpers/auth.php';
+    requireRole([1, 2], true);
 
     if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
         http_response_code(405);
@@ -39,12 +38,10 @@ function createPlatController(PDO $pdo): void {
     }
 }
 
-function updatePlatController($pdo) {
-    if (!isset($_SESSION['user_id']) || !in_array($_SESSION['role_id'], [1, 2])) {
-        http_response_code(403);
-        echo json_encode(['error' => 'Accès refusé.']);
-        exit();
-    }
+function updatePlatController($pdo)
+{
+    require_once ROOT_PATH . 'helpers/auth.php';
+    requireRole([1, 2], true);
 
     $platId    = $_POST['plat_id'] ?? null;
     $titrePlat = trim(strip_tags($_POST['titre_plat'] ?? ''));
@@ -77,7 +74,6 @@ function updatePlatController($pdo) {
 
         echo json_encode(['success' => true, 'message' => 'Plat mis à jour avec succès.']);
         exit();
-
     } catch (PDOException $e) {
         error_log("Erreur updatePlat : " . $e->getMessage());
         http_response_code(500);
@@ -86,12 +82,10 @@ function updatePlatController($pdo) {
     }
 }
 
-function togglePlatStatusController($pdo) {
-    if (!isset($_SESSION['user_id']) || !in_array($_SESSION['role_id'], [1, 2])) {
-        http_response_code(403);
-        echo json_encode(['error' => 'Accès refusé.']);
-        exit();
-    }
+function togglePlatStatusController($pdo)
+{
+    require_once ROOT_PATH . 'helpers/auth.php';
+    requireRole([1, 2], true);
 
     $data = json_decode(file_get_contents('php://input'), true) ?? [];
     $platId = $data['plat_id'] ?? null;
@@ -114,7 +108,6 @@ function togglePlatStatusController($pdo) {
             'message' => $actif === 1 ? 'Plat réactivé.' : 'Plat masqué (archivé).'
         ]);
         exit();
-
     } catch (PDOException $e) {
         error_log("Erreur togglePlatStatus : " . $e->getMessage());
         http_response_code(500);

@@ -3,24 +3,22 @@
 
 require_once ROOT_PATH . 'app/models/AvisModel.php';
 
-class ReviewController 
+class ReviewController
 {
     private AvisModel $avisModel;
 
-    public function __construct() 
+    public function __construct()
     {
         // Contrôle d'accès : Employé (role_id = 2) ou Admin (role_id = 1)
-        if (!isset($_SESSION['user_id']) || !in_array($_SESSION['role_id'], [1, 2])) {
-            header('Location: ?page=connexion');
-            exit();
-        }
+        require_once ROOT_PATH . 'helpers/auth.php';
+        requireRole([1, 2]);
 
         $this->avisModel = new AvisModel();
     }
 
     // Affiche la liste des avis en attente de modération
-    
-    public function index() 
+
+    public function index()
     {
         // Récupération des données depuis le modèle MongoDB
         $pendingReviews = $this->avisModel->getAvisByStatut('en_attente');
@@ -28,21 +26,21 @@ class ReviewController
         // Rendu via BaseController en respectant l'ordre des paramètres :
         // render($title, $viewFile, $additionalCss, $additionalJs, $data, $layout)
         BaseController::render(
-            "Modération des avis - VITEGourmand", 
-            "reviews.view.php",                   
-            [],                                   
-            ['js/dashboard-avis.js'],                                   
-            [                                     
+            "Modération des avis - VITEGourmand",
+            "reviews.view.php",
+            [],
+            ['js/dashboard-avis.js'],
+            [
                 'pendingReviews' => $pendingReviews,
                 'currentPage'    => 'employee_reviews'
             ],
-            'back'                                
+            'back'
         );
     }
 
     // Traite les actions de modération (validation ou refus)
-    
-    public function process() 
+
+    public function process()
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             header('Location: ?page=reviews');

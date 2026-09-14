@@ -6,11 +6,8 @@ require_once ROOT_PATH . 'helpers/mailer.php';
 function updateOrderStatusController($pdo)
 {
     // Contrôle d'accès (Employé = 2, Admin = 1)
-    if (!isset($_SESSION['user_id']) || !in_array($_SESSION['role_id'], [1, 2])) {
-        http_response_code(403);
-        echo json_encode(['error' => 'Accès refusé.']);
-        exit();
-    }
+    require_once ROOT_PATH . 'helpers/auth.php';
+    requireRole([1, 2], true);
 
     // Fonction utilitaire interne : Calcul de la date limite en jours ouvrés
     $calculateWorkingDaysDeadline = function (string $startDateStr, int $workingDays = 10): string {
@@ -174,11 +171,8 @@ function updateOrderStatusController($pdo)
 function getOrdersController($pdo)
 {
     // Contrôle d'accès (Employé = 2, Admin = 1)
-    if (!isset($_SESSION['user_id']) || !in_array($_SESSION['role_id'], [1, 2])) {
-        http_response_code(403);
-        echo json_encode(['error' => 'Accès refusé.']);
-        exit();
-    }
+    require_once ROOT_PATH . 'helpers/auth.php';
+    requireRole([1, 2], true);
 
     // Récupération des filtres GET
     $search = !empty($_GET['search']) ? trim($_GET['search']) : null;

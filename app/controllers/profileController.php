@@ -8,11 +8,9 @@ function profileController($pdo)
         session_start();
     }
 
-    // Protection : si l'utilisateur n'est pas connecté, retour à la connexion
-    if (!isset($_SESSION['user_id'])) {
-        header("Location: ?page=connexion");
-        exit();
-    }
+    // Protection : appel du helper pour vérifier si l'utilisateur est connecté et a le rôle approprié
+    require_once ROOT_PATH . 'helpers/auth.php';
+    requireLogin();
 
     $userModel = new User($pdo);
     $commandeModel = new Commande($pdo);

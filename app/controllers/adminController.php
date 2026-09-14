@@ -48,16 +48,12 @@ function createEmployeController($pdo)
         echo json_encode(['success' => false, 'error' => 'Adresse email invalide.']);
         exit();
     }
-    // Vérification de la complexité du mot de passe
-    if (
-        strlen($password) < 10
-        || !preg_match('/[A-Z]/', $password)
-        || !preg_match('/[a-z]/', $password)
-        || !preg_match('/\d/', $password)
-        || !preg_match('/[!@#$%^&*(),.?":{}|<>]/', $password)
-    ) {
+        // Vérification de la complexité du mot de passe
+    require_once ROOT_PATH . 'helpers/validators.php';
+    $passwordError = validatePasswordStrength($password);
+    if ($passwordError) {
         http_response_code(400);
-        echo json_encode(['success' => false, 'error' => 'Le mot de passe doit contenir au moins 10 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial.']);
+        echo json_encode(['success' => false, 'error' => $passwordError]);
         exit();
     }
 

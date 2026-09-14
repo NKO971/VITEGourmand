@@ -66,6 +66,8 @@ function resetMotDePasseController($pdo)
         return;
     }
 
+    require_once ROOT_PATH . 'helpers/validators.php';
+
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $password = $_POST['password'] ?? '';
         $passwordConfirm = $_POST['password_confirm'] ?? '';
@@ -74,16 +76,8 @@ function resetMotDePasseController($pdo)
             $error = 'Vous avez oublié un champ.';
         } elseif ($password !== $passwordConfirm) {
             $error = 'Les mots de passe ne correspondent pas.';
-        } elseif (strlen($password) < 10) {
-            $error = 'Le mot de passe doit contenir au moins 10 caractères.';
-        } elseif (!preg_match('/[A-Z]/', $password)) {
-            $error = 'Le mot de passe doit contenir au moins une lettre majuscule.';
-        } elseif (!preg_match('/[a-z]/', $password)) {
-            $error = 'Le mot de passe doit contenir au moins une lettre minuscule.';
-        } elseif (!preg_match('/\d/', $password)) {
-            $error = 'Le mot de passe doit contenir au moins un chiffre.';
-        } elseif (!preg_match('/[!@#$%^&*(),.?":{}|<>]/', $password)) {
-            $error = 'Le mot de passe doit contenir au moins un caractère spécial.';
+        } elseif ($passwordError = validatePasswordStrength($password)) {
+            $error = $passwordError;
         } else {
             require_once __DIR__ . '/../models/User.php';
             $userModel = new User($pdo);

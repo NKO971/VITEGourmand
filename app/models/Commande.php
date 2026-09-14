@@ -62,19 +62,43 @@ class Commande
         ]);
     }
 
-    public function changeOrdersStatusWithFollowUp($orderId, $nouveauStatut)
+    public function getOrderWithUserInfo($orderId)
+    {
+        $stmt = $this->pdo->prepare("
+        SELECT c.*, u.email, u.prenom 
+        FROM commande c
+        JOIN utilisateur u ON c.utilisateur_id = u.utilisateur_id
+        WHERE c.commande_id = :id
+    ");
+        $stmt->execute([':id' => $orderId]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    public function changeOrdersStatusWithFollowUp($orderId, $nouveauStatut, $modeContact = null, $motif = null, $setRestitution = false)
     {
         try {
             $this->pdo->beginTransaction();
 
-            // Mettre à jour le statut de la commande
-            $stmt1 = $this->pdo->prepare("UPDATE commande SET statut = :statut WHERE commande_id = :c_id");
+            $sql = "UPDATE commande 
+                SET statut = :statut,
+                    mode_contact = :mode_contact,
+                    motif_annulation = :motif";
+
+            if ($setRestitution) {
+                $sql .= ", restitution_materiel = 1";
+            }
+
+            $sql .= " WHERE commande_id = :c_id";
+
+            $stmt1 = $this->pdo->prepare($sql);
             $stmt1->execute([
-                ':statut' => $nouveauStatut,
-                ':c_id'   => $orderId
+                ':statut'       => $nouveauStatut,
+                ':mode_contact' => $modeContact,
+                ':motif'        => $motif,
+                ':c_id'         => $orderId
             ]);
 
-            $stmt2 = $this->pdo->prepare("INSERT INTO suivi_commande (commande_id, statut, date_suivi) VALUES (:c_id, :statut, NOW())");
+            $stmt2 = $this->pdo->prepare("INSERT INTO suivi_commande (commande_id, statut, date_modification, date_suivi) VALUES (:c_id, :statut, NOW(), NOW())");
             $stmt2->execute([
                 ':c_id'   => $orderId,
                 ':statut' => $nouveauStatut
@@ -88,6 +112,8 @@ class Commande
             return false;
         }
     }
+
+
 
     public function getOrderFollowUp($orderId)
     {
@@ -129,5 +155,60 @@ class Commande
             ':c_id'       => $orderId,
             ':u_id'       => $userId
         ]);
+    }
+
+    public function searchOrders(?string $search = null, ?string $status = null, ?string $date = null): array
+    {
+        $sql = "SELECT 
+                c.commande_id,
+                c.numero_commande,
+                c.date_commande,
+                c.date_prestation,
+                c.heure_livraison,
+                c.prix_menu,
+                c.nombre_personne,
+                c.prix_livraison,
+                (c.prix_menu + COALESCE(c.prix_livraison, 0)) AS montant_total,
+                c.statut,
+                c.pret_materiel,
+                c.restitution_materiel,
+                c.mode_contact,
+                c.motif_annulation,
+                u.nom,
+                u.prenom,
+                u.email
+            FROM commande c
+            JOIN utilisateur u ON c.utilisateur_id = u.utilisateur_id
+            WHERE 1=1";
+
+        $params = [];
+
+        if ($status) {
+            $sql .= " AND c.statut = :status";
+            $params[':status'] = $status;
+        }
+
+        if ($date) {
+            $sql .= " AND DATE(c.date_commande) = :date";
+            $params[':date'] = $date;
+        }
+
+        if ($search) {
+            $sql .= " AND (
+        u.nom LIKE :search 
+        OR u.prenom LIKE :search 
+        OR CONCAT(u.prenom, ' ', u.nom) LIKE :search
+        OR CONCAT(u.nom, ' ', u.prenom) LIKE :search
+        OR c.commande_id LIKE :search 
+        OR c.numero_commande LIKE :search
+            )";
+            $params[':search'] = '%' . $search . '%';
+        }
+
+        $sql .= " ORDER BY c.date_commande DESC";
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute($params);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 }

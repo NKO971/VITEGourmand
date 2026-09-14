@@ -1,11 +1,11 @@
 <?php
 require_once ROOT_PATH . 'helpers/mailer.php';
+require_once ROOT_PATH . 'app/models/Commande.php';
 
 // Contrôleur de gestion des statuts de commande (Back-office Employé / Admin)
 
 function updateOrderStatusController($pdo)
 {
-    // Contrôle d'accès (Employé = 2, Admin = 1)
     require_once ROOT_PATH . 'helpers/auth.php';
     requireRole([1, 2], true);
 
@@ -36,7 +36,6 @@ function updateOrderStatusController($pdo)
         exit();
     }
 
-    // Liste exacte des statuts autorisés
     $allowedStatuses = [
         'En attente',
         'Acceptée',
@@ -54,182 +53,94 @@ function updateOrderStatusController($pdo)
         exit();
     }
 
-    // RÈGLE MÉTIER : Annulation obligatoire avec mode de contact + motif
     if ($newStatus === 'Annulée' && (empty($modeContact) || empty($motif))) {
         http_response_code(422);
         echo json_encode(['error' => 'Un mode de contact et un motif sont obligatoires pour annuler une commande.']);
         exit();
     }
 
-    try {
-        // Transaction PDO : garantit l'intégrité des données
-        $pdo->beginTransaction();
+    $commandeModel = new Commande($pdo);
 
-        // Récupération des infos de la commande et du client
-        $stmtCheck = $pdo->prepare("
-            SELECT c.*, u.email, u.prenom 
-            FROM commande c
-            JOIN utilisateur u ON c.utilisateur_id = u.utilisateur_id
-            WHERE c.commande_id = :id
-        ");
-        $stmtCheck->execute([':id' => $commandeId]);
-        $order = $stmtCheck->fetch(PDO::FETCH_ASSOC);
+    $order = $commandeModel->getOrderWithUserInfo($commandeId);
 
-        if (!$order) {
-            $pdo->rollBack();
-            http_response_code(404);
-            echo json_encode(['error' => 'Commande introuvable.']);
-            exit();
-        }
-
-        // UPDATE de l'état courant
-        $sql = "UPDATE commande 
-                SET statut = :statut,
-                    mode_contact = :mode_contact,
-                    motif_annulation = :motif";
-
-        if ($newStatus === 'Terminée' && isset($order['pret_materiel']) && $order['pret_materiel'] == 1) {
-            $sql .= ", restitution_materiel = 1";
-        }
-
-        $sql .= " WHERE commande_id = :id";
-
-        $stmtUpdate = $pdo->prepare($sql);
-        $stmtUpdate->execute([
-            ':statut'       => $newStatus,
-            ':mode_contact' => ($newStatus === 'Annulée') ? $modeContact : null,
-            ':motif'        => ($newStatus === 'Annulée') ? $motif : null,
-            ':id'           => $commandeId
-        ]);
-
-        // INSERT dans l'historique suivi_commande
-        $stmtSuivi = $pdo->prepare("
-            INSERT INTO suivi_commande (commande_id, statut, date_modification, date_suivi) 
-            VALUES (:commande_id, :statut, NOW(), NOW())
-        ");
-        $stmtSuivi->execute([
-            ':commande_id' => $commandeId,
-            ':statut'      => $newStatus
-        ]);
-
-        // Validation de la transaction
-        $pdo->commit();
-
-        // Synchronisation MongoDB pour les statistiques (dashboard admin)
-        require_once ROOT_PATH . 'app/models/StatsCommandeModel.php';
-        $statsModel = new StatsCommandeModel();
-        $montantTotal = (float)($order['prix_menu'] ?? 0) + (float)($order['prix_livraison'] ?? 0);
-        $statsModel->upsertStats(
-            (int)$commandeId,
-            (int)($order['menu_id'] ?? 0),
-            $montantTotal,
-            $newStatus,
-            $order['date_commande'] ?? date('Y-m-d')
-        );
-
-        // RÈGLE MÉTIER : Envoi du Mail de rappel si prêt de matériel via ton helper PHPMailer
-        $mailSent = false;
-        if ($newStatus === 'En attente du retour de matériel') {
-            $refDate = $order['date_prestation'] ?? date('Y-m-d');
-            $deadlineStr = $calculateWorkingDaysDeadline($refDate, 10);
-
-            // Appel du mail de retour matériel
-            $mailSent = sendEquipmentReturnNotification(
-                $order['email'],
-                $order['prenom'],
-                (string)$order['numero_commande'],
-                $deadlineStr
-            );
-        } elseif ($newStatus === 'Annulée' && $modeContact === 'Mail') {
-            // Appel du mail d'annulation
-            $mailSent = sendOrderCancellationNotification(
-                $order['email'],
-                $order['prenom'],
-                (string)$order['numero_commande'],
-                $motif
-            );
-        }
-
-        echo json_encode([
-            'success'  => true,
-            'message'  => 'Statut mis à jour avec succès.',
-            'mailSent' => $mailSent
-        ]);
-        exit();
-    } catch (PDOException $e) {
-        if ($pdo->inTransaction()) {
-            $pdo->rollBack();
-        }
-        http_response_code(500);
-        echo json_encode(['error' => 'Erreur lors de la mise à jour en BDD : ' . $e->getMessage()]);
+    if (!$order) {
+        http_response_code(404);
+        echo json_encode(['error' => 'Commande introuvable.']);
         exit();
     }
+
+    $setRestitution = ($newStatus === 'Terminée' && isset($order['pret_materiel']) && $order['pret_materiel'] == 1);
+
+    $success = $commandeModel->changeOrdersStatusWithFollowUp(
+        $commandeId,
+        $newStatus,
+        ($newStatus === 'Annulée') ? $modeContact : null,
+        ($newStatus === 'Annulée') ? $motif : null,
+        $setRestitution
+    );
+
+    if (!$success) {
+        http_response_code(500);
+        echo json_encode(['error' => 'Erreur lors de la mise à jour en BDD.']);
+        exit();
+    }
+
+    // Synchronisation MongoDB pour les statistiques (dashboard admin)
+    require_once ROOT_PATH . 'app/models/StatsCommandeModel.php';
+    $statsModel = new StatsCommandeModel();
+    $montantTotal = (float)($order['prix_menu'] ?? 0) + (float)($order['prix_livraison'] ?? 0);
+    $statsModel->upsertStats(
+        (int)$commandeId,
+        (int)($order['menu_id'] ?? 0),
+        $montantTotal,
+        $newStatus,
+        $order['date_commande'] ?? date('Y-m-d')
+    );
+
+    // RÈGLE MÉTIER : Envoi du Mail de rappel si prêt de matériel via ton helper PHPMailer
+    $mailSent = false;
+    if ($newStatus === 'En attente du retour de matériel') {
+        $refDate = $order['date_prestation'] ?? date('Y-m-d');
+        $deadlineStr = $calculateWorkingDaysDeadline($refDate, 10);
+
+        $mailSent = sendEquipmentReturnNotification(
+            $order['email'],
+            $order['prenom'],
+            (string)$order['numero_commande'],
+            $deadlineStr
+        );
+    } elseif ($newStatus === 'Annulée' && $modeContact === 'Mail') {
+        $mailSent = sendOrderCancellationNotification(
+            $order['email'],
+            $order['prenom'],
+            (string)$order['numero_commande'],
+            $motif
+        );
+    }
+
+    echo json_encode([
+        'success'  => true,
+        'message'  => 'Statut mis à jour avec succès.',
+        'mailSent' => $mailSent
+    ]);
+    exit();
 }
 
-//Récupère la liste des commandes avec filtres pour le dashboard employé (AJAX)
+// Récupère la liste des commandes avec filtres pour le dashboard employé (AJAX)
 
 function getOrdersController($pdo)
 {
-    // Contrôle d'accès (Employé = 2, Admin = 1)
     require_once ROOT_PATH . 'helpers/auth.php';
     requireRole([1, 2], true);
 
-    // Récupération des filtres GET
     $search = !empty($_GET['search']) ? trim($_GET['search']) : null;
     $status = !empty($_GET['status']) ? trim($_GET['status']) : null;
     $date   = !empty($_GET['date'])   ? trim($_GET['date'])   : null;
 
-    $sql = "SELECT 
-                c.commande_id,
-                c.numero_commande,
-                c.date_commande,
-                c.date_prestation,
-                c.heure_livraison,
-                c.prix_menu,
-                c.nombre_personne,
-                c.prix_livraison,
-                (c.prix_menu + COALESCE(c.prix_livraison, 0)) AS montant_total,
-                c.statut,
-                c.pret_materiel,
-                c.restitution_materiel,
-                c.mode_contact,
-                c.motif_annulation,
-                u.nom,
-                u.prenom,
-                u.email
-            FROM commande c
-            JOIN utilisateur u ON c.utilisateur_id = u.utilisateur_id
-            WHERE 1=1";
-
-    $params = [];
-
-    if ($status) {
-        $sql .= " AND c.statut = :status";
-        $params[':status'] = $status;
-    }
-
-    if ($date) {
-        $sql .= " AND DATE(c.date_commande) = :date";
-        $params[':date'] = $date;
-    }
-
-    if ($search) {
-        $sql .= " AND (
-            u.nom LIKE :search 
-            OR u.prenom LIKE :search 
-            OR c.commande_id LIKE :search 
-            OR c.numero_commande LIKE :search
-        )";
-        $params[':search'] = '%' . $search . '%';
-    }
-
-    $sql .= " ORDER BY c.date_commande DESC";
+    $commandeModel = new Commande($pdo);
 
     try {
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute($params);
-        $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
+        $orders = $commandeModel->searchOrders($search, $status, $date);
         echo json_encode(['orders' => $orders]);
         exit();
     } catch (PDOException $e) {

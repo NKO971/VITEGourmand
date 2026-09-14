@@ -1,7 +1,4 @@
 <?php
-if (session_status() === PHP_SESSION_NONE) {
-    session_start(); // On récupère la session en cours si elle n'est pas déjà active
-}
 session_unset(); // On vide les variables de session
 session_destroy(); // On détruit le fichier de session sur le serveur
 // OPTIONNEL: Supprimer le cookie de session

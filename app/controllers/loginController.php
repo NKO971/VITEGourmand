@@ -26,10 +26,6 @@ function loginController($pdo) {
                     $error = "Ce compte a été désactivé. Merci de contacter votre administrateur.";
                 } else {
 
-                    if (session_status() === PHP_SESSION_NONE) {
-                        session_start();
-                    }
-
                     $_SESSION['user_id'] = $user['utilisateur_id'];
                     $_SESSION['nom'] = $user['nom'];
                     $_SESSION['prenom'] = $user['prenom'];

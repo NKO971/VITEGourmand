@@ -4,10 +4,6 @@ require_once ROOT_PATH . 'app/models/Commande.php';
 
 function profileController($pdo)
 {
-    if (session_status() === PHP_SESSION_NONE) {
-        session_start();
-    }
-
     // Protection : appel du helper pour vérifier si l'utilisateur est connecté et a le rôle approprié
     require_once ROOT_PATH . 'helpers/auth.php';
     requireLogin();

@@ -237,11 +237,7 @@ function annulerCommandeController($pdo)
 {
     require_once __DIR__ . '/../models/Commande.php';
     require_once ROOT_PATH . 'helpers/auth.php';
-
-    if (session_status() === PHP_SESSION_NONE) {
-        session_start();
-    }
-
+    
     requireLogin();
 
     $commandeId = $_GET['id'] ?? null;

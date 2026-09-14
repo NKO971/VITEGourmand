@@ -82,27 +82,16 @@ function createMenuController($pdo)
 
         $imagePath = null;
         if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
-            $allowedMimeTypes = ['image/jpeg', 'image/png', 'image/webp'];
-            $fileMimeType     = mime_content_type($_FILES['image']['tmp_name']);
+            require_once ROOT_PATH . 'helpers/upload.php';
+            $uploadResult = moveUploadedImage($_FILES['image'], 'menu');
 
-            if (!in_array($fileMimeType, $allowedMimeTypes)) {
+            if (!$uploadResult['success']) {
                 http_response_code(400);
-                echo json_encode(['success' => false, 'error' => 'Format d\'image non autorisé (JPG, PNG, WEBP uniquement).']);
+                echo json_encode(['success' => false, 'error' => $uploadResult['error']]);
                 exit();
             }
 
-            $extension  = pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION);
-            $fileName   = 'menu_' . uniqid() . '.' . $extension;
-            $uploadDir  = ROOT_PATH . 'public/assets/images/';
-            $targetPath = $uploadDir . $fileName;
-
-            if (!move_uploaded_file($_FILES['image']['tmp_name'], $targetPath)) {
-                http_response_code(500);
-                echo json_encode(['success' => false, 'error' => 'Échec du transfert de l\'image.']);
-                exit();
-            }
-
-            $imagePath = 'assets/images/' . $fileName;
+            $imagePath = $uploadResult['path'];
         }
 
         require_once ROOT_PATH . 'app/models/Menu.php';
@@ -177,27 +166,16 @@ function updateMenuController($pdo)
 
         $imagePath = null;
         if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
-            $allowedMimeTypes = ['image/jpeg', 'image/png', 'image/webp'];
-            $fileMimeType     = mime_content_type($_FILES['image']['tmp_name']);
+            require_once ROOT_PATH . 'helpers/upload.php';
+            $uploadResult = moveUploadedImage($_FILES['image'], 'menu');
 
-            if (!in_array($fileMimeType, $allowedMimeTypes)) {
+            if (!$uploadResult['success']) {
                 http_response_code(400);
-                echo json_encode(['success' => false, 'error' => 'Format d\'image non autorisé (Seuls JPG, PNG et WEBP sont acceptés).']);
+                echo json_encode(['success' => false, 'error' => $uploadResult['error']]);
                 exit();
             }
 
-            $extension  = pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION);
-            $fileName   = 'menu_' . uniqid() . '.' . $extension;
-            $uploadDir  = ROOT_PATH . 'public/assets/images/';
-            $targetPath = $uploadDir . $fileName;
-
-            if (!move_uploaded_file($_FILES['image']['tmp_name'], $targetPath)) {
-                http_response_code(500);
-                echo json_encode(['success' => false, 'error' => 'Échec du transfert de l\'image sur le serveur.']);
-                exit();
-            }
-
-            $imagePath = 'assets/images/' . $fileName;
+            $imagePath = $uploadResult['path'];
         }
 
         require_once ROOT_PATH . 'app/models/Menu.php';

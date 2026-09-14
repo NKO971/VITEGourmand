@@ -133,6 +133,11 @@
                         </div>
                     </div>
 
+                    <div class="mb-3">
+                        <label for="create_menu_image" class="form-label fw-semibold">Image du menu</label>
+                        <input type="file" class="form-control" id="create_menu_image" name="image" accept="image/jpeg,image/png,image/webp">
+                    </div>
+
                 </div>
 
                 <div class="modal-footer">

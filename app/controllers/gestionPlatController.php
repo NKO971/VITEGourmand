@@ -54,12 +54,12 @@ function updatePlatController($pdo)
 
     $photoData = null;
     if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
-        $allowedMimes = ['image/jpeg', 'image/png', 'image/webp'];
-        $fileMime     = mime_content_type($_FILES['photo']['tmp_name']);
+        require_once ROOT_PATH . 'helpers/upload.php';
+        $mimeError = validateImageMimeType($_FILES['photo']);
 
-        if (!in_array($fileMime, $allowedMimes)) {
+        if ($mimeError) {
             http_response_code(400);
-            echo json_encode(['error' => 'Format d\'image invalide (JPG, PNG, WEBP uniquement).']);
+            echo json_encode(['error' => $mimeError]);
             exit();
         }
 

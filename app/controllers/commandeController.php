@@ -1,6 +1,6 @@
 <?php
 
-function commandeController($menuModel)
+function commandeController($pdo, $menuModel)
 {
     require_once ROOT_PATH . 'helpers/auth.php';
     requireLogin();
@@ -24,6 +24,15 @@ function commandeController($menuModel)
     $specificCss = [];
     $specificJS = ['js/commande.js'];
 
+    require_once ROOT_PATH . 'app/models/Horaire.php';
+    $horaireModel = new Horaire($pdo);
+    try {
+        $horairesFooter = $horaireModel->getAll();
+    } catch (PDOException $e) {
+        error_log("Erreur chargement horaires footer : " . $e->getMessage());
+        $horairesFooter = [];
+    }
+
     BaseController::render(
         "Finaliser ma commande - VITEGourmand",
         "commande.view.php",
@@ -31,7 +40,8 @@ function commandeController($menuModel)
         $specificJS,
         [
             'menu'      => $menu,
-            'user_data' => $user_data
+            'user_data' => $user_data,
+            'horairesFooter' => $horairesFooter
         ]
     );
 }
@@ -160,6 +170,15 @@ function modifierCommandeController($pdo, $menuModel, $commandeModel)
         exit();
     }
 
+    require_once ROOT_PATH . 'app/models/Horaire.php';
+    $horaireModel = new Horaire($pdo);
+    try {
+        $horairesFooter = $horaireModel->getAll();
+    } catch (PDOException $e) {
+        error_log("Erreur chargement horaires footer : " . $e->getMessage());
+        $horairesFooter = [];
+    }
+
     BaseController::render(
         "Modifier ma commande - VITEGourmand",
         "modifier_commande.view.php",
@@ -167,7 +186,8 @@ function modifierCommandeController($pdo, $menuModel, $commandeModel)
         ['js/commande.js'],
         [
             'commande' => $commande,
-            'menu'     => $menu
+            'menu'     => $menu,
+            'horairesFooter' => $horairesFooter
         ]
     );
 }
@@ -237,7 +257,7 @@ function annulerCommandeController($pdo)
 {
     require_once __DIR__ . '/../models/Commande.php';
     require_once ROOT_PATH . 'helpers/auth.php';
-    
+
     requireLogin();
 
     $commandeId = $_GET['id'] ?? null;

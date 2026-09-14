@@ -26,10 +26,17 @@ function demandeResetController($pdo)
                 sendPasswordResetEmail($email, $user['prenom'] ?? '', $resetLink);
             }
 
-            // Message IDENTIQUE que l'email existe ou non : évite qu'un attaquant
-            // puisse déterminer quels emails sont enregistrés (énumération de comptes)
             $success = "Si cette adresse est associée à un compte, un email de réinitialisation vient de vous être envoyé.";
         }
+    }
+
+    require_once ROOT_PATH . 'app/models/Horaire.php';
+    $horaireModel = new Horaire($pdo);
+    try {
+        $horairesFooter = $horaireModel->getAll();
+    } catch (PDOException $e) {
+        error_log("Erreur chargement horaires footer : " . $e->getMessage());
+        $horairesFooter = [];
     }
 
     BaseController::render(
@@ -39,7 +46,8 @@ function demandeResetController($pdo)
         [],
         [
             'error' => $error,
-            'success' => $success
+            'success' => $success,
+            'horairesFooter' => $horairesFooter
         ]
     );
 }
@@ -55,13 +63,24 @@ function resetMotDePasseController($pdo)
 
     $userId = $resetModel->verifyToken($token);
 
+    require_once ROOT_PATH . 'app/models/Horaire.php';
+    $horaireModel = new Horaire($pdo);
+    try {
+        $horairesFooter = $horaireModel->getAll();
+    } catch (PDOException $e) {
+        error_log("Erreur chargement horaires footer : " . $e->getMessage());
+        $horairesFooter = [];
+    }
+
     if (!$userId) {
         BaseController::render(
             "Lien invalide - VITEGourmand",
             "reset_mot_de_passe_invalide.view.php",
             ["css/auth.css"],
             [],
-            []
+            [
+                'horairesFooter' => $horairesFooter
+            ]
         );
         return;
     }
@@ -83,7 +102,6 @@ function resetMotDePasseController($pdo)
             $userModel = new User($pdo);
             $userModel->updatePasswordById($userId, $password);
 
-            // Usage unique : le token est détruit immédiatement après utilisation
             $resetModel->deleteToken($token);
 
             $success = "Mot de passe réinitialisé avec succès. Vous pouvez maintenant vous connecter.";
@@ -99,7 +117,8 @@ function resetMotDePasseController($pdo)
         [
             'error' => $error,
             'success' => $success,
-            'token' => $token
+            'token' => $token,
+            'horairesFooter' => $horairesFooter
         ]
     );
 }

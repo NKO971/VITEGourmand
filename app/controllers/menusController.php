@@ -57,7 +57,6 @@ function menusController($pdo)
             $menu['composition'] = json_encode($composition, JSON_UNESCAPED_UNICODE);
         }
         unset($menu);
-
     } catch (PDOException $e) {
         error_log("Erreur lors de la récupération des menus : " . $e->getMessage());
         $themes = [];
@@ -66,6 +65,14 @@ function menusController($pdo)
     }
 
     require_once ROOT_PATH . 'app/controllers/baseController.php';
+    require_once ROOT_PATH . 'app/models/Horaire.php';
+    $horaireModel = new Horaire($pdo);
+    try {
+        $horairesFooter = $horaireModel->getAll();
+    } catch (PDOException $e) {
+        error_log("Erreur chargement horaires footer : " . $e->getMessage());
+        $horairesFooter = [];
+    }
 
     BaseController::render(
         "Nos Menus",
@@ -75,7 +82,8 @@ function menusController($pdo)
         [
             'themes'  => $themes,
             'regimes' => $regimes,
-            'menus'   => $menus
+            'menus'   => $menus,
+            'horairesFooter' => $horairesFooter
         ]
     );
 }

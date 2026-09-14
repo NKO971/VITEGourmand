@@ -26,6 +26,15 @@ function contactController($pdo)
         }
     }
 
+    require_once ROOT_PATH . 'app/models/Horaire.php';
+    $horaireModel = new Horaire($pdo);
+    try {
+        $horairesFooter = $horaireModel->getAll();
+    } catch (PDOException $e) {
+        error_log("Erreur chargement horaires footer : " . $e->getMessage());
+        $horairesFooter = [];
+    }
+
     BaseController::render(
         "Contact - VITEGourmand",
         "contact.view.php",
@@ -33,7 +42,8 @@ function contactController($pdo)
         [],
         [
             'error' => $error,
-            'success' => $success
+            'success' => $success,
+            'horairesFooter' => $horairesFooter
         ]
     );
 }

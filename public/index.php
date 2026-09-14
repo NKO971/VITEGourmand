@@ -24,7 +24,7 @@ switch ($page) {
 
     case 'home':
         require_once ROOT_PATH . 'app/controllers/homeController.php';
-        homeController();
+        homeController($pdo);
         break;
 
     case 'menus':
@@ -50,7 +50,7 @@ switch ($page) {
         require_once ROOT_PATH . 'app/models/Menu.php';
         require_once ROOT_PATH . 'app/controllers/commandeController.php';
         $menuModel = new Menu($pdo);
-        commandeController($menuModel);
+        commandeController($pdo, $menuModel);
         break;
 
     case 'api_zone':
@@ -335,12 +335,12 @@ switch ($page) {
     // Gestion des pages légales
     case 'mentions-legales':
         require_once ROOT_PATH . 'app/controllers/legalController.php';
-        mentionsLegalesController();
+        mentionsLegalesController($pdo);
         break;
 
     case 'cgv':
         require_once ROOT_PATH . 'app/controllers/legalController.php';
-        cgvController();
+        cgvController($pdo);
         break;
 
     default:

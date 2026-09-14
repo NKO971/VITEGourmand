@@ -50,13 +50,23 @@ function loginController($pdo) {
         }
     }
 
+    require_once ROOT_PATH . 'app/models/Horaire.php';
+    $horaireModel = new Horaire($pdo);
+    try {
+        $horairesFooter = $horaireModel->getAll();
+    } catch (PDOException $e) {
+        error_log("Erreur chargement horaires footer : " . $e->getMessage());
+        $horairesFooter = [];
+    }
+
     BaseController::render(
         "Connexion - VITEGourmand",
         "connexion.view.php",
         $specificCss,
         $specificJS,
         [
-            'error' => $error ?? ''
+            'error' => $error ?? '',
+            'horairesFooter' => $horairesFooter
         ]
     );
 }

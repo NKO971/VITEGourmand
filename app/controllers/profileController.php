@@ -4,7 +4,7 @@ require_once ROOT_PATH . 'app/models/Commande.php';
 
 function profileController($pdo)
 {
-    // Protection : appel du helper pour vérifier si l'utilisateur est connecté et a le rôle approprié
+    // Vérifie si l'utilisateur est connecté
     require_once ROOT_PATH . 'helpers/auth.php';
     requireLogin();
 
@@ -15,7 +15,6 @@ function profileController($pdo)
     unset($_SESSION['flash_message']);
     $error = '';
 
-    // Traitement du formulaire (Uniquement en POST)
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $nom = trim($_POST['nom'] ?? '');
         $prenom = trim($_POST['prenom'] ?? '');
@@ -25,7 +24,6 @@ function profileController($pdo)
         if (!empty($nom) && !empty($prenom) && !empty($gsm) && !empty($adresse)) {
             if ($userModel->updateProfile($_SESSION['user_id'], $nom, $prenom, $gsm, $adresse)) {
 
-                // Mise à jour de la session
                 $_SESSION['nom'] = $nom;
                 $_SESSION['prenom'] = $prenom;
                 $_SESSION['gsm'] = $gsm;
@@ -33,7 +31,6 @@ function profileController($pdo)
 
                 $_SESSION['flash_message'] = "Profil mis à jour avec succès !";
 
-                // REDIRECTION vers la même page pour éviter le re-post du formulaire
                 header("Location: ?page=profile");
                 exit();
             } else {
@@ -44,22 +41,27 @@ function profileController($pdo)
         }
     }
 
-    // Récupération des données MongoDB
     require_once ROOT_PATH . 'app/models/AvisModel.php';
     $avisModel = new AvisModel();
 
-    // Récupération directe du tableau d'IDs des commandes déjà évaluées
     $commandesAvecAvis = $avisModel->getCommandesIdsByUser($_SESSION['user_id']);
 
-    // Récupération des commandes de l'utilisateur (SQL)
     $orders = $commandeModel->getOrdersByUserId($_SESSION['user_id']);
 
     $tousLesSuivis = [];
     foreach ($orders as $order) {
-        // On récupère le suivi seulement si la commande n'est pas "En attente" ou "Annulée"
         if ($order['statut'] !== 'En attente' && $order['statut'] !== 'Annulée') {
             $tousLesSuivis[$order['commande_id']] = $commandeModel->getOrderFollowUp($order['commande_id']);
         }
+    }
+
+    require_once ROOT_PATH . 'app/models/Horaire.php';
+    $horaireModel = new Horaire($pdo);
+    try {
+        $horairesFooter = $horaireModel->getAll();
+    } catch (PDOException $e) {
+        error_log("Erreur chargement horaires footer : " . $e->getMessage());
+        $horairesFooter = [];
     }
 
     BaseController::render(
@@ -72,7 +74,8 @@ function profileController($pdo)
             'error' => $error,
             'orders' => $orders,
             'tousLesSuivis' => $tousLesSuivis,
-            'commandesAvecAvis' => $commandesAvecAvis
+            'commandesAvecAvis' => $commandesAvecAvis,
+            'horairesFooter' => $horairesFooter
         ]
     );
 }

@@ -112,4 +112,30 @@ class Menu
         $stmt = $this->pdo->query("SELECT menu_id, titre FROM menu ORDER BY titre ASC");
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    // Récupère tous les menus avec les libellés de thème et régime
+    public function getAllWithLabels(): array
+    {
+        $stmt = $this->pdo->query("
+        SELECT m.*, t.libelle AS theme_libelle, r.libelle AS regime_libelle 
+        FROM menu m
+        LEFT JOIN theme t ON m.theme_id = t.theme_id
+        LEFT JOIN regime r ON m.regime_id = r.regime_id
+        ORDER BY m.menu_id DESC
+    ");
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    // Récupère tous les menus actifs avec les libellés de thème et régime pour le ront-end
+    public function getAllActiveWithLabels(): array
+    {
+        $stmt = $this->pdo->query("
+        SELECT m.*, t.libelle AS theme_libelle, r.libelle AS regime_libelle 
+        FROM menu m
+        LEFT JOIN theme t ON m.theme_id = t.theme_id
+        LEFT JOIN regime r ON m.regime_id = r.regime_id
+        WHERE m.actif = 1
+    ");
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }

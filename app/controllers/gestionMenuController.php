@@ -5,24 +5,21 @@ function renderGestionMenuController($pdo)
     require_once ROOT_PATH . 'helpers/auth.php';
     requireRole([1, 2]);
 
+    require_once ROOT_PATH . 'app/models/Menu.php';
+    require_once ROOT_PATH . 'app/models/Plat.php';
+    require_once ROOT_PATH . 'app/models/Theme.php';
+    require_once ROOT_PATH . 'app/models/Regime.php';
+
     try {
-        $stmtMenus = $pdo->query("
-            SELECT m.*, t.libelle AS theme_libelle, r.libelle AS regime_libelle 
-            FROM menu m
-            LEFT JOIN theme t ON m.theme_id = t.theme_id
-            LEFT JOIN regime r ON m.regime_id = r.regime_id
-            ORDER BY m.menu_id DESC
-        ");
-        $menus = $stmtMenus->fetchAll(PDO::FETCH_ASSOC);
+        $menuModel = new Menu($pdo);
+        $platModel = new Plat($pdo);
+        $themeModel = new Theme($pdo);
+        $regimeModel = new Regime($pdo);
 
-        $stmtPlats = $pdo->query("SELECT * FROM plat ORDER BY plat_id DESC");
-        $plats = $stmtPlats->fetchAll(PDO::FETCH_ASSOC);
-
-        $stmtThemes = $pdo->query("SELECT * FROM theme ORDER BY libelle ASC");
-        $themes = $stmtThemes->fetchAll(PDO::FETCH_ASSOC);
-
-        $stmtRegimes = $pdo->query("SELECT * FROM regime ORDER BY libelle ASC");
-        $regimes = $stmtRegimes->fetchAll(PDO::FETCH_ASSOC);
+        $menus = $menuModel->getAllWithLabels();
+        $plats = $platModel->getAll();
+        $themes = $themeModel->getAll();
+        $regimes = $regimeModel->getAll();
     } catch (PDOException $e) {
         error_log("Erreur chargement carte back-office : " . $e->getMessage());
         $menus = [];

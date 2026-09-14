@@ -29,9 +29,9 @@ switch ($page) {
 
     case 'menus':
         require_once ROOT_PATH . 'app/controllers/menusController.php';
-        menusController();
+        menusController($pdo);
         break;
-
+        
     case 'connexion':
         require_once ROOT_PATH . 'app/controllers/loginController.php';
         loginController($pdo);

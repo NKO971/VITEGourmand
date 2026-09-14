@@ -1,12 +1,15 @@
 <?php
-class Plat {
+class Plat
+{
     private $pdo;
 
-    public function __construct($pdo) {
+    public function __construct($pdo)
+    {
         $this->pdo = $pdo;
     }
 
-    public function createPlat(string $titrePlat, int $actif) {
+    public function createPlat(string $titrePlat, int $actif)
+    {
         $stmt = $this->pdo->prepare('INSERT INTO plat (titre_plat, actif) VALUES (:titre, :actif)');
         $stmt->execute([
             ':titre' => $titrePlat,
@@ -15,7 +18,8 @@ class Plat {
         return $this->pdo->lastInsertId();
     }
 
-    public function updatePlat($platId, string $titrePlat, $photoData = null) {
+    public function updatePlat($platId, string $titrePlat, $photoData = null)
+    {
         if ($photoData !== null) {
             $sql = "UPDATE plat SET titre_plat = :titre, photo = :photo WHERE plat_id = :id";
             $stmt = $this->pdo->prepare($sql);
@@ -33,12 +37,19 @@ class Plat {
         ]);
     }
 
-    public function toggleStatus($platId, $actif) {
+    public function toggleStatus($platId, $actif)
+    {
         $stmt = $this->pdo->prepare("UPDATE plat SET actif = :actif WHERE plat_id = :id");
         $stmt->execute([
             ':actif' => $actif,
             ':id'    => $platId
         ]);
         return $stmt->rowCount();
+    }
+
+    public function getAll(): array
+    {
+        $stmt = $this->pdo->query("SELECT * FROM plat ORDER BY plat_id DESC");
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 }

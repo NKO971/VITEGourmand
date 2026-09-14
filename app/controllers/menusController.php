@@ -1,28 +1,25 @@
 <?php
-function menusController()
+function menusController($pdo)
 {
-    global $pdo;
+    require_once ROOT_PATH . 'app/models/Menu.php';
+    require_once ROOT_PATH . 'app/models/Theme.php';
+    require_once ROOT_PATH . 'app/models/Regime.php';
+    require_once ROOT_PATH . 'app/models/Plat.php';
 
     try {
-        $themes = $pdo->query("SELECT * FROM " . TABLE_THEME)->fetchAll();
-        $regimes = $pdo->query("SELECT * FROM " . TABLE_REGIME)->fetchAll();
+        $themeModel = new Theme($pdo);
+        $regimeModel = new Regime($pdo);
+        $menuModel = new Menu($pdo);
+        $platModel = new Plat($pdo);
 
-        $menusQuery = "SELECT
-            m.*,
-            t.libelle AS theme_libelle,
-            r.libelle AS regime_libelle
-        FROM " . TABLE_MENU . " m
-        LEFT JOIN " . TABLE_THEME . " t ON m.theme_id = t.theme_id
-        LEFT JOIN " . TABLE_REGIME . " r ON m.regime_id = r.regime_id
-        WHERE m.actif = 1";
-
-        $menus = $pdo->query($menusQuery)->fetchAll();
+        $themes = $themeModel->getAll();
+        $regimes = $regimeModel->getAll();
+        $menus = $menuModel->getAllActiveWithLabels();
 
         // État actuel des plats, indexé à la fois par ID (fiable) et par nom normalisé (repli pour anciennes données)
         $platsParId = [];
         $platsParNom = [];
-        $stmtPlats = $pdo->query("SELECT plat_id, titre_plat, actif FROM plat");
-        foreach ($stmtPlats->fetchAll(PDO::FETCH_ASSOC) as $p) {
+        foreach ($platModel->getAll() as $p) {
             $platsParId[$p['plat_id']] = $p;
             $platsParNom[mb_strtolower(trim($p['titre_plat']))] = $p;
         }
@@ -51,7 +48,7 @@ function menusController()
 
                     if ($platTrouve && $platTrouve['actif'] == 1) {
                         $composition[$role]['nom'] = $platTrouve['titre_plat'];
-                        $composition[$role]['plat_id'] = $platTrouve['plat_id']; // On en profite pour "réparer" les anciennes données sans ID
+                        $composition[$role]['plat_id'] = $platTrouve['plat_id'];
                     } else {
                         $composition[$role]['nom'] = 'Actuellement indisponible';
                     }
@@ -68,7 +65,7 @@ function menusController()
         $menus = [];
     }
 
-    require_once(__DIR__ . '/baseController.php');
+    require_once ROOT_PATH . 'app/controllers/baseController.php';
 
     BaseController::render(
         "Nos Menus",

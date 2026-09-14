@@ -211,4 +211,50 @@ class Commande
         $stmt->execute($params);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    public function calculerTotalCommande($prixMenu, $nbPersonnes, $minPersonnes, $distanceKM)
+    {
+        if ($distanceKM === null) {
+            return [
+                'zone_desservie' => false,
+                'total_menu' => 0,
+                'frais_livraison' => 0,
+                'total_general' => 0
+            ];
+        }
+
+        $totalMenu = $prixMenu * $nbPersonnes;
+
+        if ($nbPersonnes >= ($minPersonnes + 5)) {
+            $totalMenu = $totalMenu * 0.9;
+        }
+
+        $fraisLivraison = ($distanceKM > 0) ? (5 + (0.59 * $distanceKM)) : 0;
+
+        return [
+            'zone_desservie' => true,
+            'total_menu' => $totalMenu,
+            'frais_livraison' => $fraisLivraison,
+            'total_general' => $totalMenu + $fraisLivraison
+        ];
+    }
+
+    public function generateNumeroCommande(): string
+    {
+        return 'CMD-' . uniqid();
+    }
+
+    // Cette fonction calcule la date limite en jours ouvrables à partir d'une date donnée.
+    public function calculateWorkingDaysDeadline(string $startDateStr, int $workingDays = 10): string
+    {
+        $date = new DateTime($startDateStr);
+        $addedDays = 0;
+        while ($addedDays < $workingDays) {
+            $date->modify('+1 day');
+            if ($date->format('N') < 6) { // Lundi à vendredi
+                $addedDays++;
+            }
+        }
+        return $date->format('d/m/Y');
+    }
 }

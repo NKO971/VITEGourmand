@@ -9,19 +9,6 @@ function updateOrderStatusController($pdo)
     require_once ROOT_PATH . 'helpers/auth.php';
     requireRole([1, 2], true);
 
-    // Fonction utilitaire interne : Calcul de la date limite en jours ouvrés
-    $calculateWorkingDaysDeadline = function (string $startDateStr, int $workingDays = 10): string {
-        $date = new DateTime($startDateStr);
-        $addedDays = 0;
-        while ($addedDays < $workingDays) {
-            $date->modify('+1 day');
-            if ($date->format('N') < 6) { // Lundi à vendredi
-                $addedDays++;
-            }
-        }
-        return $date->format('d/m/Y');
-    };
-
     // Récupération des données (compatible JSON Fetch + Formulaire HTML POST)
     $data = json_decode(file_get_contents('php://input'), true) ?? [];
 
@@ -101,7 +88,7 @@ function updateOrderStatusController($pdo)
     $mailSent = false;
     if ($newStatus === 'En attente du retour de matériel') {
         $refDate = $order['date_prestation'] ?? date('Y-m-d');
-        $deadlineStr = $calculateWorkingDaysDeadline($refDate, 10);
+        $deadlineStr = $commandeModel->calculateWorkingDaysDeadline($refDate, 10);
 
         $mailSent = sendEquipmentReturnNotification(
             $order['email'],

@@ -36,34 +36,6 @@ function commandeController($menuModel)
     );
 }
 
-// Fonction de calcul du prix total du menu
-function calculerTotalCommande($prixMenu, $nbPersonnes, $minPersonnes, $distanceKM)
-{
-    if ($distanceKM === null) {
-        return [
-            'zone_desservie' => false,
-            'total_menu' => 0,
-            'frais_livraison' => 0,
-            'total_general' => 0
-        ];
-    }
-
-    $totalMenu = $prixMenu * $nbPersonnes;
-
-    if ($nbPersonnes >= ($minPersonnes + 5)) {
-        $totalMenu = $totalMenu * 0.9;
-    }
-
-    $fraisLivraison = ($distanceKM > 0) ? (5 + (0.59 * $distanceKM)) : 0;
-
-    return [
-        'zone_desservie' => true,
-        'total_menu' => $totalMenu,
-        'frais_livraison' => $fraisLivraison,
-        'total_general' => $totalMenu + $fraisLivraison
-    ];
-}
-
 function getZoneDistance($pdo)
 {
     header('Content-Type: application/json');
@@ -101,7 +73,7 @@ function enregistrerCommande($pdo, $menuModel, $commandeModel, $dataPost)
     $zoneModel = new ZoneLivraison($pdo);
     $distance = $zoneModel->getDistanceByCodePostal($dataPost['code_postal']);
 
-    $resultat = calculerTotalCommande(
+    $resultat = $commandeModel->calculerTotalCommande(
         $menu['prix_par_personne'],
         $dataPost['nb_personnes'],
         $menu['nombre_personne_minimum'],
@@ -112,7 +84,7 @@ function enregistrerCommande($pdo, $menuModel, $commandeModel, $dataPost)
         throw new Exception("Votre zone n'est pas desservie pour la livraison. Merci de vérifier votre code postal.");
     }
 
-    $numeroCommande = 'CMD-' . uniqid();
+    $numeroCommande = $commandeModel->generateNumeroCommande();
 
     $success = $commandeModel->enregistrerCommande([
         'numero_commande'       => $numeroCommande,
@@ -228,7 +200,7 @@ function updateCommandeController($pdo, $menuModel, $commandeModel, $dataPost)
     $zoneModel = new ZoneLivraison($pdo);
     $distance = $zoneModel->getDistanceByCodePostal($dataPost['code_postal']);
 
-    $resultat = calculerTotalCommande(
+    $resultat = $commandeModel->calculerTotalCommande(
         $menu['prix_par_personne'],
         $dataPost['nb_personnes'],
         $menu['nombre_personne_minimum'],

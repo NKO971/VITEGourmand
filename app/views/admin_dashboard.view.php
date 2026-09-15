@@ -15,6 +15,23 @@
                         <p class="text-muted text-center py-4">Aucune donnée disponible pour le moment.</p>
                     <?php else: ?>
                         <canvas id="chartCommandesParMenu" height="280"></canvas>
+                        <table class="visually-hidden">
+                            <caption>Nombre de commandes par menu</caption>
+                            <thead>
+                                <tr>
+                                    <th scope="col">Menu</th>
+                                    <th scope="col">Nombre de commandes</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($commandesParMenu as $item): ?>
+                                    <tr>
+                                        <td><?= htmlspecialchars($item['titre']) ?></td>
+                                        <td><?= (int)$item['nombre'] ?></td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
                     <?php endif; ?>
                 </div>
             </div>

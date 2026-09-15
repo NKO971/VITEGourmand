@@ -21,6 +21,7 @@
                     <tr>
                         <th scope="col"># N°</th>
                         <th scope="col">Client</th>
+                        <th scope="col">Menu</Menu></th>
                         <th scope="col">Date / Heure</th>
                         <th scope="col">Montant</th>
                         <th scope="col" class="text-end">Actions requises</th>
@@ -93,6 +94,7 @@
                 <tr>
                     <th scope="col"># N°</th>
                     <th scope="col">Client</th>
+                    <th scope="col">Menu</th>
                     <th scope="col">Date / Heure</th>
                     <th scope="col">Montant</th>
                     <th scope="col">Statut</th>

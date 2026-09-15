@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (ordersTbody) {
                 ordersTbody.innerHTML = `
                     <tr>
-                        <td colspan="6" class="text-center text-danger py-4">
+                        <td colspan="7" class="text-center text-danger py-4">
                             <i class="bi bi-exclamation-triangle me-2"></i>${escapeHtml(error.message || 'Erreur réseau')}
                         </td>
                     </tr>`;
@@ -80,6 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <tr class="table-warning-subtle">
                 <td class="fw-bold">#${escapeHtml(String(order.commande_id))}</td>
                 <td>${escapeHtml(order.prenom || '')} ${escapeHtml(order.nom || '')}</td>
+                <td>${escapeHtml(order.menu_titre || '-')}</td>
                 <td>${formatDate(order.date_commande)}</td>
                 <td class="fw-bold text-dark">${parseFloat(order.montant_total || order.prix_menu || 0).toFixed(2)} €</td>
                 <td class="text-end">
@@ -106,7 +107,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (orders.length === 0) {
             ordersTbody.innerHTML = `
                 <tr>
-                    <td colspan="6" class="text-center text-muted py-4">
+                    <td colspan="7" class="text-center text-muted py-4">
                         <i class="bi bi-inbox me-2"></i>Aucune commande trouvée.
                     </td>
                 </tr>`;
@@ -117,6 +118,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <tr>
                 <td class="fw-bold">#${escapeHtml(String(order.commande_id || order.id || ''))}</td>
                 <td>${escapeHtml(order.prenom || '')} ${escapeHtml(order.nom || '')}</td>
+                <td>${escapeHtml(order.menu_titre || '-')}</td>
                 <td>${formatDate(order.date_commande)}</td>
                 <td class="fw-semibold">${parseFloat(order.montant_total || order.prix_menu || 0).toFixed(2)} €</td>
                 <td>

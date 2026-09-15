@@ -160,26 +160,28 @@ class Commande
     public function searchOrders(?string $search = null, ?string $status = null, ?string $date = null): array
     {
         $sql = "SELECT 
-                c.commande_id,
-                c.numero_commande,
-                c.date_commande,
-                c.date_prestation,
-                c.heure_livraison,
-                c.prix_menu,
-                c.nombre_personne,
-                c.prix_livraison,
-                (c.prix_menu + COALESCE(c.prix_livraison, 0)) AS montant_total,
-                c.statut,
-                c.pret_materiel,
-                c.restitution_materiel,
-                c.mode_contact,
-                c.motif_annulation,
-                u.nom,
-                u.prenom,
-                u.email
-            FROM commande c
-            JOIN utilisateur u ON c.utilisateur_id = u.utilisateur_id
-            WHERE 1=1";
+            c.commande_id,
+            c.numero_commande,
+            c.date_commande,
+            c.date_prestation,
+            c.heure_livraison,
+            c.prix_menu,
+            c.nombre_personne,
+            c.prix_livraison,
+            (c.prix_menu + COALESCE(c.prix_livraison, 0)) AS montant_total,
+            c.statut,
+            c.pret_materiel,
+            c.restitution_materiel,
+            c.mode_contact,
+            c.motif_annulation,
+            u.nom,
+            u.prenom,
+            u.email,
+            m.titre AS menu_titre
+        FROM commande c
+        JOIN utilisateur u ON c.utilisateur_id = u.utilisateur_id
+        LEFT JOIN menu m ON c.menu_id = m.menu_id
+        WHERE 1=1";
 
         $params = [];
 

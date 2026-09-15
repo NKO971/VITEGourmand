@@ -1,7 +1,8 @@
 <!-- Filtres des menus -->
 <section id="menus" class="container my-5">
+  <h1 class="visually-hidden">Découvrez nos menus</h1>
   <div class="vg-filter-container p-3 rounded shadow-sm border mb-5">
-    <h3 class="h6 mb-3 vg-filter-title fw-bold text-uppercase">Filtres de recherche</h3>
+    <h2 class="h6 mb-3 vg-filter-title fw-bold text-uppercase">Filtres de recherche</h2>
 
     <form class="row g-2 align-items-center">
 
@@ -87,7 +88,7 @@
           </div>
 
           <div class="card-body">
-            <h5 class="card-title fw-bold"><?php echo htmlspecialchars($menu['titre']); ?></h5>
+            <h3 class="card-title fw-bold"><?php echo htmlspecialchars($menu['titre']); ?></h3>
 
             <p class="text-muted small mb-2"><i class="bi bi-tag" aria-hidden="true"></i> Thème : <?php echo htmlspecialchars($menu['theme_libelle']); ?></p>
 

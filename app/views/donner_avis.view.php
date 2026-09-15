@@ -7,7 +7,7 @@
                 
                 <!-- En-tête de la carte aux couleurs de ton app -->
                 <div class="card-header bg-primary text-white text-center py-3">
-                    <h3 class="card-title mb-1">Votre avis nous intéresse !</h3>
+                    <h1 class="card-title mb-1">Votre avis nous intéresse !</h1>
                     <p class="mb-0 text-white-50">Commande n°<?= htmlspecialchars($_GET['commande_id'] ?? '') ?></p>
                 </div>
                 

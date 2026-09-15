@@ -4,7 +4,7 @@
   <!-- Bloc 1 : L'Histoire (Texte + Image) -->
   <div class="row align-items-center mb-5">
     <div class="col-md-6">
-      <h2 class="fw-bold mb-3">Vite & Gourmand : 25 ans de passion, une nouvelle page à écrire</h2>
+      <h1 class="fw-bold mb-3">Vite & Gourmand : 25 ans de passion, une nouvelle page à écrire</h1>
       <p class="text-muted">Depuis un quart de siècle, le cœur de Bordeaux bat au rythme des petits plats de Julie et José. Chez Vite & Gourmand, la cuisine n'est pas qu'une affaire de recettes ; c’est une histoire de fidélité, de saisons qui défilent et de ces moments précieux — des fêtes de Noël aux retrouvailles de Pâques — que l'on célèbre autour d'une table bien garnie.</p>
     </div>
 <div class="col-12 col-md-8 mx-auto">
@@ -49,7 +49,7 @@
   <!-- Bloc 2 : L'Équipe (Pleine largeur en dessous) -->
   <div class="row">
     <div class="col-12 bg-light p-4 rounded">
-      <h3 class="h4 fw-bold mb-3">Une équipe soudée et polyvalente</h3>
+      <h2 class="h4 fw-bold mb-3">Une équipe soudée et polyvalente</h2>
       <p class="mb-0">Derrière les fourneaux et le comptoir de Vite & Gourmand, il n’y a pas de barrières, seulement une passion commune. Notre équipe est une petite brigade soudée de quatre personnes, pensée comme une mécanique de précision où la polyvalence est reine. À l'origine de cette aventure, Julie et José ne se contentent pas de diriger : ils incarnent l'esprit de l'entreprise au quotidien. Notre force réside dans notre complémentarité, articulée autour de deux binômes : deux cuisiniers passionnés et deux serveurs dévoués.</p>
     </div>
   </div>
@@ -67,7 +67,7 @@
                 <div class="col-md-4 mb-3">
                     <div class="card h-100 shadow-sm">
                         <div class="card-body">
-                            <h5 class="card-title"><?= htmlspecialchars($avis['nom_client']) ?></h5>
+                            <h3 class="card-title"><?= htmlspecialchars($avis['nom_client']) ?></h3>
                             <div class="text-warning mb-2">
                                 <?= str_repeat('★', (int)$avis['note']) ?><?= str_repeat('☆', 5 - (int)$avis['note']) ?>
                             </div>

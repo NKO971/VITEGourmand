@@ -3,7 +3,7 @@
         <div class="row justify-content-center">
             <div class="col-12 col-md-8 col-lg-6">
 
-                <h2 class="fw-bold mb-4 text-center">Contactez-nous</h2>
+                <h1 class="fw-bold mb-4 text-center">Contactez-nous</h1>
 
                 <?php if (!empty($error)): ?>
                     <div class="alert alert-danger shadow-sm border-0"><?= htmlspecialchars($error) ?></div>

@@ -1,4 +1,5 @@
 <main>
+     <h1 class="visually-hidden">Connexion</h1>
     <div class="container my-5 py-4">
         <div class="row gx-5 justify-content-evenly align-items-center">
 

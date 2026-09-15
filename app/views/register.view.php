@@ -1,3 +1,5 @@
+<main>
+    <h1 class="visually-hidden">Créer un compte</h1>
 <div class="container-fluid px-4 my-5">
     <div class="row gx-5 justify-content-evenly align-items-center">
         <div class="col-12 col-md-6 col-lg-5 formulaires_connexion">
@@ -81,3 +83,4 @@
         </div>
     </div>
 </div>
+</main>

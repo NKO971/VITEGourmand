@@ -5,7 +5,7 @@
 
     <div class="card shadow-sm">
         <div class="card-header bg-white py-3">
-            <h5 class="card-title text-primary mb-0"><i class="bi bi-clock me-2" aria-hidden="true"></i>Horaires d'ouverture</h5>
+            <h2 class="card-title text-primary mb-0"><i class="bi bi-clock me-2" aria-hidden="true"></i>Horaires d'ouverture</h2>
         </div>
         <div class="card-body p-0">
             <div class="table-responsive">

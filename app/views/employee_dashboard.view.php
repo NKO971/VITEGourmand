@@ -10,9 +10,9 @@
 <div id="pending-orders-container" class="mb-5 d-none">
     <div class="card border-warning shadow-sm">
         <div class="card-header bg-warning text-dark py-3 d-flex justify-content-between align-items-center">
-            <h5 class="mb-0 fw-bold">
+            <h2 class="mb-0 fw-bold">
                 <i class="bi bi-exclamation-triangle-fill me-2" aria-hidden="true"></i>Nouvelles commandes à traiter
-            </h5>
+            </h2>
             <span class="badge bg-dark text-white fs-6" id="pending-count">0 en attente</span>
         </div>
         <div class="table-responsive">
@@ -83,7 +83,7 @@
 <!-- TABLEAU DES COMMANDES -->
 <div class="card shadow-sm border-0">
     <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
-        <h5 class="mb-0 fw-bold"><i class="bi bi-list-check me-2 text-primary" aria-hidden="true"></i>Commandes reçues</h5>
+        <h2 class="mb-0 fw-bold"><i class="bi bi-list-check me-2 text-primary" aria-hidden="true"></i>Commandes reçues</h2>
         <span class="badge bg-primary fs-6" id="orders-count">0 commande(s)</span>
     </div>
 

@@ -33,15 +33,15 @@
                     <div class="card h-100 shadow-sm">
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-center mb-2">
-                                <h5 class="card-title mb-0"><?= htmlspecialchars($review['nom_client'] ?? 'Client') ?></h5>
+                                <h2 class="card-title mb-0"><?= htmlspecialchars($review['nom_client'] ?? 'Client') ?></h2>
                                 <span class="badge bg-warning text-dark">
                                     <?= str_repeat('★', $note) . str_repeat('☆', 5 - $note) ?> (<?= $note ?>/5)
                                 </span>
                             </div>
-                            <h6 class="card-subtitle mb-2 text-muted">
+                            <h3 class="card-subtitle mb-2 text-muted">
                                 Commande #<?= htmlspecialchars((string)($review['commande_id'] ?? 'N/A')) ?> 
                                 • <?= htmlspecialchars($review['date_creation'] ?? '') ?>
-                            </h6>
+                            </h3>
                             <p class="card-text mt-3">
                                 "<?= htmlspecialchars($review['commentaire'] ?? '') ?>"
                             </p>

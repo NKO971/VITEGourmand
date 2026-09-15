@@ -21,7 +21,7 @@
     <!-- SECTION 1 : GESTION DES MENUS -->
     <div class="card shadow-sm mb-5">
         <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
-            <h5 class="card-title text-primary mb-0"><i class="bi bi-egg-fried me-2" aria-hidden="true"></i>Liste des Menus</h5>
+            <h2 class="card-title text-primary mb-0"><i class="bi bi-egg-fried me-2" aria-hidden="true"></i>Liste des Menus</h2>
             <button class="btn btn-sm btn-outline-primary" id="btn-add-menu"><i class="bi bi-plus-circle me-1" aria-hidden="true"></i> Ajouter menu</button>
         </div>
         <div class="card-body p-0">
@@ -98,7 +98,7 @@
     <!-- SECTION 2 : GESTION DES PLATS -->
     <div class="card shadow-sm">
         <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
-            <h5 class="card-title text-primary mb-0"><i class="bi bi-disc me-2" aria-hidden="true"></i>Liste des Plats</h5>
+            <h2 class="card-title text-primary mb-0"><i class="bi bi-disc me-2" aria-hidden="true"></i>Liste des Plats</h2>
             <button class="btn btn-sm btn-outline-primary" id="btn-add-plat"><i class="bi bi-plus-circle me-1" aria-hidden="true"></i> Ajouter un plat</button>
         </div>
         <div class="card-body p-0">

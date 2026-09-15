@@ -5,9 +5,9 @@
 
             <!-- En-tête de la modale -->
             <div class="modal-header">
-                <h5 class="modal-title fw-bold" id="orderModalLabel">
+                <h3 class="modal-title fw-bold" id="orderModalLabel">
                     Détails de la commande <span id="modal-order-number" class="text-primary"></span>
-                </h5>
+                </h3>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
             </div>
 
@@ -19,12 +19,12 @@
                     <!-- Infos Client & Prestation -->
                     <div class="row mb-3">
                         <div class="col-md-6">
-                            <h6 class="fw-bold text-muted mb-1">CLIENT</h6>
+                            <h4 class="fw-bold text-muted mb-1">CLIENT</h4>
                             <p id="modal-client-info" class="fw-bold fs-6 mb-0"></p>
                             <small id="modal-client-email" class="text-primary"></small>
                         </div>
                         <div class="col-md-6 text-md-end">
-                            <h6 class="fw-bold text-muted mb-1">DÉTAILS PRESTATION</h6>
+                            <h4 class="fw-bold text-muted mb-1">DÉTAILS PRESTATION</h4>
                             <p id="modal-order-date" class="fw-bold mb-0"></p>
                             <small id="modal-order-guests" class="text-muted"></small>
                         </div>
@@ -34,7 +34,7 @@
                     <div id="modal-equipment-alert" class="alert alert-warning border-warning d-flex align-items-start mb-3 d-none" role="alert">
                         <i class="bi bi-box-seam fs-4 me-3 text-warning-emphasis" aria-hidden="true"></i>
                         <div>
-                            <h6 class="alert-heading fw-bold mb-1" id="equipment-alert-title">Prêt de matériel associé</h6>
+                            <h4 class="alert-heading fw-bold mb-1" id="equipment-alert-title">Prêt de matériel associé</h4>
                             <p class="mb-0 small" id="equipment-alert-desc">
                                 Du matériel a été mis à disposition du client pour cette prestation.
                             </p>
@@ -68,9 +68,9 @@
 
                     <!-- Champs obligatoires si Annulation -->
                     <div id="cancellation-fields" class="p-3 bg-light border border-danger rounded d-none">
-                        <h6 class="text-danger fw-bold mb-3">
+                        <h4 class="text-danger fw-bold mb-3">
                             <i class="bi bi-exclamation-triangle-fill me-1" aria-hidden="true"></i> Contact client obligatoire avant annulation
-                        </h6>
+                        </h4>
                         <div class="mb-3">
                             <label class="form-label fw-bold">Mode de contact utilisé * :</label>
                             <select class="form-select" id="modal-contact-mode" name="mode_contact">

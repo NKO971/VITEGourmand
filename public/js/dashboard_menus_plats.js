@@ -368,12 +368,18 @@ document.addEventListener('click', (e) => {
                 }
 
                 if (result.success) {
-                    const modalEl = document.getElementById('modalEditMenu');
-                    const modal = bootstrap.Modal.getInstance(modalEl);
-                    if (modal) modal.hide();
+                   const modalEl = document.getElementById('modalEditMenu');
+                   const modal = bootstrap.Modal.getInstance(modalEl);
 
+                if (modal) {
+                    modalEl.addEventListener('hidden.bs.modal', () => {
                     window.location.reload();
-                }
+                }, { once: true });
+                   modal.hide();
+                 } else {
+                    window.location.reload();
+                 }
+                }    
             } catch (error) {
                 console.error('Erreur update_menu :', error);
                 alert(error.message);

@@ -214,9 +214,20 @@ class Commande
 
     public function calculerTotalCommande($prixMenu, $nbPersonnes, $minPersonnes, $distanceKM)
     {
+        if ($nbPersonnes < $minPersonnes) {
+            return [
+                'zone_desservie' => null,
+                'nombre_suffisant' => false,
+                'total_menu' => 0,
+                'frais_livraison' => 0,
+                'total_general' => 0
+            ];
+        }
+
         if ($distanceKM === null) {
             return [
                 'zone_desservie' => false,
+                'nombre_suffisant' => true,
                 'total_menu' => 0,
                 'frais_livraison' => 0,
                 'total_general' => 0
@@ -233,6 +244,7 @@ class Commande
 
         return [
             'zone_desservie' => true,
+            'nombre_suffisant' => true,
             'total_menu' => $totalMenu,
             'frais_livraison' => $fraisLivraison,
             'total_general' => $totalMenu + $fraisLivraison

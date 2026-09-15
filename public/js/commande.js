@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // 1. Récupération de tous nos éléments du DOM
     const inputCodePostal = document.getElementById('postal_code');
     const inputNbPersonnes = document.getElementById('nb_personnes');
+    const formCommande = inputNbPersonnes.closest('form');
     
     const txtAffichageNbPers = document.getElementById('affichage_nb_personnes');
     const txtMenuTotal = document.getElementById('prix_menu_total');
@@ -14,6 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const minPersonnes = parseInt(document.getElementById('min_personnes_hidden').value) || 1;
 
     let fraisLivraisonActuels = 0;
+    let zoneDesservie = true; // Suivi de l'état de la zone, pour la validation au submit
 
     function mettreAJourResume() {
         const nbPersonnes = parseInt(inputNbPersonnes.value) || 1;
@@ -51,10 +53,12 @@ document.addEventListener('DOMContentLoaded', () => {
                         txtLivraison.textContent = "Zone non desservie";
                         txtLivraison.classList.add('text-danger');
                         fraisLivraisonActuels = 0;
+                        zoneDesservie = false;
                         document.querySelector('button[type="submit"]').disabled = true;
                     } else {
                         document.querySelector('button[type="submit"]').disabled = false;
                         txtLivraison.classList.remove('text-danger');
+                        zoneDesservie = true;
                         const distance = data.distance_km;
                         // Formule de Julie
                         fraisLivraisonActuels = (distance > 0) ? (5 + (0.59 * distance)) : 0;
@@ -78,8 +82,31 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // Validation avant soumission : bulle native pointée sur le bon champ
+    function validerAvantEnvoi(e) {
+        inputNbPersonnes.setCustomValidity('');
+        inputCodePostal.setCustomValidity('');
+
+        const nbPersonnes = parseInt(inputNbPersonnes.value) || 0;
+
+        if (nbPersonnes < minPersonnes) {
+            e.preventDefault();
+            inputNbPersonnes.setCustomValidity(`Le nombre de personnes minimum pour ce menu est de ${minPersonnes}.`);
+            inputNbPersonnes.reportValidity();
+            return;
+        }
+
+        if (!zoneDesservie) {
+            e.preventDefault();
+            inputCodePostal.setCustomValidity("Cette zone n'est pas desservie par nos services.");
+            inputCodePostal.reportValidity();
+            return;
+        }
+    }
+
     inputNbPersonnes.addEventListener('input', mettreAJourResume);
     inputCodePostal.addEventListener('input', verifierCodePostal);
+    formCommande.addEventListener('submit', validerAvantEnvoi);
 
     if (inputCodePostal.value.trim().length === 5) {
         verifierCodePostal(); 

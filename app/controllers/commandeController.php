@@ -79,6 +79,7 @@ function enregistrerCommande($pdo, $menuModel, $commandeModel, $dataPost)
         throw new Exception("Menu non trouvé ");
     }
 
+    // Vérification de la zone de livraison
     require_once ROOT_PATH . 'app/models/ZoneLivraison.php';
     $zoneModel = new ZoneLivraison($pdo);
     $distance = $zoneModel->getDistanceByCodePostal($dataPost['code_postal']);
@@ -89,6 +90,10 @@ function enregistrerCommande($pdo, $menuModel, $commandeModel, $dataPost)
         $menu['nombre_personne_minimum'],
         $distance
     );
+
+    if (!$resultat['nombre_suffisant']) {
+        throw new Exception("Le nombre de personnes doit être au moins de " . $menu['nombre_personne_minimum'] . " pour ce menu.");
+    }
 
     if (!$resultat['zone_desservie']) {
         throw new Exception("Votre zone n'est pas desservie pour la livraison. Merci de vérifier votre code postal.");
@@ -226,6 +231,13 @@ function updateCommandeController($pdo, $menuModel, $commandeModel, $dataPost)
         $menu['nombre_personne_minimum'],
         $distance
     );
+
+    // Vérification du nombre de personnes et de la zone de livraison
+    if (!$resultat['nombre_suffisant']) {
+        $_SESSION['flash_message'] = "Le nombre de personnnes doit être au moins de " . $menu['nombre_personne_minimum'] . " pour ce menu.";
+        header("Location: ?page=modifier_commande&id={$commandeId}");
+        exit();
+    }
 
     if (!$resultat['zone_desservie']) {
         $_SESSION['flash_message'] = "Votre zone n'est pas desservie pour la livraison. Merci de vérifier votre code postal.";

@@ -21,21 +21,21 @@
     <!-- SECTION 1 : GESTION DES MENUS -->
     <div class="card shadow-sm mb-5">
         <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
-            <h5 class="card-title text-primary mb-0"><i class="bi bi-egg-fried me-2"></i>Liste des Menus</h5>
-            <button class="btn btn-sm btn-outline-primary" id="btn-add-menu"><i class="bi bi-plus-circle me-1"></i> Ajouter menu</button>
+            <h5 class="card-title text-primary mb-0"><i class="bi bi-egg-fried me-2" aria-hidden="true"></i>Liste des Menus</h5>
+            <button class="btn btn-sm btn-outline-primary" id="btn-add-menu"><i class="bi bi-plus-circle me-1" aria-hidden="true"></i> Ajouter menu</button>
         </div>
         <div class="card-body p-0">
             <div class="table-responsive">
                 <table class="table table-hover align-middle mb-0">
                     <thead class="table-light">
                         <tr>
-                            <th>ID</th>
-                            <th>Titre</th>
-                            <th>Prix</th>
-                            <th>Min. pers.</th>
-                            <th>Thème / Régime</th>
-                            <th>Statut</th>
-                            <th class="text-end">Actions</th>
+                            <th scope="col">ID</th>
+                            <th scope="col">Titre</th>
+                            <th scope="col">Prix</th>
+                            <th scope="col">Min. pers.</th>
+                            <th scope="col">Thème / Régime</th>
+                            <th scope="col">Statut</th>
+                            <th scope="col" class="text-end">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -77,12 +77,12 @@
                                             data-regime="<?= $menu['regime_id'] ?? '' ?>"
                                             data-composition='<?= htmlspecialchars($jsonComposition, ENT_QUOTES, 'UTF-8') ?>'
                                             data-conditions='<?= htmlspecialchars($jsonConditions, ENT_QUOTES, 'UTF-8') ?>'>
-                                            <i class="bi bi-pencil"></i> Modifier
+                                            <i class="bi bi-pencil" aria-hidden="true"></i> Modifier
                                         </button>
                                         <button class="btn btn-sm <?= ($menu['actif'] ?? 1) == 1 ? 'btn-outline-danger' : 'btn-outline-success' ?> btn-toggle-menu"
                                             data-id="<?= $menu['menu_id'] ?>"
                                             data-actif="<?= ($menu['actif'] ?? 1) == 1 ? 0 : 1 ?>">
-                                            <i class="bi <?= ($menu['actif'] ?? 1) == 1 ? 'bi-eye-slash' : 'bi-eye' ?>"></i>
+                                            <i class="bi <?= ($menu['actif'] ?? 1) == 1 ? 'bi-eye-slash' : 'bi-eye' ?>" aria-hidden="true"></i>
                                             <?= ($menu['actif'] ?? 1) == 1 ? 'Masquer' : 'Activer' ?>
                                         </button>
                                     </td>
@@ -98,18 +98,18 @@
     <!-- SECTION 2 : GESTION DES PLATS -->
     <div class="card shadow-sm">
         <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
-            <h5 class="card-title text-primary mb-0"><i class="bi bi-disc me-2"></i>Liste des Plats</h5>
-            <button class="btn btn-sm btn-outline-primary" id="btn-add-plat"><i class="bi bi-plus-circle me-1"></i> Ajouter un plat</button>
+            <h5 class="card-title text-primary mb-0"><i class="bi bi-disc me-2" aria-hidden="true"></i>Liste des Plats</h5>
+            <button class="btn btn-sm btn-outline-primary" id="btn-add-plat"><i class="bi bi-plus-circle me-1" aria-hidden="true"></i> Ajouter un plat</button>
         </div>
         <div class="card-body p-0">
             <div class="table-responsive">
                 <table class="table table-hover align-middle mb-0">
                     <thead class="table-light">
                         <tr>
-                            <th>ID</th>
-                            <th>Titre du plat</th>
-                            <th>Statut</th>
-                            <th class="text-end">Actions</th>
+                            <th scope="col">ID</th>
+                            <th scope="col">Titre du plat</th>
+                            <th scope="col">Statut</th>
+                            <th scope="col" class="text-end">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -131,12 +131,12 @@
                                     <td class="text-end">
                                         <button class="btn btn-sm btn-outline-primary me-1 btn-edit-plat"
                                             data-id="<?= $plat['plat_id'] ?>">
-                                            <i class="bi bi-pencil"></i> Modifier
+                                            <i class="bi bi-pencil" aria-hidden="true"></i> Modifier
                                         </button>
                                         <button class="btn btn-sm <?= ($plat['actif'] ?? 1) == 1 ? 'btn-outline-danger' : 'btn-outline-success' ?> btn-toggle-plat"
                                             data-id="<?= $plat['plat_id'] ?>"
                                             data-actif="<?= ($plat['actif'] ?? 1) == 1 ? 0 : 1 ?>">
-                                            <i class="bi <?= ($plat['actif'] ?? 1) == 1 ? 'bi-eye-slash' : 'bi-eye' ?>"></i>
+                                            <i class="bi <?= ($plat['actif'] ?? 1) == 1 ? 'bi-eye-slash' : 'bi-eye' ?>" aria-hidden="true"></i>
                                             <?= ($plat['actif'] ?? 1) == 1 ? 'Masquer' : 'Activer' ?>
                                         </button>
                                     </td>

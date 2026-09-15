@@ -8,6 +8,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
                 </div>
                 <div class="modal-body">
+                    <p class="text-muted small mb-3">Les champs marqués <span class="text-danger">*</span> sont obligatoires.</p>
                     <!-- Champ caché pour l'ID du menu -->
                     <input type="hidden" name="menu_id" id="edit_menu_id">
 

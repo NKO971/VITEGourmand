@@ -9,6 +9,7 @@
         </div>
 
         <div class="modal-body">
+          <p class="text-muted small mb-3">Les champs marqués <span class="text-danger">*</span> sont obligatoires.</p>
           <input type="hidden" name="commande_id" id="cancel_commande_id" value="">
           <input type="hidden" name="statut" value="Annulée">
 

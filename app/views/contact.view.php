@@ -16,6 +16,7 @@
                 <?php if (empty($success)): ?>
                 <form method="post" action="?page=contact">
                     <fieldset class="fieldset-connexion p-4 bg-white">
+                        <p class="text-muted small mb-3">Les champs marqués <span class="text-danger">*</span> sont obligatoires.</p>
 
                         <div class="mb-3">
                             <label for="titre" class="form-label small fw-medium text-secondary">Titre</label>

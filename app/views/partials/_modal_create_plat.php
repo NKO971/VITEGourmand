@@ -11,6 +11,7 @@
             
             <form id="formCreatePlat" action="index.php?page=create_plat" method="POST">
                 <div class="modal-body">
+                    <p class="text-muted small mb-3">Les champs marqués <span class="text-danger">*</span> sont obligatoires.</p>
                     
                     <!-- Nom / Titre du Plat -->
                     <div class="mb-3">

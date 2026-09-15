@@ -5,8 +5,8 @@
                 <h5 class="fw-bold font-poppins mb-3 text-orange">VITE<span class="text-white">Gourmand</span></h5>
                 <p class="text-muted small">Des plats d'exception cuisinés avec amour par vos chefs locaux, livrés à toute vitesse.</p>
                 <div class="vg-social-links d-flex gap-3 mt-3">
-                    <a href="#" class="text-white opacity-75 opacity-100-hover"><i class="bi bi-instagram fs-5"></i></a>
-                    <a href="#" class="text-white opacity-75 opacity-100-hover"><i class="bi bi-facebook fs-5"></i></a>
+                    <a href="#" class="text-white opacity-75 opacity-100-hover" aria-label="Instagram"><i class="bi bi-instagram fs-5" aria-hidden="true"></i></a>
+                    <a href="#" class="text-white opacity-75 opacity-100-hover" aria-label="Facebook"><i class="bi bi-facebook fs-5" aria-hidden="true"></i></a>
                 </div>
             </div>
 

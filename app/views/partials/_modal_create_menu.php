@@ -8,6 +8,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
                 </div>
                 <div class="modal-body">
+                    <p class="text-muted small mb-3">Les champs marqués <span class="text-danger">*</span> sont obligatoires.</p>
 
                     <div class="row g-3 mb-3">
                         <div class="col-md-4">

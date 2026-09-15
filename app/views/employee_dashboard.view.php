@@ -11,7 +11,7 @@
     <div class="card border-warning shadow-sm">
         <div class="card-header bg-warning text-dark py-3 d-flex justify-content-between align-items-center">
             <h5 class="mb-0 fw-bold">
-                <i class="bi bi-exclamation-triangle-fill me-2"></i>Nouvelles commandes à traiter
+                <i class="bi bi-exclamation-triangle-fill me-2" aria-hidden="true"></i>Nouvelles commandes à traiter
             </h5>
             <span class="badge bg-dark text-white fs-6" id="pending-count">0 en attente</span>
         </div>
@@ -43,7 +43,7 @@
             <div class="col-md-4">
                 <label for="filter-search" class="form-label text-muted small fw-bold">Recherche</label>
                 <div class="input-group">
-                    <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
+                    <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted" aria-hidden="true"></i></span>
                     <input type="text" id="filter-search" class="form-control border-start-0 ps-0" placeholder="Nom, prénom ou n° commande...">
                 </div>
             </div>
@@ -72,7 +72,7 @@
             <!-- Bouton Réinitialiser -->
             <div class="col-md-2">
                 <button type="button" id="btn-reset" class="btn btn-outline-secondary w-100">
-                    <i class="bi bi-x-circle me-1"></i> Réinitialiser
+                    <i class="bi bi-x-circle me-1" aria-hidden="true"></i> Réinitialiser
                 </button>
             </div>
 
@@ -83,7 +83,7 @@
 <!-- TABLEAU DES COMMANDES -->
 <div class="card shadow-sm border-0">
     <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
-        <h5 class="mb-0 fw-bold"><i class="bi bi-list-check me-2 text-primary"></i>Commandes reçues</h5>
+        <h5 class="mb-0 fw-bold"><i class="bi bi-list-check me-2 text-primary" aria-hidden="true"></i>Commandes reçues</h5>
         <span class="badge bg-primary fs-6" id="orders-count">0 commande(s)</span>
     </div>
 

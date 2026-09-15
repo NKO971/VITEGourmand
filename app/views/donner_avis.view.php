@@ -19,11 +19,12 @@
                     <form action="?page=traitement_avis" method="POST">
                         <!-- ID de la commande masqué pour la transmission -->
                         <input type="hidden" name="commande_id" value="<?= htmlspecialchars($_GET['commande_id'] ?? '') ?>">
+                        <p class="text-muted small mb-3">Les champs marqués <span class="text-danger">*</span> sont obligatoires.</p>
 
                         <!-- Section Note avec un Select "Stars" beaucoup plus pro -->
                         <div class="mb-4">
-                            <label class="form-label fw-bold">Quelle note attribuez-vous ?</label>
-                            <select name="note" class="form-select form-select-lg border-2" required>
+                            <label class="form-label fw-bold" for="avis_note">Quelle note attribuez-vous ?</label>
+                            <select id="avis_note" name="note" class="form-select form-select-lg border-2" required>
                                 <option value="" disabled selected>Choisir une note...</option>
                                 <option value="5">⭐⭐⭐⭐⭐ - Excellent !</option>
                                 <option value="4">⭐⭐⭐⭐ - Très bon</option>
@@ -34,8 +35,8 @@
                         </div>
 
                         <div class="mb-4">
-                            <label class="form-label fw-bold">Votre commentaire :</label>
-                            <textarea name="commentaire" class="form-control border-2" rows="4" 
+                            <label class="form-label fw-bold" for="avis_commentaire">Votre commentaire :</label>
+                            <textarea id="avis_commentaire" name="commentaire" class="form-control border-2" rows="4" 
                                       placeholder="Qu'avez-vous pensé de la qualité du repas, du temps de livraison... ?" required></textarea>
                         </div>
 

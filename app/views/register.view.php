@@ -17,6 +17,7 @@
             <form id="inscription-form" method="post" action="">
                 <fieldset class="fieldset-connexion p-4 bg-white">
                     <legend class="fw-bold mb-4">Créer un compte</legend>
+                    <p class="text-muted small mb-3">Les champs marqués <span class="text-danger">*</span> sont obligatoires.</p>
 
                     <div class="row">
                         <div class="col-md-6 mb-3" id="nom-div">
@@ -69,7 +70,7 @@
 
         <div class="col-12 col-md-6 col-lg-5 d-flex flex-column align-items-center justify-content-center text-center p-4">
             <div class="vg-welcome-badge mb-3">
-                <i class="bi bi-egg-fried"></i> L'aventure commence ici
+                <i class="bi bi-egg-fried" aria-hidden="true"></i> L'aventure commence ici
             </div>
             <h2 class="vg-title-inscription fw-black mb-3">
                 Inscrivez-vous <br><span class="text-dark">& rejoignez la table !</span>

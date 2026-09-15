@@ -4,6 +4,7 @@
 
         <form action="index.php?page=enregistrer_commande" method="POST">
             <input type="hidden" name="menu_id" value="<?= htmlspecialchars($menu['menu_id']) ?>">
+            <p class="text-muted small mb-3">Les champs marqués <span class="text-danger">*</span> sont obligatoires.</p>
             <div class="row">
 
                 <div class="col-md-6">
@@ -27,12 +28,12 @@
 
                     <div class="mb-3">
                         <label for="heure_livraison" class="form-label fw-bold">Heure souhaitée</label>
-                        <input type="time" class="form-control" name="heure_livraison" required>
+                        <input type="time" class="form-control" id="heure_livraison" name="heure_livraison" required>
                     </div>
 
                     <div class="mb-3">
                         <label for="lieu_livraison" class="form-label fw-bold">Lieu de livraison</label>
-                        <input type="text" class="form-control" name="lieu_livraison" value="<?= htmlspecialchars($user_data['adresse']) ?>" required>
+                        <input type="text" class="form-control" id="lieu_livraison" name="lieu_livraison" value="<?= htmlspecialchars($user_data['adresse']) ?>" required>
                     </div>
 
                     <div class="mb-3">

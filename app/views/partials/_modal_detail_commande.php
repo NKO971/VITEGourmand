@@ -32,7 +32,7 @@
 
                     <!-- BLOC DYNAMIQUE : Alertes Matériel Prêté & CGV 600 € -->
                     <div id="modal-equipment-alert" class="alert alert-warning border-warning d-flex align-items-start mb-3 d-none" role="alert">
-                        <i class="bi bi-box-seam fs-4 me-3 text-warning-emphasis"></i>
+                        <i class="bi bi-box-seam fs-4 me-3 text-warning-emphasis" aria-hidden="true"></i>
                         <div>
                             <h6 class="alert-heading fw-bold mb-1" id="equipment-alert-title">Prêt de matériel associé</h6>
                             <p class="mb-0 small" id="equipment-alert-desc">
@@ -40,11 +40,11 @@
                             </p>
                             <div id="equipment-penalty-notice" class="mt-2 pt-2 border-top border-warning-subtle small text-danger">
                                 <div class="fw-bold mb-1 text-dark">
-                                    <i class="bi bi-calendar-check me-1 text-warning-emphasis"></i> Date limite de remise :
+                                    <i class="bi bi-calendar-check me-1 text-warning-emphasis" aria-hidden="true"></i> Date limite de remise :
                                     <span id="modal-equipment-deadline" class="badge bg-warning text-dark fs-6 ms-1"></span>
                                 </div>
                                 <div class="fw-bold">
-                                    <i class="bi bi-shield-exclamation me-1"></i> Pénalité non-restitution : <strong>600,00 €</strong> (selon CGV).
+                                    <i class="bi bi-shield-exclamation me-1" aria-hidden="true"></i> Pénalité non-restitution : <strong>600,00 €</strong> (selon CGV).
                                 </div>
                             </div>
                         </div>
@@ -69,7 +69,7 @@
                     <!-- Champs obligatoires si Annulation -->
                     <div id="cancellation-fields" class="p-3 bg-light border border-danger rounded d-none">
                         <h6 class="text-danger fw-bold mb-3">
-                            <i class="bi bi-exclamation-triangle-fill me-1"></i> Contact client obligatoire avant annulation
+                            <i class="bi bi-exclamation-triangle-fill me-1" aria-hidden="true"></i> Contact client obligatoire avant annulation
                         </h6>
                         <div class="mb-3">
                             <label class="form-label fw-bold">Mode de contact utilisé * :</label>

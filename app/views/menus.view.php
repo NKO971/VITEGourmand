@@ -8,11 +8,11 @@
       <div class="col-md-6">
         <div class="row g-2">
           <div class="col-6">
-            <label class="form-label small">Prix Min (€)</label>
+            <label class="form-label small" for="prix-min">Prix Min (€)</label>
             <input type="number" class="form-control form-control-sm" id="prix-min" placeholder="0">
           </div>
           <div class="col-6">
-            <label class="form-label small">Prix Max (€)</label>
+            <label class="form-label small" for="prix-max">Prix Max (€)</label>
             <input type="number" class="form-control form-control-sm" id="prix-max" placeholder="100">
           </div>
         </div>
@@ -21,7 +21,7 @@
       <div class="col-md-6">
         <div class="row g-2">
           <div class="col-6">
-            <label class="form-label small">Convives</label>
+            <label class="form-label small" for="filtre-convives">Convives</label>
             <select class="form-select form-select-sm" id="filtre-convives">
               <option value="Tous">Tous</option>
               <option value="2">2 personnes</option>
@@ -30,7 +30,7 @@
             </select>
           </div>
           <div class="col-6">
-            <label class="form-label small">Régime</label>
+            <label class="form-label small" for="filtre-regime">Régime</label>
             <select class="form-select form-select-sm" id="filtre-regime">
               <option value="tous">Tous</option>
               <?php foreach ($regimes as $regime): ?>
@@ -44,7 +44,7 @@
       <div class="col-12 mt-2">
         <div class="row g-2 align-items-end">
           <div class="col-md-9">
-            <label class="form-label small">Thème du menu</label>
+            <label class="form-label small" for="filtre-theme">Thème du menu</label>
             <select class="form-select form-select-sm" id="filtre-theme">
               <option value="tous">Tous</option>
               <?php foreach ($themes as $theme): ?>
@@ -89,7 +89,7 @@
           <div class="card-body">
             <h5 class="card-title fw-bold"><?php echo htmlspecialchars($menu['titre']); ?></h5>
 
-            <p class="text-muted small mb-2"><i class="bi bi-tag"></i> Thème : <?php echo htmlspecialchars($menu['theme_libelle']); ?></p>
+            <p class="text-muted small mb-2"><i class="bi bi-tag" aria-hidden="true"></i> Thème : <?php echo htmlspecialchars($menu['theme_libelle']); ?></p>
 
             <div class="d-flex gap-2 mb-3">
               <span class="badge bg-success-subtle text-success"><?php echo htmlspecialchars($menu['regime_libelle']); ?></span>

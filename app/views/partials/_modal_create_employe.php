@@ -8,6 +8,7 @@
             </div>
             <form id="formCreateEmploye">
                 <div class="modal-body">
+                    <p class="text-muted small mb-3">Les champs marqués <span class="text-danger">*</span> sont obligatoires.</p>
                     <div class="mb-3">
                         <label for="create_employe_email" class="form-label fw-semibold">Email <span class="text-danger">*</span></label>
                         <input type="email" class="form-control" id="create_employe_email" name="email" required>

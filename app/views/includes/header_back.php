@@ -36,32 +36,32 @@
                     <ul class="nav flex-column gap-2">
                         <li class="nav-item">
                             <a class="nav-link <?= (($currentPage ?? '') === 'employee') ? 'bg-primary text-white' : 'text-white-50' ?> rounded px-3 py-2 d-flex align-items-center gap-2" href="?page=employee">
-                                <i class="bi bi-speedometer2"></i> Commandes
+                                <i class="bi bi-speedometer2" aria-hidden="true"></i> Commandes
                             </a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link <?= (($currentPage ?? '') === 'employee_menus') ? 'bg-primary text-white' : 'text-white-50' ?> rounded px-3 py-2 d-flex align-items-center gap-2" href="?page=employee_menus">
-                                <i class="bi bi-egg-fried"></i> Menus & Plats
+                                <i class="bi bi-egg-fried" aria-hidden="true"></i> Menus & Plats
                             </a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link <?= (($currentPage ?? '') === 'employee_schedules') ? 'bg-primary text-white' : 'text-white-50' ?> rounded px-3 py-2 d-flex align-items-center gap-2" href="?page=employee_schedules">
-                                <i class="bi bi-clock"></i> Horaires
+                                <i class="bi bi-clock" aria-hidden="true"></i> Horaires
                             </a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link <?= (($currentPage ?? '') === 'employee_reviews') ? 'bg-primary text-white' : 'text-white-50' ?> rounded px-3 py-2 d-flex align-items-center gap-2" href="?page=employee_reviews">
-                                <i class="bi bi-chat-left-text"></i> Modération Avis
+                                <i class="bi bi-chat-left-text" aria-hidden="true"></i> Modération Avis
                             </a>
                             <?php if (($_SESSION['role_id'] ?? null) == 1): ?>
                         <li class="nav-item">
                             <a class="nav-link <?= (($currentPage ?? '') === 'admin_dashboard') ? 'bg-primary text-white' : 'text-white-50' ?> rounded px-3 py-2 d-flex align-items-center gap-2" href="?page=admin_dashboard">
-                                <i class="bi bi-bar-chart"></i> Dashboard
+                                <i class="bi bi-bar-chart" aria-hidden="true"></i> Dashboard
                             </a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link <?= (($currentPage ?? '') === 'admin_employes') ? 'bg-primary text-white' : 'text-white-50' ?> rounded px-3 py-2 d-flex align-items-center gap-2" href="?page=admin_employes">
-                                <i class="bi bi-people"></i> Gestion Employés
+                                <i class="bi bi-people" aria-hidden="true"></i> Gestion Employés
                             </a>
                         </li>
                     <?php endif; ?>
@@ -72,12 +72,12 @@
                     <ul class="nav flex-column gap-2">
                         <li class="nav-item">
                             <a class="nav-link text-info px-3 py-2 d-flex align-items-center gap-2" href="?page=home">
-                                <i class="bi bi-arrow-left-circle"></i> Retour au site public
+                                <i class="bi bi-arrow-left-circle" aria-hidden="true"></i> Retour au site public
                             </a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link text-danger px-3 py-2 d-flex align-items-center gap-2" href="?page=deconnexion">
-                                <i class="bi bi-box-arrow-right"></i> Déconnexion
+                                <i class="bi bi-box-arrow-right" aria-hidden="true"></i> Déconnexion
                             </a>
                         </li>
                     </ul>

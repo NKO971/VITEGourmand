@@ -17,6 +17,7 @@
                     <input type="hidden" name="token" value="<?= htmlspecialchars($token) ?>">
                     <fieldset class="fieldset-connexion p-4 bg-white">
                         <legend class="fw-bold mb-4">Nouveau mot de passe</legend>
+                        <p class="text-muted small mb-3">Les champs marqués <span class="text-danger">*</span> sont obligatoires.</p>
 
                         <div class="mb-3">
                             <label for="password" class="form-label small fw-medium text-secondary">Nouveau mot de passe</label>

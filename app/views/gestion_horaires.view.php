@@ -5,17 +5,17 @@
 
     <div class="card shadow-sm">
         <div class="card-header bg-white py-3">
-            <h5 class="card-title text-primary mb-0"><i class="bi bi-clock me-2"></i>Horaires d'ouverture</h5>
+            <h5 class="card-title text-primary mb-0"><i class="bi bi-clock me-2" aria-hidden="true"></i>Horaires d'ouverture</h5>
         </div>
         <div class="card-body p-0">
             <div class="table-responsive">
                 <table class="table table-hover align-middle mb-0">
                     <thead class="table-light">
                         <tr>
-                            <th>Jour</th>
-                            <th>Heure d'ouverture</th>
-                            <th>Heure de fermeture</th>
-                            <th class="text-end">Action</th>
+                            <th scope="col">Jour</th>
+                            <th scope="col">Heure d'ouverture</th>
+                            <th scope="col">Heure de fermeture</th>
+                            <th scope="col" class="text-end">Action</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -28,19 +28,23 @@
                                 <tr data-jour="<?= htmlspecialchars($horaire['jour']) ?>">
                                     <td><strong><?= htmlspecialchars($horaire['jour']) ?></strong></td>
                                     <td>
+                                        <label class="visually-hidden" for="ouverture_<?= htmlspecialchars($horaire['jour']) ?>">Heure d'ouverture <?= htmlspecialchars($horaire['jour']) ?></label>
                                         <input type="text" class="form-control input-ouverture"
+                                               id="ouverture_<?= htmlspecialchars($horaire['jour']) ?>"
                                                value="<?= htmlspecialchars($horaire['heure_ouverture']) ?>"
                                                placeholder="ex: 10:00 ou Fermé">
                                     </td>
                                     <td>
+                                        <label class="visually-hidden" for="fermeture_<?= htmlspecialchars($horaire['jour']) ?>">Heure de fermeture <?= htmlspecialchars($horaire['jour']) ?></label>
                                         <input type="text" class="form-control input-fermeture"
+                                               id="fermeture_<?= htmlspecialchars($horaire['jour']) ?>"
                                                value="<?= htmlspecialchars($horaire['heure_fermeture']) ?>"
                                                placeholder="ex: 22:00 ou Fermé">
                                     </td>
                                     <td class="text-end">
                                         <button class="btn btn-sm btn-outline-primary btn-save-horaire"
                                                 data-jour="<?= htmlspecialchars($horaire['jour']) ?>">
-                                            <i class="bi bi-check-lg"></i> Enregistrer
+                                            <i class="bi bi-check-lg" aria-hidden="true"></i> Enregistrer
                                         </button>
                                     </td>
                                 </tr>

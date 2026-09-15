@@ -8,6 +8,7 @@
 
         <form action="index.php?page=update_commande" method="POST">
             <input type="hidden" name="commande_id" value="<?= htmlspecialchars($commande['commande_id']) ?>">
+            <p class="text-muted small mb-3">Les champs marqués <span class="text-danger">*</span> sont obligatoires.</p>
             <div class="row">
 
                 <div class="col-md-6">
@@ -30,13 +31,13 @@
 
                     <div class="mb-3">
                         <label for="heure_livraison" class="form-label fw-bold">Heure souhaitée</label>
-                        <input type="time" class="form-control" name="heure_livraison"
+                        <input type="time" class="form-control" id="heure_livraison" name="heure_livraison"
                             value="<?= htmlspecialchars($commande['heure_livraison']) ?>" required>
                     </div>
 
                     <div class="mb-3">
                         <label for="lieu_livraison" class="form-label fw-bold">Lieu de livraison</label>
-                        <input type="text" class="form-control" name="lieu_livraison"
+                        <input type="text" class="form-control" id="lieu_livraison" name="lieu_livraison"
                             value="<?= htmlspecialchars($commande['adresse_livraison']) ?>" required>
                     </div>
 

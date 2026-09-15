@@ -3,7 +3,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title fw-bold" id="menuModalLabel-<?= $menu['menu_id'] ?>"><?= htmlspecialchars($menu['titre']) ?></h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
       </div>
       <div class="modal-body">
 
@@ -51,7 +51,7 @@
         <?php if (!empty($conditions)): ?>
           <div class="alert alert-warning border-warning-subtle my-3" role="alert">
             <h6 class="alert-heading fw-bold d-flex align-items-center mb-2 text-warning-emphasis">
-              <i class="bi bi-exclamation-triangle-fill me-2 fs-5"></i>
+              <i class="bi bi-exclamation-triangle-fill me-2 fs-5" aria-hidden="true"></i>
               IMPORTANT : Conditions obligatoires de ce menu
             </h6>
             <hr class="my-2 bg-warning-border">
@@ -76,13 +76,13 @@
         <?php if (isset($_SESSION['user_id'])): ?>
 
           <a href="index.php?page=commander&menu_id=<?= $menu['menu_id'] ?>" class="btn btn-primary fw-bold">
-            <i class="bi bi-cart-plus me-2"></i>Commander ce menu
+            <i class="bi bi-cart-plus me-2" aria-hidden="true"></i>Commander ce menu
           </a>
 
         <?php else: ?>
 
           <a href="index.php?page=connexion&redirect_to=commander&menu_id=<?= $menu['menu_id'] ?>" class="btn btn-outline-danger fw-bold">
-            <i class="bi bi-box-arrow-in-right me-2"></i>Se connecter pour commander
+            <i class="bi bi-box-arrow-in-right me-2" aria-hidden="true"></i>Se connecter pour commander
           </a>
 
         <?php endif; ?>

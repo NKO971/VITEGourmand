@@ -8,7 +8,7 @@
         <div class="col-12 col-lg-7">
             <div class="card shadow-sm h-100">
                 <div class="card-header bg-white py-3">
-                    <h5 class="card-title text-primary mb-0"><i class="bi bi-bar-chart me-2"></i>Nombre de commandes par menu</h5>
+                    <h5 class="card-title text-primary mb-0"><i class="bi bi-bar-chart me-2" aria-hidden="true"></i>Nombre de commandes par menu</h5>
                 </div>
                 <div class="card-body">
                     <?php if (empty($commandesParMenu)): ?>
@@ -24,7 +24,7 @@
         <div class="col-12 col-lg-5">
             <div class="card shadow-sm h-100">
                 <div class="card-header bg-white py-3">
-                    <h5 class="card-title text-danger mb-0"><i class="bi bi-x-circle me-2"></i>Annulations ce mois-ci</h5>
+                    <h5 class="card-title text-danger mb-0"><i class="bi bi-x-circle me-2" aria-hidden="true"></i>Annulations ce mois-ci</h5>
                 </div>
                 <div class="card-body d-flex flex-column align-items-center justify-content-center">
                     <span class="display-3 fw-bold text-danger"><?= (int)$annulationsMoisEnCours ?></span>
@@ -54,7 +54,7 @@
         <div class="col-12">
             <div class="card shadow-sm">
                 <div class="card-header bg-white py-3">
-                    <h5 class="card-title text-success mb-0"><i class="bi bi-currency-euro me-2"></i>Chiffre d'affaires</h5>
+                    <h5 class="card-title text-success mb-0"><i class="bi bi-currency-euro me-2" aria-hidden="true"></i>Chiffre d'affaires</h5>
                 </div>
                 <div class="card-body">
                     <form id="formFiltresCA" class="row g-3 align-items-end mb-4" onsubmit="event.preventDefault();">

@@ -11,6 +11,7 @@
                 <form id="connexion-form" method="post" action="">
                     <fieldset class="fieldset-connexion p-4 bg-white">
                         <legend class="fw-bold mb-4">Connexion</legend>
+                        <p class="text-muted small mb-3">Les champs marqués <span class="text-danger">*</span> sont obligatoires.</p>
 
                         <div class="mb-3" id="email-div">
                             <label for="email" class="form-label small fw-medium text-secondary">Email</label>
@@ -46,7 +47,7 @@
 
             <div class="col-12 col-md-6 col-lg-5 text-center text-md-start d-flex flex-column align-items-center align-items-md-start">
                 <div class="vg-welcome-badge mb-3">
-                    <i class="bi bi-fire"></i> Content de vous revoir !
+                    <i class="bi bi-fire" aria-hidden="true"></i> Content de vous revoir !
                 </div>
                 <h2 class="vg-title-inscription fw-black mb-3 text-center text-md-start">
                     Ravi de vous <br><span class="text-dark d-block d-md-inline">revoir à table</span>

@@ -269,4 +269,21 @@ class Commande
         }
         return $date->format('d/m/Y');
     }
+
+    // Cette fonction vérifie si la transition de statut est autorisée.
+    public function isTransitionAutorisee(string $statutActuel, string $nouveauStatut): bool
+{
+    $transitionsAutorisees = [
+        'En attente'                       => ['En attente', 'Acceptée', 'Annulée'],
+        'Acceptée'                          => ['Acceptée', 'En préparation', 'Annulée'],
+        'En préparation'                    => ['En préparation', 'En cours de livraison'],
+        'En cours de livraison'             => ['En cours de livraison', 'Livré'],
+        'Livré'                              => ['Livré', 'En attente du retour de matériel', 'Terminée'],
+        'En attente du retour de matériel'  => ['En attente du retour de matériel', 'Terminée'],
+        'Terminée'                          => ['Terminée'],
+        'Annulée'                           => ['Annulée'],
+    ];
+
+    return in_array($nouveauStatut, $transitionsAutorisees[$statutActuel] ?? []);
+}
 }

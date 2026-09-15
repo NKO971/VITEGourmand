@@ -56,8 +56,13 @@ function updateOrderStatusController($pdo)
         exit();
     }
 
-    $setRestitution = ($newStatus === 'Terminée' && isset($order['pret_materiel']) && $order['pret_materiel'] == 1);
+    if (!$commandeModel->isTransitionAutorisee($order['statut'], $newStatus)) {
+        http_response_code(422);
+        echo json_encode(['error' => "Impossible de passer du statut '{$order['statut']}' à '{$newStatus}'."]);
+        exit();
+    }
 
+    $setRestitution = ($newStatus === 'Terminée' && isset($order['pret_materiel']) && $order['pret_materiel'] == 1);
     $success = $commandeModel->changeOrdersStatusWithFollowUp(
         $commandeId,
         $newStatus,

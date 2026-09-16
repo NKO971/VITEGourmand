@@ -11,13 +11,13 @@
 
     <?php if (isset($specificCss) && is_array($specificCss)): ?>
         <?php foreach ($specificCss as $css): ?>
-            <link rel="stylesheet" href="/VITEGourmand/public/<?php echo ltrim($css, '/'); ?>">
+            <link rel="stylesheet" href="<?= BASE_URL ?>/<?php echo ltrim($css, '/'); ?>">
         <?php endforeach; ?>
     <?php endif; ?>
 
     <?php if (isset($specificJS) && is_array($specificJS)): ?>
         <?php foreach ($specificJS as $script): ?>
-            <script src="/VITEGourmand/public/<?php echo ltrim($script, '/'); ?>" defer></script>
+            <script src="<?= BASE_URL ?>/<?php echo ltrim($script, '/'); ?>" defer></script>
         <?php endforeach; ?>
     <?php endif; ?>
 </head>
@@ -25,7 +25,7 @@
 <header class="vg-header sticky-top">
     <nav class="navbar navbar-expand-lg navbar-light bg-white py-3">
         <div class="container">
-            <a class="navbar-brand d-flex align-items-center" href="/VITEGourmand/public/?page=home">
+            <a class="navbar-brand d-flex align-items-center" href="<?= BASE_URL ?>/?page=home">
                 <span class="fw-black fs-3 text-dark font-poppins">VITE<span class="text-orange">Gourmand</span></span>
             </a>
 
@@ -36,9 +36,9 @@
 
             <div class="collapse navbar-collapse" id="navbarNav">
                 <div class="navbar-nav ms-auto align-items-center gap-2">
-                    <a class="nav-link vg-nav-link" href="/VITEGourmand/public/?page=home">Accueil</a>
-                    <a class="nav-link vg-nav-link" href="/VITEGourmand/public/?page=menus">Nos Menus</a>
-                    <a class="nav-link vg-nav-link" href="/VITEGourmand/public/?page=contact">Contact</a>
+                    <a class="nav-link vg-nav-link" href="<?= BASE_URL ?>/?page=home">Accueil</a>
+                    <a class="nav-link vg-nav-link" href="<?= BASE_URL ?>/?page=menus">Nos Menus</a>
+                    <a class="nav-link vg-nav-link" href="<?= BASE_URL ?>/?page=contact">Contact</a>
 
                     <div class="nav-vr d-none d-lg-block mx-2"></div>
 
@@ -52,7 +52,7 @@
                                 
                                 <?php if (isset($_SESSION['role_id']) && in_array($_SESSION['role_id'], [1, 2])): ?>
                                     <li>
-                                        <a class="dropdown-item py-2 fw-bold text-primary" href="/VITEGourmand/public/?page=employee">
+                                        <a class="dropdown-item py-2 fw-bold text-primary" href="<?= BASE_URL ?>/?page=employee">
                                             <i class="bi bi-speedometer2 me-2" aria-hidden="true"></i> Espace Employé
                                         </a>
                                     </li>
@@ -60,7 +60,7 @@
                                 <?php endif; ?>
 
                                 <li>
-                                    <a class="dropdown-item py-2" href="/VITEGourmand/public/?page=profile">
+                                    <a class="dropdown-item py-2" href="<?= BASE_URL ?>/?page=profile">
                                         <i class="bi bi-gear me-2" aria-hidden="true"></i> Mon Profil
                                     </a>
                                 </li>
@@ -74,8 +74,8 @@
                         </div>
 
                     <?php else: ?>
-                        <a class="nav-link vg-nav-link px-3" href="/VITEGourmand/public/?page=connexion">Connexion</a>
-                        <a class="btn btn-vg-primary btn-sm px-4 py-2 fw-bold" href="/VITEGourmand/public/?page=inscription">S'inscrire</a>
+                        <a class="nav-link vg-nav-link px-3" href="<?= BASE_URL ?>/?page=connexion">Connexion</a>
+                        <a class="btn btn-vg-primary btn-sm px-4 py-2 fw-bold" href="<?= BASE_URL ?>/?page=inscription">S'inscrire</a>
                     <?php endif; ?>
                 </div>
             </div>

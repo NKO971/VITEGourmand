@@ -10,11 +10,15 @@ if ($jawsdbUrl) {
     define('DB_NAME', ltrim($dbParts['path'], '/'));
     define('DB_USER', $dbParts['user']);
     define('DB_PASS', $dbParts['pass']);
+
+    define('BASE_URL', '');
 } else {
     define('DB_HOST', 'localhost');
     define('DB_NAME', 'vitegourmand');
     define('DB_USER', 'root');
     define('DB_PASS', '');
+
+    define('BASE_URL', '/VITEGourmand/public');
 }
 
 // Dictionnaire des Tables pour éviter les fautes de frappe comme dans EcoRide

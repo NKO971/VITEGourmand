@@ -135,8 +135,14 @@
                     </div>
 
                     <div class="mb-3">
-                        <label for="edit_menu_image" class="form-label fw-semibold">Image du menu</label>
-                        <input type="file" class="form-control" id="edit_menu_image" name="image" accept="image/jpeg,image/png,image/webp">
+                        <label for="create_menu_galerie" class="form-label fw-semibold"><i class="bi bi-images me-1"></i>Galerie photos du menu (optionnel)</label>
+                        <textarea class="form-control" id="create_menu_galerie" rows="3" placeholder="Collez une URL d'image par ligne (max 10), ex :&#10;https://images.unsplash.com/photo-...&#10;https://images.unsplash.com/photo-..."></textarea>
+                        <div class="form-text">Une URL par ligne. Ces photos s'affichent en carrousel dans le détail du menu. La vignette de la carte reste le champ "Image du menu" ci-dessous.</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="create_menu_image" class="form-label fw-semibold">Image du menu (vignette)</label>
+                        <input type="file" class="form-control" id="create_menu_image" name="image" accept="image/jpeg,image/png,image/webp">
                     </div>
                 </div>
 

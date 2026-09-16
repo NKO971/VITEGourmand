@@ -33,14 +33,27 @@ CREATE TABLE IF NOT EXISTS `menu` (
     menu_id INT AUTO_INCREMENT PRIMARY KEY,
     titre VARCHAR(100) NOT NULL,
     prix_par_personne DOUBLE NOT NULL,
+    description VARCHAR(255),
     nombre_personne_minimum INT NOT NULL,
     quantite_restante INT DEFAULT 0,
     theme_id INT,
     regime_id INT,
     composition JSON,
     conditions_stockage JSON,
+    image VARCHAR(255),
+    actif TINYINT(1) DEFAULT 1,
     FOREIGN KEY (theme_id) REFERENCES theme(theme_id),
     FOREIGN KEY (regime_id) REFERENCES regime(regime_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Galerie d'images par menu (URLs externes : pas d'upload fichier,
+-- filesystem éphémère sur Heroku). menu.image reste la vignette.
+CREATE TABLE IF NOT EXISTS `menu_images` (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    menu_id INT NOT NULL,
+    image_url VARCHAR(500) NOT NULL,
+    ordre INT DEFAULT 0,
+    FOREIGN KEY (menu_id) REFERENCES menu(menu_id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `plat` (

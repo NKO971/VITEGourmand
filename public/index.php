@@ -301,6 +301,13 @@ switch ($page) {
         exit();
         break;
 
+    case 'get_menu_gallery':
+        header('Content-Type: application/json');
+        require_once ROOT_PATH . 'app/controllers/gestionMenuController.php';
+        getMenuGalleryController($pdo);
+        exit();
+        break;
+
     case 'toggle_plat_status':
         header('Content-Type: application/json');
         require_once ROOT_PATH . 'app/controllers/gestionPlatController.php';

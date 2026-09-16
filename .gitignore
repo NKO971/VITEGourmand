@@ -5,6 +5,9 @@
 .env
 /app/config/db_credentials.php
 
+# Backups locaux de données (ne jamais committer)
+database/backup_*.txt
+
 # Fichiers système
 .DS_Store
 Thumbs.db

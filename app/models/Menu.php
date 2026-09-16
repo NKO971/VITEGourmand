@@ -138,4 +138,106 @@ class Menu
     ");
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    // ─────────────────────────────────────────────
+    // Galerie d'images par menu (table menu_images)
+    // URLs externes (pas d'upload fichier : filesystem
+    // éphémère sur Heroku). menu.image reste la vignette.
+    // ─────────────────────────────────────────────
+
+    /**
+     * Retourne les URLs de la galerie d'un menu, triées par ordre.
+     * @return string[]
+     */
+    public function getImagesByMenuId($menuId): array
+    {
+        $stmt = $this->pdo->prepare("SELECT image_url FROM menu_images WHERE menu_id = ? ORDER BY ordre ASC, id ASC");
+        $stmt->execute([(int)$menuId]);
+        return $stmt->fetchAll(PDO::FETCH_COLUMN) ?: [];
+    }
+
+    /**
+     * Retourne les galeries de plusieurs menus en une seule requête.
+     * @return array [menu_id => [url, ...]]
+     */
+    public function getAllImagesByMenuIds(array $menuIds): array
+    {
+        if (empty($menuIds)) {
+            return [];
+        }
+
+        $ids = array_values(array_unique(array_map('intval', $menuIds)));
+        $placeholders = implode(',', array_fill(0, count($ids), '?'));
+        $stmt = $this->pdo->prepare(
+            "SELECT menu_id, image_url FROM menu_images WHERE menu_id IN ($placeholders) ORDER BY menu_id ASC, ordre ASC, id ASC"
+        );
+        $stmt->execute($ids);
+
+        $result = [];
+        foreach ($ids as $id) {
+            $result[$id] = [];
+        }
+        foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $row) {
+            $result[(int)$row['menu_id']][] = $row['image_url'];
+        }
+        return $result;
+    }
+
+    /**
+     * Remplace toute la galerie d'un menu par la liste d'URLs fournie.
+     * Les URLs vides / invalides sont ignorées (max 10).
+     * @param string[] $urls
+     */
+    public function saveGallery(int $menuId, array $urls): void
+    {
+        $clean = [];
+        foreach ($urls as $url) {
+            $url = trim((string)$url);
+            if ($url === '' || strlen($url) > 500) {
+                continue;
+            }
+            // N'accepte que des URLs http(s) — évite javascript: et chemins locaux
+            if (!preg_match('#^https?://#i', $url) || !filter_var($url, FILTER_VALIDATE_URL)) {
+                continue;
+            }
+            if (!in_array($url, $clean, true)) {
+                $clean[] = $url;
+            }
+            if (count($clean) >= 10) {
+                break;
+            }
+        }
+
+        $this->pdo->prepare("DELETE FROM menu_images WHERE menu_id = ?")->execute([$menuId]);
+
+        if (empty($clean)) {
+            return;
+        }
+
+        $stmt = $this->pdo->prepare("INSERT INTO menu_images (menu_id, image_url, ordre) VALUES (?, ?, ?)");
+        $ordre = 0;
+        foreach ($clean as $url) {
+            $stmt->execute([$menuId, $url, $ordre++]);
+        }
+    }
+
+    /**
+     * Découpe le contenu d'un textarea "une URL par ligne" en tableau d'URLs.
+     * @return string[]
+     */
+    public static function parseGalleryTextarea(?string $raw): array
+    {
+        if ($raw === null || $raw === '') {
+            return [];
+        }
+        $lines = preg_split('/\r\n|\r|\n/', $raw);
+        $urls = [];
+        foreach ($lines as $line) {
+            $line = trim($line);
+            if ($line !== '') {
+                $urls[] = $line;
+            }
+        }
+        return $urls;
+    }
 }

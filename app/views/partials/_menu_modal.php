@@ -7,6 +7,39 @@
       </div>
       <div class="modal-body">
 
+        <?php
+        // Galerie photos du menu (table menu_images), sinon repli sur menu.image
+        $galerieMenu = $galeries[$menu['menu_id']] ?? [];
+        if (empty($galerieMenu) && !empty($menu['image'])) {
+            $galerieMenu = [$menu['image']];
+        }
+        $carouselId = 'carouselMenu-' . $menu['menu_id'];
+        ?>
+
+        <?php if (!empty($galerieMenu)): ?>
+          <div id="<?= $carouselId ?>" class="carousel slide mb-4 shadow-sm rounded overflow-hidden" data-bs-ride="false">
+            <div class="carousel-inner">
+              <?php foreach ($galerieMenu as $i => $imgUrl): ?>
+                <div class="carousel-item <?= $i === 0 ? 'active' : '' ?>">
+                  <img src="<?= htmlspecialchars($imgUrl) ?>" class="d-block w-100" style="height: 260px; object-fit: cover;" alt="Photo <?= $i + 1 ?> du menu <?= htmlspecialchars($menu['titre']) ?>" loading="lazy">
+                </div>
+              <?php endforeach; ?>
+            </div>
+            <?php if (count($galerieMenu) > 1): ?>
+              <button class="carousel-control-prev" type="button" data-bs-target="#<?= $carouselId ?>" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Précédent</span>
+              </button>
+              <button class="carousel-control-next" type="button" data-bs-target="#<?= $carouselId ?>" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Suivant</span>
+              </button>
+            <?php endif; ?>
+          </div>
+        <?php else: ?>
+          <p class="text-muted small fst-italic mb-3">Aucune photo pour ce menu pour le moment.</p>
+        <?php endif; ?>
+
         <?php if (!empty($composition)): ?>
           <h6 class="fw-bold text-primary mb-3">Composition du menu :</h6>
 

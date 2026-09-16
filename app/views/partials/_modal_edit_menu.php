@@ -143,8 +143,14 @@
                         </div>
                     </div>
                     <div class="mb-3">
-                        <label for="edit_menu_image" class="form-label fw-semibold">Image du menu</label>
+                        <label for="edit_menu_galerie" class="form-label fw-semibold"><i class="bi bi-images me-1"></i>Galerie photos du menu (optionnel)</label>
+                        <textarea class="form-control" id="edit_menu_galerie" rows="3" placeholder="Collez une URL d'image par ligne (max 10), ex :&#10;https://images.unsplash.com/photo-...&#10;https://images.unsplash.com/photo-..."></textarea>
+                        <div class="form-text">Une URL par ligne. Vider le champ supprime toute la galerie. Ces photos s'affichent en carrousel dans le détail du menu.</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="edit_menu_image" class="form-label fw-semibold">Image du menu (vignette)</label>
                         <input type="file" class="form-control" id="edit_menu_image" name="image" accept="image/jpeg,image/png,image/webp">
+                        <div class="form-text">Conservée comme vignette sur la vue globale des menus.</div>
                     </div>
 
                 </div>

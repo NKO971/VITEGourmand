@@ -82,7 +82,7 @@ function createMenuController($pdo)
 
         $imagePath = null;
         if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
-            require_once ROOT_PATH . 'helpers/upload.php';
+            require_once ROOT_PATH . 'helpers/uploadImage.php'; // helper réel : uploadImage.php
             $uploadResult = moveUploadedImage($_FILES['image'], 'menu');
 
             if (!$uploadResult['success']) {
@@ -109,6 +109,13 @@ function createMenuController($pdo)
             'conditions_stockage' => $conditionsStockage,
             'image'               => $imagePath
         ]);
+
+        // Galerie : textarea "une URL par ligne" (peut arriver en string ou en tableau)
+        $rawGalerie = $data['galerie'] ?? $data['images'] ?? $data['galerie_urls'] ?? '';
+        $urlsGalerie = is_array($rawGalerie) ? $rawGalerie : Menu::parseGalleryTextarea((string)$rawGalerie);
+        if (!empty($urlsGalerie)) {
+            $menuModel->saveGallery((int)$menuId, $urlsGalerie);
+        }
 
         echo json_encode([
             'success' => true,
@@ -166,7 +173,7 @@ function updateMenuController($pdo)
 
         $imagePath = null;
         if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
-            require_once ROOT_PATH . 'helpers/upload.php';
+            require_once ROOT_PATH . 'helpers/uploadImage.php'; // helper réel : uploadImage.php
             $uploadResult = moveUploadedImage($_FILES['image'], 'menu');
 
             if (!$uploadResult['success']) {
@@ -194,6 +201,14 @@ function updateMenuController($pdo)
             'conditions_stockage' => $conditionsStockage,
             'image'               => $imagePath
         ]);
+
+        // Galerie : si le champ est présent dans la requête, on remplace
+        // toute la galerie (champ vide = suppression de la galerie).
+        if (array_key_exists('galerie', $data) || array_key_exists('images', $data) || array_key_exists('galerie_urls', $data)) {
+            $rawGalerie = $data['galerie'] ?? $data['images'] ?? $data['galerie_urls'] ?? '';
+            $urlsGalerie = is_array($rawGalerie) ? $rawGalerie : Menu::parseGalleryTextarea((string)$rawGalerie);
+            $menuModel->saveGallery((int)$menuId, $urlsGalerie);
+        }
 
         echo json_encode([
             'success' => true,
@@ -258,6 +273,31 @@ function toggleMenuStatusController($pdo)
         error_log("Erreur PDO toggleMenuStatus : " . $e->getMessage());
         http_response_code(500);
         echo json_encode(['error' => 'Erreur BDD SQL : ' . $e->getMessage()]);
+        exit();
+    }
+}
+
+function getMenuGalleryController($pdo)
+{
+    require_once ROOT_PATH . 'helpers/auth.php';
+    requireRole([1, 2], true);
+
+    $menuId = filter_var($_GET['menu_id'] ?? null, FILTER_VALIDATE_INT);
+    if (!$menuId) {
+        http_response_code(400);
+        echo json_encode(['success' => false, 'error' => 'menu_id invalide.']);
+        exit();
+    }
+
+    try {
+        require_once ROOT_PATH . 'app/models/Menu.php';
+        $menuModel = new Menu($pdo);
+        echo json_encode(['success' => true, 'images' => $menuModel->getImagesByMenuId($menuId)]);
+        exit();
+    } catch (PDOException $e) {
+        error_log("Erreur PDO getMenuGallery : " . $e->getMessage());
+        http_response_code(500);
+        echo json_encode(['success' => false, 'error' => 'Erreur BDD SQL : ' . $e->getMessage()]);
         exit();
     }
 }

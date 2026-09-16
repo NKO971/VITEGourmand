@@ -72,6 +72,8 @@
 
     <?php foreach ($menus as $menu):
       $composition = json_decode($menu['composition'] ?? '[]', true);
+      // Vignette carte : menu.image si renseignée, sinon 1re photo galerie, sinon placeholder
+      $vignetteMenu = !empty($menu['image']) ? $menu['image'] : (!empty($galeries[$menu['menu_id']][0]) ? $galeries[$menu['menu_id']][0] : 'Image/photo_accueil.jpg');
     ?>
       <div class="col-12 col-md-6 col-lg-4 menu-item-card"
         data-prix="<?php echo $menu['prix_par_personne']; ?>"
@@ -81,7 +83,7 @@
 
         <div class="card h-100 shadow-sm border-0 rounded-4 overflow-hidden">
           <div class="position-relative">
-            <img src="Image/photo_accueil.jpg" class="card-img-top" alt="Menu" style="height: 200px; object-fit: cover;">
+            <img src="<?= htmlspecialchars($vignetteMenu) ?>" class="card-img-top" alt="Photo du menu <?= htmlspecialchars($menu['titre']) ?>" style="height: 200px; object-fit: cover;">
             <span class="badge vg-badge-stock position-absolute top-0 end-0 m-2">
               Stock : <?php echo $menu['quantite_restante']; ?>
             </span>

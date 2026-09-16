@@ -249,6 +249,22 @@ document.addEventListener('click', (e) => {
     document.getElementById('edit_delai_commande').value = conditions.delai_commande || '';
     document.getElementById('edit_conservation').value = conditions.conservation || '';
 
+    // Galerie : pré-remplissage du textarea (une URL par ligne) via fetch
+    const galerieField = document.getElementById('edit_menu_galerie');
+    if (galerieField) {
+        galerieField.value = 'Chargement...';
+        fetch('index.php?page=get_menu_gallery&menu_id=' + encodeURIComponent(ds.id || ''), {
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+            .then((r) => r.json())
+            .then((res) => {
+                galerieField.value = (res.images || []).join("\n");
+            })
+            .catch(() => {
+                galerieField.value = '';
+            });
+    }
+
     // Ouverture de la modal Bootstrap
     const modalEl = document.getElementById('modalEditMenu');
     bootstrap.Modal.getOrCreateInstance(modalEl).show();
@@ -347,6 +363,7 @@ document.addEventListener('click', (e) => {
                 theme_id: document.getElementById('edit_menu_theme').value,
                 regime_id: document.getElementById('edit_menu_regime').value,
                 description: document.getElementById('edit_menu_description').value,
+                galerie: document.getElementById('edit_menu_galerie').value,
                 composition: JSON.stringify(compositionObj),
                 conditions_stockage: JSON.stringify(conditionsObj)
             };
@@ -472,6 +489,7 @@ if (formCreateMenu) {
             theme_id: document.getElementById('create_menu_theme').value,
             regime_id: document.getElementById('create_menu_regime').value,
             description: document.getElementById('create_menu_description').value,
+            galerie: document.getElementById('create_menu_galerie').value,
             composition: JSON.stringify(compositionObj),
             conditions_stockage: JSON.stringify(conditionsObj)
         };

@@ -16,6 +16,16 @@ function menusController($pdo)
         $regimes = $regimeModel->getAll();
         $menus = $menuModel->getAllActiveWithLabels();
 
+        // Galeries photos (table menu_images) : 1 seule requête pour tous les menus
+        $galeries = [];
+        try {
+            $ids = array_column($menus, 'menu_id');
+            $galeries = $menuModel->getAllImagesByMenuIds($ids);
+        } catch (PDOException $e) {
+            error_log("Erreur chargement galeries menus : " . $e->getMessage());
+            $galeries = [];
+        }
+
         // État actuel des plats, indexé à la fois par ID (fiable) et par nom normalisé (repli pour anciennes données)
         $platsParId = [];
         $platsParNom = [];
@@ -83,6 +93,7 @@ function menusController($pdo)
             'themes'  => $themes,
             'regimes' => $regimes,
             'menus'   => $menus,
+            'galeries' => $galeries ?? [],
             'horairesFooter' => $horairesFooter
         ]
     );

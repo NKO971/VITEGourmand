@@ -36,7 +36,7 @@
                 <ul class="list-unstyled d-flex flex-column gap-2 small">
                     <li><a href="?page=mentions-legales" class="vg-footer-link text-muted text-decoration-none">Mentions légales</a></li>
                     <li><a href="?page=cgv" class="vg-footer-link text-muted text-decoration-none">Conditions Générales de Vente</a></li>
-                    <li><a href="/VITEGourmand/public/?page=contact" class="vg-footer-link text-muted text-decoration-none">Nous contacter</a></li>
+                    <li><a href="<?= BASE_URL ?>/?page=contact" class="vg-footer-link text-muted text-decoration-none">Nous contacter</a></li>
                 </ul>
             </div>
         </div>

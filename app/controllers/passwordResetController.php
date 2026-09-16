@@ -20,7 +20,7 @@ function demandeResetController($pdo)
 
             if ($user) {
                 $token = $resetModel->createToken($user['utilisateur_id']);
-                $resetLink = "http://" . $_SERVER['HTTP_HOST'] . "/VITEGourmand/public/?page=reset-mot-de-passe&token={$token}";
+                $resetLink = "http://" . $_SERVER['HTTP_HOST'] . "<?= BASE_URL ?>/?page=reset-mot-de-passe&token={$token}";
 
                 require_once ROOT_PATH . 'helpers/mailer.php';
                 sendPasswordResetEmail($email, $user['prenom'] ?? '', $resetLink);

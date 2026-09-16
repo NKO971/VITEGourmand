@@ -25,7 +25,7 @@
                         </div>
 
                         <div class="mb-4 text-end">
-                            <a href="/VITEGourmand/public/?page=oubli-mot-de-passe" class="small text-muted">Mot de passe oublié ?</a>
+                            <a href="<?= BASE_URL ?>/?page=oubli-mot-de-passe" class="small text-muted">Mot de passe oublié ?</a>
                         </div>
 
                         <div class="mb-4 form-check">
@@ -40,7 +40,7 @@
                         </div>
 
                         <div class="text-center">
-                            <a href="/VITEGourmand/public/?page=inscription" class="small">Pas encore inscrit ? S'inscrire</a>
+                            <a href="<?= BASE_URL ?>/?page=inscription" class="small">Pas encore inscrit ? S'inscrire</a>
                         </div>
                     </fieldset>
                 </form>

@@ -309,7 +309,7 @@ function sendWelcomeEmail(string $toEmail, string $prenom): bool {
             <p>Vous pouvez dès à présent parcourir nos menus et passer votre première commande.</p>
             
             <div style='text-align: center; margin: 25px 0;'>
-                <a href='http://localhost/VITEGourmand/public/?page=menus' style='background-color: #0d6efd; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; display: inline-block;'>Découvrir nos menus</a>
+                <a href='http://localhost<?= BASE_URL ?>/?page=menus' style='background-color: #0d6efd; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; display: inline-block;'>Découvrir nos menus</a>
             </div>
 
             <hr style='border: none; border-top: 1px solid #eee; margin: 20px 0;'>

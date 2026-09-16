@@ -11,3 +11,4 @@ database/backup_*.txt
 # Fichiers système
 .DS_Store
 Thumbs.db
+import_*.php

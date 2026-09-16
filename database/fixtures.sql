@@ -1,70 +1,67 @@
--- Remplir les tables de référence
-INSERT INTO `role` (`role_id`, `libelle`) VALUES (1, 'Administrateur'), (2, 'Employé'), (3, 'Client');
-INSERT INTO `theme` (`theme_id`, `libelle`) VALUES (1, 'Soleil et apéros'), (2, 'Noël'), (3, 'Pâques');
-INSERT INTO `regime` (`regime_id`, `libelle`) VALUES (1, 'Classique'), (2, 'Végétarien'), (3, 'Vegan');
+-- =====================================================================
+-- VITEGourmand - DONNEES (a importer APRES schema.sql)
+-- Source : vitegourmand (2).sql du 16/09/2026 (copie a l'identique).
+-- Contenu : references + seul compte admin en base.
+-- Ordre : references -> utilisateur admin.
+-- Menus / plats / commandes / suivi / avis : vides dans vitegourmand (2).sql.
+-- Encodage : utf8mb4.
+-- =====================================================================
 
--- Test pour le visuel du rendu bootsrap css
 
--- Insertion des Thèmes (Orange et Bleu / Terroir et Mer)
+-- ---------------------------------------------------------------------
+-- 1. Rôles (référencés par utilisateur.role_id)
+-- 1 = admin, 2 = employe, 3 = utilisateur (ids fixés car le code
+-- contrôle les accès avec requireRole([1, 2]) et role_id = 3)
+-- ---------------------------------------------------------------------
+INSERT INTO `role` (`role_id`, `libelle`) VALUES
+(1, 'admin'),
+(2, 'employe'),
+(3, 'utilisateur');
+
+-- ---------------------------------------------------------------------
+-- 2. Thèmes et régimes (référencés par menu.theme_id / menu.regime_id)
+-- ---------------------------------------------------------------------
 INSERT INTO `theme` (`theme_id`, `libelle`) VALUES
 (1, 'Tradition & Terroir'),
 (2, 'Retour de Pêche'),
 (3, 'Saveurs Exotiques');
 
--- Insertion des Régimes
 INSERT INTO `regime` (`regime_id`, `libelle`) VALUES
 (1, 'Omnivore'),
 (2, 'Végétarien'),
 (3, 'Sans Gluten');
 
--- Insertion de quelques Menus de test
-INSERT INTO `menu` (`titre`, `prix_par_personne`, `theme_id`, `regime_id`, `nombre_personne_minimum`, `quantite_restante`) VALUES
-('Le Gascon', 29.00, 1, 1, 2, 15),
-('Le Potager du Chef', 24.50, 1, 2, 2, 10),
-('L''Océanique', 34.00, 2, 1, 4, 8),
-('Fraîcheur Marine', 31.00, 2, 3, 2, 12),
-('Le Voyageur', 27.00, 3, 1, 2, 20);
+-- ---------------------------------------------------------------------
+-- 3. Horaires d'ouverture (affiches dans le footer public)
+-- Donnees reelles du dump : Vendredi/Samedi 23:00, Dimanche 14:00-17:00
+-- ---------------------------------------------------------------------
+INSERT INTO `horaire` (`horaire_id`, `jour`, `heure_ouverture`, `heure_fermeture`) VALUES
+(1, 'Lundi', 'Fermé', 'Fermé'),
+(2, 'Mardi', '10:00', '22:00'),
+(3, 'Mercredi', '10:00', '22:00'),
+(4, 'Jeudi', '10:00', '22:00'),
+(5, 'Vendredi', '10:00', '23:00'),
+(6, 'Samedi', '10:00', '23:00'),
+(7, 'Dimanche', '14:00', '17:00');
 
-UPDATE menu 
-SET composition = '{"entree": {"nom": "Foie gras de canard maison", "allergenes": ["Sulfites"]}, "plat": {"nom": "Confit de canard et pommes sarladaises", "allergenes": []}, "dessert": {"nom": "Croustade aux pommes et Armagnac", "allergenes": ["Gluten"]}}'
-WHERE menu_id = 1;
+-- ---------------------------------------------------------------------
+-- 4. Zones de livraison (tarification selon distance_km)
+-- ---------------------------------------------------------------------
+INSERT INTO `zone_livraison` (`zone_id`, `code_postal`, `ville`, `distance_km`) VALUES
+(1, '33000', 'Bordeaux Centre', 0),
+(2, '33200', 'Bordeaux Caudéran', 3),
+(3, '33600', 'Pessac', 8),
+(4, '33400', 'Talence', 6),
+(5, '33130', 'Bègles', 7),
+(6, '33700', 'Mérignac', 12);
 
-INSERT INTO role (role_id, libelle) VALUES 
-(1, 'admin'),
-(2, 'employe'),
-(3, 'utilisateur')
-ON DUPLICATE KEY UPDATE libelle=VALUES(libelle);
+-- ---------------------------------------------------------------------
+-- 5. Utilisateur (copie de vitegourmand (2).sql : seul compte en base)
+-- id 4 = admin (hash bcrypt d'origine conserve).
+-- ---------------------------------------------------------------------
+INSERT INTO `utilisateur` (`utilisateur_id`, `email`, `gsm`, `adresse`, `password`, `prenom`, `nom`, `role_id`, `is_active`) VALUES
+(4, 'admin@vitegourmand.fr', '0600000000', 'Siège social', '$2y$10$.5C5UwyiAy.p5TnOICWlKOnY.sSKu6p3bSfkRw6uanUpQT3/PAeVq', 'VITEGourmand', 'Admin', 1, 1);
 
--- Insertion de quelques distances de test
-INSERT INTO `zone_livraison` (`code_postal`, `ville`, `distance_km`) VALUES
-('33000', 'Bordeaux Centre', 0),
-('33200', 'Bordeaux Caudéran', 3),
-('33600', 'Pessac', 8),
-('33400', 'Talence', 6),
-('33130', 'Bègles', 7),
-('33700', 'Mérignac', 12);
-
-// Insertion de test 
-INSERT INTO suivi_commande (commande_id, statut, date_suivi) VALUES 
-(6, 'En attente', '2026-06-19 10:00:00'),
-(6, 'Acceptée', '2026-06-19 11:00:00'),
-(6, 'En préparation', '2026-06-19 11:30:00'),
-(6, 'Terminée', '2026-06-19 12:24:00');
-
-// Ajout une colonne a la table plat
-ALTER TABLE plat ADD COLUMN IF NOT EXISTS actif TINYINT(1) DEFAULT 1; 
-
-// Insertion de quelques plats de test
-INSERT INTO plat (titre_plat, actif) VALUES 
-('Foie gras de canard maison', 1),
-('Croustade aux pommes et Armagnac', 1);
-
-// Insertion des horraires 
-INSERT INTO `horaire` (`jour`, `heure_ouverture`, `heure_fermeture`) VALUES
-('Lundi', 'Fermé', 'Fermé'),
-('Mardi', '10:00', '22:00'),
-('Mercredi', '10:00', '22:00'),
-('Jeudi', '10:00', '22:00'),
-('Vendredi', '10:00', '22:00'),
-('Samedi', '10:00', '22:00'),
-('Dimanche', '10:00', '14:00');
+-- ---------------------------------------------------------------------
+-- Fin des donnees (copie de vitegourmand (2).sql : references + admin).
+-- ---------------------------------------------------------------------

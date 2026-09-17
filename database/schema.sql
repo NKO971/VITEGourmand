@@ -115,6 +115,8 @@ CREATE TABLE IF NOT EXISTS `menu` (
     regime_id INT DEFAULT NULL,
     composition LONGTEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`composition`)),
     conditions_stockage LONGTEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`conditions_stockage`)),
+    delai_commande_valeur INT DEFAULT NULL,
+    delai_commande_unite VARCHAR(10) DEFAULT NULL,
     image VARCHAR(255) DEFAULT NULL,
     actif TINYINT(1) DEFAULT 1,
     FOREIGN KEY (theme_id) REFERENCES theme (theme_id),
@@ -140,6 +142,13 @@ CREATE TABLE IF NOT EXISTS `menu_images` (
 -- sans elle (utilisee par Menu::saveGallery/getImagesByMenuId/getAllImagesByMenuIds).
 -- Sans danger a rejouer sur une base existante (IF NOT EXISTS), y compris en prod.
 ALTER TABLE `menu_images` ADD COLUMN IF NOT EXISTS `ordre` INT DEFAULT 0 AFTER `image_url`;
+
+-- Patch idempotent : ajoute les colonnes de delai de commande a menu si elles
+-- n'existent pas deja (utilisees par Menu::createMenu/updateMenu et par le
+-- blocage reel de date_prestation cote commande). Sans danger a rejouer sur
+-- une base existante (IF NOT EXISTS), y compris en prod.
+ALTER TABLE `menu` ADD COLUMN IF NOT EXISTS `delai_commande_valeur` INT DEFAULT NULL AFTER `conditions_stockage`;
+ALTER TABLE `menu` ADD COLUMN IF NOT EXISTS `delai_commande_unite` VARCHAR(10) DEFAULT NULL AFTER `delai_commande_valeur`;
 
 -- ---------------------------------------------------------------------
 -- 5. Commandes et suivi (dépendent de utilisateur et menu)

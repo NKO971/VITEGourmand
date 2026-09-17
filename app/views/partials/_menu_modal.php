@@ -79,9 +79,12 @@
 
         <?php
         $conditions = json_decode($menu['conditions_stockage'] ?? '[]', true);
+        $delaiValeur = $menu['delai_commande_valeur'] ?? null;
+        $delaiUnite  = $menu['delai_commande_unite'] ?? null;
+        $hasDelai = !empty($delaiValeur) && !empty($delaiUnite);
         ?>
 
-        <?php if (!empty($conditions)): ?>
+        <?php if ($hasDelai || !empty($conditions)): ?>
           <div class="alert alert-warning border-warning-subtle my-3" role="alert">
             <h6 class="alert-heading fw-bold d-flex align-items-center mb-2 text-warning-emphasis">
               <i class="bi bi-exclamation-triangle-fill me-2 fs-5" aria-hidden="true"></i>
@@ -89,9 +92,9 @@
             </h6>
             <hr class="my-2 bg-warning-border">
             <ul class="mb-0 small text-dark">
-              <?php if (!empty($conditions['delai_commande'])): ?>
+              <?php if ($hasDelai): ?>
                 <li class="mb-1">
-                  <strong>Délai de réservation :</strong> Ce menu doit impérativement être commandé au moins <span class="badge bg-dark"><?= htmlspecialchars($conditions['delai_commande']) ?></span> avant la prestation.
+                  <strong>Délai de réservation :</strong> Ce menu doit impérativement être commandé au moins <span class="badge bg-dark"><?= (int)$delaiValeur ?> <?= htmlspecialchars($delaiUnite) ?></span> avant la prestation.
                 </li>
               <?php endif; ?>
               <?php if (!empty($conditions['conservation'])): ?>

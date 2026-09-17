@@ -124,8 +124,15 @@
                         <h6 class="fw-bold text-primary mb-2"><i class="bi bi-box-seam me-2"></i>Conditions de stockage & conservation</h6>
                         <div class="row g-3">
                             <div class="col-md-6">
-                                <label for="create_delai_commande" class="form-label fw-semibold">Délai de commande minimum</label>
-                                <input type="text" class="form-control" id="create_delai_commande" placeholder="ex : 24h à l'avance" required>
+                                <label for="create_delai_valeur" class="form-label fw-semibold">Délai de commande minimum</label>
+                                <div class="input-group">
+                                    <input type="number" class="form-control" id="create_delai_valeur" placeholder="ex : 24" min="1" step="1">
+                                    <select class="form-select" id="create_delai_unite" style="max-width: 130px;">
+                                        <option value="heures">heure(s)</option>
+                                        <option value="jours">jour(s)</option>
+                                    </select>
+                                </div>
+                                <div class="form-text">Laisser vide si aucun délai minimum n'est requis pour ce menu.</div>
                             </div>
                             <div class="col-md-6">
                                 <label for="create_conservation" class="form-label fw-semibold">Instruction de conservation</label>

@@ -76,7 +76,9 @@
                                             data-theme="<?= $menu['theme_id'] ?? '' ?>"
                                             data-regime="<?= $menu['regime_id'] ?? '' ?>"
                                             data-composition='<?= htmlspecialchars($jsonComposition, ENT_QUOTES, 'UTF-8') ?>'
-                                            data-conditions='<?= htmlspecialchars($jsonConditions, ENT_QUOTES, 'UTF-8') ?>'>
+                                            data-conditions='<?= htmlspecialchars($jsonConditions, ENT_QUOTES, 'UTF-8') ?>'
+                                            data-delai-valeur="<?= htmlspecialchars((string)($menu['delai_commande_valeur'] ?? ''), ENT_QUOTES) ?>"
+                                            data-delai-unite="<?= htmlspecialchars($menu['delai_commande_unite'] ?? '', ENT_QUOTES) ?>">
                                             <i class="bi bi-pencil" aria-hidden="true"></i> Modifier
                                         </button>
                                         <button class="btn btn-sm <?= ($menu['actif'] ?? 1) == 1 ? 'btn-outline-danger' : 'btn-outline-success' ?> btn-toggle-menu"

@@ -82,6 +82,13 @@ function createMenuController($pdo)
         $compositions       = $data['composition'] ?? null;
         $conditionsStockage = $data['conditions_stockage'] ?? null;
 
+        // Délai de commande structuré (valeur + unité heures/jours). Optionnel :
+        // absent ou vide = pas de délai minimum pour ce menu.
+        $delaiValeurRaw = $data['delai_valeur'] ?? null;
+        $delaiUniteRaw  = trim((string)($data['delai_unite'] ?? ''));
+        $delaiValeur = ($delaiValeurRaw === null || $delaiValeurRaw === '') ? null : filter_var($delaiValeurRaw, FILTER_VALIDATE_INT);
+        $delaiUnite  = $delaiUniteRaw !== '' ? $delaiUniteRaw : null;
+
         if (empty($titre) || $prix === false || $prix <= 0 || $stock === false || $stock < 0 || !$themeId || !$regimeId || !$minPersonnes || $minPersonnes < 1) {
             http_response_code(400);
             echo json_encode([
@@ -89,6 +96,18 @@ function createMenuController($pdo)
                 'error'   => 'Champs invalides ou incomplets (vérifiez titre, prix, stock, thème, régime et nombre de personnes minimum).'
             ]);
             exit();
+        }
+
+        if ($delaiValeur !== null && ($delaiValeur === false || $delaiValeur <= 0 || !in_array($delaiUnite, ['heures', 'jours'], true))) {
+            http_response_code(400);
+            echo json_encode([
+                'success' => false,
+                'error'   => 'Délai de commande invalide (valeur positive et unité heures/jours requises).'
+            ]);
+            exit();
+        }
+        if ($delaiValeur === null) {
+            $delaiUnite = null;
         }
 
         $imagePath = null;
@@ -118,6 +137,8 @@ function createMenuController($pdo)
             'regime_id'           => $regimeId,
             'composition'         => $compositions,
             'conditions_stockage' => $conditionsStockage,
+            'delai_commande_valeur' => $delaiValeur,
+            'delai_commande_unite'  => $delaiUnite,
             'image'               => $imagePath
         ]);
 
@@ -173,6 +194,13 @@ function updateMenuController($pdo)
         $compositions       = $data['composition'] ?? null;
         $conditionsStockage = $data['conditions_stockage'] ?? null;
 
+        // Délai de commande structuré (valeur + unité heures/jours). Optionnel :
+        // absent ou vide = pas de délai minimum pour ce menu.
+        $delaiValeurRaw = $data['delai_valeur'] ?? null;
+        $delaiUniteRaw  = trim((string)($data['delai_unite'] ?? ''));
+        $delaiValeur = ($delaiValeurRaw === null || $delaiValeurRaw === '') ? null : filter_var($delaiValeurRaw, FILTER_VALIDATE_INT);
+        $delaiUnite  = $delaiUniteRaw !== '' ? $delaiUniteRaw : null;
+
         if (!$menuId || empty($titre) || $prix === false || $prix <= 0 || $stock === false || $stock < 0 || !$themeId || !$regimeId || !$minPersonnes || $minPersonnes < 1) {
             http_response_code(400);
             echo json_encode([
@@ -180,6 +208,18 @@ function updateMenuController($pdo)
                 'error'   => 'Champs invalides ou incomplets (Vérifiez le titre, le prix, le stock, le thème et le régime).'
             ]);
             exit();
+        }
+
+        if ($delaiValeur !== null && ($delaiValeur === false || $delaiValeur <= 0 || !in_array($delaiUnite, ['heures', 'jours'], true))) {
+            http_response_code(400);
+            echo json_encode([
+                'success' => false,
+                'error'   => 'Délai de commande invalide (valeur positive et unité heures/jours requises).'
+            ]);
+            exit();
+        }
+        if ($delaiValeur === null) {
+            $delaiUnite = null;
         }
 
         $imagePath = null;
@@ -210,6 +250,8 @@ function updateMenuController($pdo)
             'regime_id'           => $regimeId,
             'composition'         => $compositions,
             'conditions_stockage' => $conditionsStockage,
+            'delai_commande_valeur' => $delaiValeur,
+            'delai_commande_unite'  => $delaiUnite,
             'image'               => $imagePath
         ]);
 

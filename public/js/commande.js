@@ -14,6 +14,36 @@ document.addEventListener('DOMContentLoaded', () => {
     const prixMenuParPersonne = parseFloat(document.getElementById('prix_menu_hidden').value) || 0; 
     const minPersonnes = parseInt(document.getElementById('min_personnes_hidden').value) || 1;
 
+    // Délai de commande minimum (structuré : valeur + unité heures/jours)
+    const inputDatePrestation = document.getElementById('date_prestation');
+    const elDelaiValeur = document.getElementById('delai_valeur_hidden');
+    const elDelaiUnite = document.getElementById('delai_unite_hidden');
+    const elDelaiInfo = document.getElementById('delai_commande_info');
+    const delaiValeur = elDelaiValeur ? (parseInt(elDelaiValeur.value, 10) || 0) : 0;
+    const delaiUnite = elDelaiUnite ? elDelaiUnite.value : '';
+
+    // Calcule la date la plus proche autorisée (granularité jour : les heures
+    // sont arrondies au jour supérieur) ou null si le menu n'a pas de délai.
+    function calculerDateMinimum(valeur, unite) {
+        if (!valeur || valeur <= 0) return null;
+        const heuresTotales = unite === 'jours' ? valeur * 24 : valeur;
+        const joursMinimum = Math.ceil(heuresTotales / 24);
+        const d = new Date();
+        d.setHours(0, 0, 0, 0);
+        d.setDate(d.getDate() + joursMinimum);
+        return d;
+    }
+
+    const dateMinimumAutorisee = calculerDateMinimum(delaiValeur, delaiUnite);
+
+    if (dateMinimumAutorisee && inputDatePrestation) {
+        const iso = dateMinimumAutorisee.toISOString().slice(0, 10);
+        inputDatePrestation.min = iso;
+        if (elDelaiInfo) {
+            elDelaiInfo.textContent = `Ce menu doit être commandé au moins ${delaiValeur} ${delaiUnite} avant la prestation (date la plus proche possible : ${iso.split('-').reverse().join('/')}).`;
+        }
+    }
+
     let fraisLivraisonActuels = 0;
     let zoneDesservie = true; // Suivi de l'état de la zone, pour la validation au submit
 
@@ -86,6 +116,9 @@ document.addEventListener('DOMContentLoaded', () => {
     function validerAvantEnvoi(e) {
         inputNbPersonnes.setCustomValidity('');
         inputCodePostal.setCustomValidity('');
+        if (inputDatePrestation) {
+            inputDatePrestation.setCustomValidity('');
+        }
 
         const nbPersonnes = parseInt(inputNbPersonnes.value) || 0;
 
@@ -101,6 +134,16 @@ document.addEventListener('DOMContentLoaded', () => {
             inputCodePostal.setCustomValidity("Cette zone n'est pas desservie par nos services.");
             inputCodePostal.reportValidity();
             return;
+        }
+
+        if (dateMinimumAutorisee && inputDatePrestation && inputDatePrestation.value) {
+            const datePresChoisie = new Date(inputDatePrestation.value + 'T00:00:00');
+            if (datePresChoisie < dateMinimumAutorisee) {
+                e.preventDefault();
+                inputDatePrestation.setCustomValidity(`Ce menu doit être commandé au moins ${delaiValeur} ${delaiUnite} avant la prestation.`);
+                inputDatePrestation.reportValidity();
+                return;
+            }
         }
     }
 

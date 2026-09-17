@@ -54,7 +54,7 @@ function updatePlatController($pdo)
 
     $photoData = null;
     if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
-        require_once ROOT_PATH . 'helpers/upload.php';
+        require_once ROOT_PATH . 'helpers/uploadImage.php';
         $mimeError = validateImageMimeType($_FILES['photo']);
 
         if ($mimeError) {

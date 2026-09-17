@@ -50,22 +50,39 @@ function getZoneDistance($pdo)
 {
     header('Content-Type: application/json');
 
-    $codePostal = $_GET['code_postal'] ?? null;
+    $adresse    = trim($_GET['adresse'] ?? '');
+    $codePostal = trim($_GET['code_postal'] ?? '');
 
-    if (!$codePostal) {
-        echo json_encode(['error' => 'Code postal manquant']);
-        return;
+    if (empty($adresse) || empty($codePostal)) {
+        echo json_encode(['success' => false, 'message' => 'Adresse incomplète.']);
+        exit();
     }
 
     require_once ROOT_PATH . 'app/models/ZoneLivraison.php';
-    $zoneModel = new ZoneLivraison($pdo);
-    $distance = $zoneModel->getDistanceByCodePostal($codePostal);
+    $zoneModel = new ZoneLivraison();
 
-    if ($distance !== null) {
-        echo json_encode(['distance_km' => $distance]);
-    } else {
-        echo json_encode(['error' => 'Zone de livraison non trouvée']);
+    $resultat = $zoneModel->getDistanceByAdresse($adresse, $codePostal);
+
+    if ($resultat === null) {
+        echo json_encode(['success' => false, 'message' => 'Adresse introuvable, vérifiez la saisie.']);
+        exit();
     }
+
+    if (!$resultat['zone_desservie']) {
+        echo json_encode([
+            'success' => false,
+            'message' => 'Désolé, cette adresse se trouve hors de notre zone de livraison (' . $resultat['distance_km'] . ' km, 80 km maximum).',
+        ]);
+        exit();
+    }
+
+    echo json_encode([
+        'success'     => true,
+        'distance_km' => $resultat['distance_km'],
+        'ville'       => $resultat['ville'],
+        'gratuit'     => $zoneModel->estBordeaux($resultat['ville']),
+    ]);
+    exit();
 }
 
 function enregistrerCommande($pdo, $menuModel, $commandeModel, $dataPost)
@@ -80,23 +97,31 @@ function enregistrerCommande($pdo, $menuModel, $commandeModel, $dataPost)
     }
 
     // Vérification de la zone de livraison
+    // Vérification de la zone de livraison
     require_once ROOT_PATH . 'app/models/ZoneLivraison.php';
-    $zoneModel = new ZoneLivraison($pdo);
-    $distance = $zoneModel->getDistanceByCodePostal($dataPost['code_postal']);
+    $zoneModel = new ZoneLivraison();
+    $geoloc = $zoneModel->getDistanceByAdresse($dataPost['lieu_livraison'], $dataPost['code_postal']);
+
+    if ($geoloc === null) {
+        throw new Exception("Impossible de localiser cette adresse, merci de vérifier votre saisie.");
+    }
+
+    // Bordeaux même = livraison gratuite, même si la distance géocodée n'est jamais exactement 0
+    $distanceFacturable = $zoneModel->estBordeaux($geoloc['ville']) ? 0 : $geoloc['distance_km'];
 
     $resultat = $commandeModel->calculerTotalCommande(
         $menu['prix_par_personne'],
         $dataPost['nb_personnes'],
         $menu['nombre_personne_minimum'],
-        $distance
+        $distanceFacturable
     );
 
     if (!$resultat['nombre_suffisant']) {
         throw new Exception("Le nombre de personnes doit être au moins de " . $menu['nombre_personne_minimum'] . " pour ce menu.");
     }
 
-    if (!$resultat['zone_desservie']) {
-        throw new Exception("Votre zone n'est pas desservie pour la livraison. Merci de vérifier votre code postal.");
+    if (!$geoloc['zone_desservie']) {
+        throw new Exception("Votre zone n'est pas desservie pour la livraison (" . $geoloc['distance_km'] . " km, 80 km maximum).");
     }
 
     // Vérification du délai de commande minimum (blocage réel, pas juste visuel)
@@ -109,7 +134,7 @@ function enregistrerCommande($pdo, $menuModel, $commandeModel, $dataPost)
         }
     }
 
-        $numeroCommande = $commandeModel->generateNumeroCommande();
+    $numeroCommande = $commandeModel->generateNumeroCommande();
 
     $pdo->beginTransaction();
     try {
@@ -243,28 +268,31 @@ function updateCommandeController($pdo, $menuModel, $commandeModel, $dataPost)
         throw new Exception("Menu introuvable pour cette commande.");
     }
 
+    // Vérification de la zone de livraison
     require_once ROOT_PATH . 'app/models/ZoneLivraison.php';
-    $zoneModel = new ZoneLivraison($pdo);
-    $distance = $zoneModel->getDistanceByCodePostal($dataPost['code_postal']);
+    $zoneModel = new ZoneLivraison();
+    $geoloc = $zoneModel->getDistanceByAdresse($dataPost['lieu_livraison'], $dataPost['code_postal']);
+
+    if ($geoloc === null) {
+        throw new Exception("Impossible de localiser cette adresse, merci de vérifier votre saisie.");
+    }
+
+    // Bordeaux même = livraison gratuite, même si la distance géocodée n'est jamais exactement 0
+    $distanceFacturable = $zoneModel->estBordeaux($geoloc['ville']) ? 0 : $geoloc['distance_km'];
 
     $resultat = $commandeModel->calculerTotalCommande(
         $menu['prix_par_personne'],
         $dataPost['nb_personnes'],
         $menu['nombre_personne_minimum'],
-        $distance
+        $distanceFacturable
     );
 
-    // Vérification du nombre de personnes et de la zone de livraison
     if (!$resultat['nombre_suffisant']) {
-        $_SESSION['flash_message'] = "Le nombre de personnnes doit être au moins de " . $menu['nombre_personne_minimum'] . " pour ce menu.";
-        header("Location: ?page=modifier_commande&id={$commandeId}");
-        exit();
+        throw new Exception("Le nombre de personnes doit être au moins de " . $menu['nombre_personne_minimum'] . " pour ce menu.");
     }
 
-    if (!$resultat['zone_desservie']) {
-        $_SESSION['flash_message'] = "Votre zone n'est pas desservie pour la livraison. Merci de vérifier votre code postal.";
-        header("Location: ?page=modifier_commande&id={$commandeId}");
-        exit();
+    if (!$geoloc['zone_desservie']) {
+        throw new Exception("Votre zone n'est pas desservie pour la livraison (" . $geoloc['distance_km'] . " km, 80 km maximum).");
     }
 
     // Vérification du délai de commande minimum (blocage réel, pas juste visuel)

@@ -31,9 +31,10 @@
                         <input type="time" class="form-control" id="heure_livraison" name="heure_livraison" required>
                     </div>
 
-                    <div class="mb-3">
+                    <div class="mb-3 position-relative">
                         <label for="lieu_livraison" class="form-label fw-bold">Lieu de livraison</label>
-                        <input type="text" class="form-control" id="lieu_livraison" name="lieu_livraison" value="<?= htmlspecialchars($user_data['adresse']) ?>" required>
+                        <input type="text" class="form-control" id="lieu_livraison" name="lieu_livraison" value="..." autocomplete="off" required>
+                        <ul id="adresse_suggestions" class="list-group position-absolute w-100" style="z-index: 1000; top: 100%;"></ul>
                     </div>
 
                     <div class="mb-3">

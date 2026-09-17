@@ -1,6 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
     // 1. Récupération de tous nos éléments du DOM
     const inputCodePostal = document.getElementById('postal_code');
+    const inputAdresse = document.getElementById('lieu_livraison');
+    const listeSuggestions = document.getElementById('adresse_suggestions');
     const inputNbPersonnes = document.getElementById('nb_personnes');
     const formCommande = inputNbPersonnes.closest('form');
     
@@ -53,120 +55,182 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     let fraisLivraisonActuels = 0;
-    let zoneDesservie = true; // Suivi de l'état de la zone, pour la validation au submit
+let zoneDesservie = true;
+let debounceTimer = null;
 
-    function mettreAJourResume() {
-        inputNbPersonnes.setCustomValidity('');
-        const nbPersonnes = parseInt(inputNbPersonnes.value) || 1;
-        
-        txtAffichageNbPers.textContent = nbPersonnes;
+function mettreAJourResume() {
+    inputNbPersonnes.setCustomValidity('');
+    const nbPersonnes = parseInt(inputNbPersonnes.value) || 1;
 
-        let prixTotalMenu = prixMenuParPersonne * nbPersonnes;
-        
-        // Gestion de la réduction pour les commandes de 5 personnes ou plus
-        if (nbPersonnes >= (minPersonnes + 5)) {
-            const reduction = prixTotalMenu * 0.10; 
-            prixTotalMenu = prixTotalMenu - reduction;
-            
-            txtMontantReduction.textContent = `- ${reduction.toFixed(2)} €`;
-            ligneReduction.classList.remove('d-none');
-        } else {
-            ligneReduction.classList.add('d-none');
-        }
+    txtAffichageNbPers.textContent = nbPersonnes;
 
-        txtMenuTotal.textContent = (prixMenuParPersonne * nbPersonnes).toFixed(2) + " €";
-        
-        const prixTotalGeneral = prixTotalMenu + fraisLivraisonActuels;
-        txtTotal.textContent = prixTotalGeneral.toFixed(2) + " €";
+    let prixTotalMenu = prixMenuParPersonne * nbPersonnes;
+
+    if (nbPersonnes >= (minPersonnes + 5)) {
+        const reduction = prixTotalMenu * 0.10;
+        prixTotalMenu = prixTotalMenu - reduction;
+
+        txtMontantReduction.textContent = `- ${reduction.toFixed(2)} €`;
+        ligneReduction.classList.remove('d-none');
+    } else {
+        ligneReduction.classList.add('d-none');
     }
 
-    // On intéroge l'API à chaque changement du code postal pour mettre à jour les frais de livraison
-    function verifierCodePostal() {
-        inputCodePostal.setCustomValidity('');
-        const codePostal = inputCodePostal.value.trim();
+    txtMenuTotal.textContent = (prixMenuParPersonne * nbPersonnes).toFixed(2) + " €";
 
-        if (codePostal.length === 5) {
-            fetch(`index.php?page=api_zone&code_postal=${codePostal}`)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.error) {
-                        txtLivraison.textContent = "Zone non desservie";
-                        txtLivraison.classList.add('text-danger');
-                        fraisLivraisonActuels = 0;
-                        zoneDesservie = false;
-                        document.querySelector('button[type="submit"]').disabled = true;
-                    } else {
-                        document.querySelector('button[type="submit"]').disabled = false;
-                        txtLivraison.classList.remove('text-danger');
-                        zoneDesservie = true;
-                        const distance = data.distance_km;
-                        // Formule de Julie
-                        fraisLivraisonActuels = (distance > 0) ? (5 + (0.59 * distance)) : 0;
-                        txtLivraison.textContent = fraisLivraisonActuels.toFixed(2) + " €";
-                    }
-                    mettreAJourResume();
-                })
-                .catch(error => {
-                    console.error('Erreur API:', error);
-                    txtLivraison.textContent = "Erreur de calcul";
+    const prixTotalGeneral = prixTotalMenu + fraisLivraisonActuels;
+    txtTotal.textContent = prixTotalGeneral.toFixed(2) + " €";
+}
+
+function verifierAdresse() {
+    inputCodePostal.setCustomValidity('');
+    const codePostal = inputCodePostal.value.trim();
+    const adresse = inputAdresse.value.trim(); // <-- à remplacer par le vrai id, voir plus bas
+
+    if (codePostal.length === 5 && adresse.length > 0) {
+        fetch(`index.php?page=api_zone&adresse=${encodeURIComponent(adresse)}&code_postal=${encodeURIComponent(codePostal)}`)
+            .then(response => response.json())
+            .then(data => {
+                if (!data.success) {
+                    txtLivraison.textContent = data.message || "Zone non desservie";
                     txtLivraison.classList.add('text-danger');
                     fraisLivraisonActuels = 0;
-                    mettreAJourResume();
-                });
-        } else {
-            // Si le code postal n'est pas complet (ex: en cours de saisie)
-            txtLivraison.textContent = "0.00 €";
-            txtLivraison.classList.remove('text-danger');
-            fraisLivraisonActuels = 0;
-            mettreAJourResume();
-        }
+                    zoneDesservie = false;
+                    document.querySelector('button[type="submit"]').disabled = true;
+                } else {
+                    document.querySelector('button[type="submit"]').disabled = false;
+                    txtLivraison.classList.remove('text-danger');
+                    zoneDesservie = true;
+                    fraisLivraisonActuels = data.gratuit ? 0 : (5 + (0.59 * data.distance_km));
+                    txtLivraison.textContent = fraisLivraisonActuels.toFixed(2) + " €";
+                }
+                mettreAJourResume();
+            })
+            .catch(error => {
+                console.error('Erreur API:', error);
+                txtLivraison.textContent = "Erreur de calcul";
+                txtLivraison.classList.add('text-danger');
+                fraisLivraisonActuels = 0;
+                mettreAJourResume();
+            });
+    } else {
+        txtLivraison.textContent = "0.00 €";
+        txtLivraison.classList.remove('text-danger');
+        fraisLivraisonActuels = 0;
+        mettreAJourResume();
+    }
+}
+
+// Debounce : on attend 600ms après la dernière frappe avant d'appeler l'API,
+// pour ne pas la spammer à chaque caractère tapé.
+function declencherVerificationAdresse() {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(verifierAdresse, 600);
+}
+
+let suggestionDebounceTimer = null;
+
+function rechercherSuggestions() {
+    const texte = inputAdresse.value.trim();
+
+    if (texte.length < 3) {
+        listeSuggestions.innerHTML = '';
+        return;
     }
 
-    // Validation avant soumission : bulle native pointée sur le bon champ
-    function validerAvantEnvoi(e) {
-        inputNbPersonnes.setCustomValidity('');
-        inputCodePostal.setCustomValidity('');
-        if (inputDatePrestation) {
-            inputDatePrestation.setCustomValidity('');
-        }
+    fetch(`https://api-adresse.data.gouv.fr/search/?q=${encodeURIComponent(texte)}&limit=5&autocomplete=1`)
+        .then(response => response.json())
+        .then(data => {
+            listeSuggestions.innerHTML = '';
 
-        const nbPersonnes = parseInt(inputNbPersonnes.value) || 0;
-
-        if (nbPersonnes < minPersonnes) {
-            e.preventDefault();
-            inputNbPersonnes.setCustomValidity(`Le nombre de personnes minimum pour ce menu est de ${minPersonnes}.`);
-            inputNbPersonnes.reportValidity();
-            return;
-        }
-
-        if (!zoneDesservie) {
-            e.preventDefault();
-            inputCodePostal.setCustomValidity("Cette zone n'est pas desservie par nos services.");
-            inputCodePostal.reportValidity();
-            return;
-        }
-
-        if (dateMinimumAutorisee && inputDatePrestation && inputDatePrestation.value) {
-            const datePresChoisie = new Date(inputDatePrestation.value + 'T00:00:00');
-            if (datePresChoisie < dateMinimumAutorisee) {
-                e.preventDefault();
-                inputDatePrestation.setCustomValidity(`Ce menu doit être commandé au moins ${delaiValeur} ${delaiUnite} avant la prestation.`);
-                inputDatePrestation.reportValidity();
+            if (!data.features || data.features.length === 0) {
                 return;
             }
+
+            data.features.forEach(feature => {
+                const item = document.createElement('li');
+                item.classList.add('list-group-item', 'list-group-item-action');
+                item.style.cursor = 'pointer';
+                item.textContent = feature.properties.label;
+
+                // Le mousedown plutôt : se déclenche avant le blur de l'input, sinon la liste se ferme avant que le clic soit pris en compte.
+                item.addEventListener('mousedown', (e) => {
+                    e.preventDefault();
+                    inputAdresse.value = feature.properties.label;
+                    if (feature.properties.postcode) {
+                        inputCodePostal.value = feature.properties.postcode;
+                    }
+                    listeSuggestions.innerHTML = '';
+                    declencherVerificationAdresse();
+                });
+
+                listeSuggestions.appendChild(item);
+            });
+        })
+        .catch(error => {
+            console.error('Erreur suggestions adresse:', error);
+            listeSuggestions.innerHTML = '';
+        });
+}
+
+function declencherRechercheSuggestions() {
+    clearTimeout(suggestionDebounceTimer);
+    suggestionDebounceTimer = setTimeout(rechercherSuggestions, 300);
+}
+
+function validerAvantEnvoi(e) {
+    inputNbPersonnes.setCustomValidity('');
+    inputCodePostal.setCustomValidity('');
+    if (inputDatePrestation) {
+        inputDatePrestation.setCustomValidity('');
+    }
+
+    const nbPersonnes = parseInt(inputNbPersonnes.value) || 0;
+
+    if (nbPersonnes < minPersonnes) {
+        e.preventDefault();
+        inputNbPersonnes.setCustomValidity(`Le nombre de personnes minimum pour ce menu est de ${minPersonnes}.`);
+        inputNbPersonnes.reportValidity();
+        return;
+    }
+
+    if (!zoneDesservie) {
+        e.preventDefault();
+        inputCodePostal.setCustomValidity("Cette zone n'est pas desservie par nos services.");
+        inputCodePostal.reportValidity();
+        return;
+    }
+
+    if (dateMinimumAutorisee && inputDatePrestation && inputDatePrestation.value) {
+        const datePresChoisie = new Date(inputDatePrestation.value + 'T00:00:00');
+        if (datePresChoisie < dateMinimumAutorisee) {
+            e.preventDefault();
+            inputDatePrestation.setCustomValidity(`Ce menu doit être commandé au moins ${delaiValeur} ${delaiUnite} avant la prestation.`);
+            inputDatePrestation.reportValidity();
+            return;
         }
     }
+}
 
-    inputNbPersonnes.addEventListener('input', mettreAJourResume);
-    inputCodePostal.addEventListener('input', verifierCodePostal);
-    formCommande.addEventListener('submit', validerAvantEnvoi);
+   inputNbPersonnes.addEventListener('input', mettreAJourResume);
+   inputCodePostal.addEventListener('input', declencherVerificationAdresse);
+   
+   inputAdresse.addEventListener('input', () => {
+       declencherRechercheSuggestions();
+       declencherVerificationAdresse();
+    });
 
-    if (inputDatePrestation) {
-        inputDatePrestattion.addEventListener('input', () => inputDatePrestation.setCustomValidity('')); // Réinitialise la validité si l'utilisateur change la date
+    inputAdresse.addEventListener('blur', () => {
+        setTimeout(() => { listeSuggestions.innerHTML = ''; }, 150);
+    });
+   formCommande.addEventListener('submit', validerAvantEnvoi);
+
+   if (inputDatePrestation) {
+        inputDatePrestation.addEventListener('input', () => inputDatePrestation.setCustomValidity(''));
     }
 
-    if (inputCodePostal.value.trim().length === 5) {
-        verifierCodePostal(); 
+    if (inputCodePostal.value.trim().length === 5 && inputAdresse.value.trim().length > 0) {
+        verifierAdresse();
     } else {
         mettreAJourResume();
     }

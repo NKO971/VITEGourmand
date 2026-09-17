@@ -76,7 +76,9 @@
                                             data-theme="<?= $menu['theme_id'] ?? '' ?>"
                                             data-regime="<?= $menu['regime_id'] ?? '' ?>"
                                             data-composition='<?= htmlspecialchars($jsonComposition, ENT_QUOTES, 'UTF-8') ?>'
-                                            data-conditions='<?= htmlspecialchars($jsonConditions, ENT_QUOTES, 'UTF-8') ?>'>
+                                            data-conditions='<?= htmlspecialchars($jsonConditions, ENT_QUOTES, 'UTF-8') ?>'
+                                            data-delai-valeur="<?= htmlspecialchars((string)($menu['delai_commande_valeur'] ?? ''), ENT_QUOTES) ?>"
+                                            data-delai-unite="<?= htmlspecialchars($menu['delai_commande_unite'] ?? '', ENT_QUOTES) ?>">
                                             <i class="bi bi-pencil" aria-hidden="true"></i> Modifier
                                         </button>
                                         <button class="btn btn-sm <?= ($menu['actif'] ?? 1) == 1 ? 'btn-outline-danger' : 'btn-outline-success' ?> btn-toggle-menu"
@@ -108,6 +110,7 @@
                         <tr>
                             <th scope="col">ID</th>
                             <th scope="col">Titre du plat</th>
+                            <th scope="col">Allergènes</th>
                             <th scope="col">Statut</th>
                             <th scope="col" class="text-end">Actions</th>
                         </tr>
@@ -115,13 +118,23 @@
                     <tbody>
                         <?php if (empty($plats)): ?>
                             <tr>
-                                <td colspan="4" class="text-center py-3 text-muted">Aucun plat enregistré.</td>
+                                <td colspan="5" class="text-center py-3 text-muted">Aucun plat enregistré.</td>
                             </tr>
                         <?php else: ?>
                             <?php foreach ($plats as $plat): ?>
+                                <?php $allergenesPlat = $allergenesParPlat[$plat['plat_id']] ?? []; ?>
                                 <tr>
                                     <td><strong>#<?= htmlspecialchars((string)$plat['plat_id']) ?></strong></td>
                                     <td><?= htmlspecialchars($plat['titre_plat'] ?? '') ?></td>
+                                    <td>
+                                        <?php if (empty($allergenesPlat)): ?>
+                                            <span class="text-muted small">—</span>
+                                        <?php else: ?>
+                                            <?php foreach ($allergenesPlat as $a): ?>
+                                                <span class="badge bg-danger-subtle text-danger small">⚠️ <?= htmlspecialchars($a['libelle']) ?></span>
+                                            <?php endforeach; ?>
+                                        <?php endif; ?>
+                                    </td>
                                     <!-- Affiche le statut du plat -->
                                     <td>
                                         <span class="badge badge-status <?= ($plat['actif'] ?? 1) == 1 ? 'bg-success' : 'bg-danger' ?>">
@@ -130,7 +143,8 @@
                                     </td>
                                     <td class="text-end">
                                         <button class="btn btn-sm btn-outline-primary me-1 btn-edit-plat"
-                                            data-id="<?= $plat['plat_id'] ?>">
+                                            data-id="<?= $plat['plat_id'] ?>"
+                                            data-allergenes="<?= htmlspecialchars(implode(',', array_column($allergenesPlat, 'allergene_id')), ENT_QUOTES) ?>">
                                             <i class="bi bi-pencil" aria-hidden="true"></i> Modifier
                                         </button>
                                         <button class="btn btn-sm <?= ($plat['actif'] ?? 1) == 1 ? 'btn-outline-danger' : 'btn-outline-success' ?> btn-toggle-plat"

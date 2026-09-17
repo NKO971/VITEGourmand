@@ -9,23 +9,32 @@ function renderGestionMenuController($pdo)
     require_once ROOT_PATH . 'app/models/Plat.php';
     require_once ROOT_PATH . 'app/models/Theme.php';
     require_once ROOT_PATH . 'app/models/Regime.php';
+    require_once ROOT_PATH . 'app/models/Allergene.php';
 
     try {
         $menuModel = new Menu($pdo);
         $platModel = new Plat($pdo);
         $themeModel = new Theme($pdo);
         $regimeModel = new Regime($pdo);
+        $allergeneModel = new Allergene($pdo);
 
         $menus = $menuModel->getAllWithLabels();
         $plats = $platModel->getAll();
         $themes = $themeModel->getAll();
         $regimes = $regimeModel->getAll();
+        $allergenes = $allergeneModel->getAll();
+
+        // Allergenes deja associes a chaque plat, pour pre-remplir le
+        // select multiple en edition (data-allergenes sur le bouton Modifier).
+        $allergenesParPlat = $platModel->getAllergenesForPlats(array_column($plats, 'plat_id'));
     } catch (PDOException $e) {
         error_log("Erreur chargement carte back-office : " . $e->getMessage());
         $menus = [];
         $plats = [];
         $themes = [];
         $regimes = [];
+        $allergenes = [];
+        $allergenesParPlat = [];
     }
 
     $currentPage = 'employee_menus';
@@ -37,11 +46,13 @@ function renderGestionMenuController($pdo)
         [],
         ['js/dashboard_menus_plats.js'],
         [
-            'menus'       => $menus,
-            'plats'       => $plats,
-            'themes'      => $themes,
-            'regimes'     => $regimes,
-            'currentPage' => 'employee_menus'
+            'menus'              => $menus,
+            'plats'              => $plats,
+            'themes'             => $themes,
+            'regimes'            => $regimes,
+            'allergenes'         => $allergenes,
+            'allergenesParPlat'  => $allergenesParPlat,
+            'currentPage'        => 'employee_menus'
         ],
         'back'
     );
@@ -71,6 +82,13 @@ function createMenuController($pdo)
         $compositions       = $data['composition'] ?? null;
         $conditionsStockage = $data['conditions_stockage'] ?? null;
 
+        // Délai de commande structuré (valeur + unité heures/jours). Optionnel :
+        // absent ou vide = pas de délai minimum pour ce menu.
+        $delaiValeurRaw = $data['delai_valeur'] ?? null;
+        $delaiUniteRaw  = trim((string)($data['delai_unite'] ?? ''));
+        $delaiValeur = ($delaiValeurRaw === null || $delaiValeurRaw === '') ? null : filter_var($delaiValeurRaw, FILTER_VALIDATE_INT);
+        $delaiUnite  = $delaiUniteRaw !== '' ? $delaiUniteRaw : null;
+
         if (empty($titre) || $prix === false || $prix <= 0 || $stock === false || $stock < 0 || !$themeId || !$regimeId || !$minPersonnes || $minPersonnes < 1) {
             http_response_code(400);
             echo json_encode([
@@ -78,6 +96,18 @@ function createMenuController($pdo)
                 'error'   => 'Champs invalides ou incomplets (vérifiez titre, prix, stock, thème, régime et nombre de personnes minimum).'
             ]);
             exit();
+        }
+
+        if ($delaiValeur !== null && ($delaiValeur === false || $delaiValeur <= 0 || !in_array($delaiUnite, ['heures', 'jours'], true))) {
+            http_response_code(400);
+            echo json_encode([
+                'success' => false,
+                'error'   => 'Délai de commande invalide (valeur positive et unité heures/jours requises).'
+            ]);
+            exit();
+        }
+        if ($delaiValeur === null) {
+            $delaiUnite = null;
         }
 
         $imagePath = null;
@@ -107,6 +137,8 @@ function createMenuController($pdo)
             'regime_id'           => $regimeId,
             'composition'         => $compositions,
             'conditions_stockage' => $conditionsStockage,
+            'delai_commande_valeur' => $delaiValeur,
+            'delai_commande_unite'  => $delaiUnite,
             'image'               => $imagePath
         ]);
 
@@ -162,6 +194,13 @@ function updateMenuController($pdo)
         $compositions       = $data['composition'] ?? null;
         $conditionsStockage = $data['conditions_stockage'] ?? null;
 
+        // Délai de commande structuré (valeur + unité heures/jours). Optionnel :
+        // absent ou vide = pas de délai minimum pour ce menu.
+        $delaiValeurRaw = $data['delai_valeur'] ?? null;
+        $delaiUniteRaw  = trim((string)($data['delai_unite'] ?? ''));
+        $delaiValeur = ($delaiValeurRaw === null || $delaiValeurRaw === '') ? null : filter_var($delaiValeurRaw, FILTER_VALIDATE_INT);
+        $delaiUnite  = $delaiUniteRaw !== '' ? $delaiUniteRaw : null;
+
         if (!$menuId || empty($titre) || $prix === false || $prix <= 0 || $stock === false || $stock < 0 || !$themeId || !$regimeId || !$minPersonnes || $minPersonnes < 1) {
             http_response_code(400);
             echo json_encode([
@@ -169,6 +208,18 @@ function updateMenuController($pdo)
                 'error'   => 'Champs invalides ou incomplets (Vérifiez le titre, le prix, le stock, le thème et le régime).'
             ]);
             exit();
+        }
+
+        if ($delaiValeur !== null && ($delaiValeur === false || $delaiValeur <= 0 || !in_array($delaiUnite, ['heures', 'jours'], true))) {
+            http_response_code(400);
+            echo json_encode([
+                'success' => false,
+                'error'   => 'Délai de commande invalide (valeur positive et unité heures/jours requises).'
+            ]);
+            exit();
+        }
+        if ($delaiValeur === null) {
+            $delaiUnite = null;
         }
 
         $imagePath = null;
@@ -199,6 +250,8 @@ function updateMenuController($pdo)
             'regime_id'           => $regimeId,
             'composition'         => $compositions,
             'conditions_stockage' => $conditionsStockage,
+            'delai_commande_valeur' => $delaiValeur,
+            'delai_commande_unite'  => $delaiUnite,
             'image'               => $imagePath
         ]);
 

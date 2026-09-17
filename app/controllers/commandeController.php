@@ -99,6 +99,16 @@ function enregistrerCommande($pdo, $menuModel, $commandeModel, $dataPost)
         throw new Exception("Votre zone n'est pas desservie pour la livraison. Merci de vérifier votre code postal.");
     }
 
+    // Vérification du délai de commande minimum (blocage réel, pas juste visuel)
+    require_once ROOT_PATH . 'app/models/Menu.php';
+    $dateMinimum = Menu::computeMinDateForDelai($menu['delai_commande_valeur'] ?? null, $menu['delai_commande_unite'] ?? null);
+    if ($dateMinimum !== null) {
+        $datePrestation = DateTimeImmutable::createFromFormat('Y-m-d', $dataPost['date_prestation']);
+        if (!$datePrestation || $datePrestation->format('Y-m-d') < $dateMinimum->format('Y-m-d')) {
+            throw new Exception("Ce menu doit être commandé au moins " . $menu['delai_commande_valeur'] . " " . $menu['delai_commande_unite'] . " avant la prestation (date la plus proche possible : " . $dateMinimum->format('d/m/Y') . ").");
+        }
+    }
+
     $numeroCommande = $commandeModel->generateNumeroCommande();
 
     $success = $commandeModel->enregistrerCommande([
@@ -243,6 +253,18 @@ function updateCommandeController($pdo, $menuModel, $commandeModel, $dataPost)
         $_SESSION['flash_message'] = "Votre zone n'est pas desservie pour la livraison. Merci de vérifier votre code postal.";
         header("Location: ?page=modifier_commande&id={$commandeId}");
         exit();
+    }
+
+    // Vérification du délai de commande minimum (blocage réel, pas juste visuel)
+    require_once ROOT_PATH . 'app/models/Menu.php';
+    $dateMinimum = Menu::computeMinDateForDelai($menu['delai_commande_valeur'] ?? null, $menu['delai_commande_unite'] ?? null);
+    if ($dateMinimum !== null) {
+        $datePrestation = DateTimeImmutable::createFromFormat('Y-m-d', $dataPost['date_prestation']);
+        if (!$datePrestation || $datePrestation->format('Y-m-d') < $dateMinimum->format('Y-m-d')) {
+            $_SESSION['flash_message'] = "Ce menu doit être commandé au moins " . $menu['delai_commande_valeur'] . " " . $menu['delai_commande_unite'] . " avant la prestation (date la plus proche possible : " . $dateMinimum->format('d/m/Y') . ").";
+            header("Location: ?page=modifier_commande&id={$commandeId}");
+            exit();
+        }
     }
 
     $success = $commandeModel->updateOrder($commandeId, $_SESSION['user_id'], [

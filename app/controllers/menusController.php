@@ -29,10 +29,15 @@ function menusController($pdo)
         // État actuel des plats, indexé à la fois par ID (fiable) et par nom normalisé (repli pour anciennes données)
         $platsParId = [];
         $platsParNom = [];
-        foreach ($platModel->getAll() as $p) {
+        $tousLesPlats = $platModel->getAll();
+        foreach ($tousLesPlats as $p) {
             $platsParId[$p['plat_id']] = $p;
             $platsParNom[mb_strtolower(trim($p['titre_plat']))] = $p;
         }
+
+        // Allergenes de chaque plat (table plat_allergene), source de verite
+        // affichee au visiteur - remplace l'ancien JSON libre composition.allergenes.
+        $allergenesParPlat = $platModel->getAllergenesForPlats(array_column($tousLesPlats, 'plat_id'));
 
         foreach ($menus as &$menu) {
             $composition = json_decode($menu['composition'] ?? '[]', true);
@@ -59,8 +64,13 @@ function menusController($pdo)
                     if ($platTrouve && $platTrouve['actif'] == 1) {
                         $composition[$role]['nom'] = $platTrouve['titre_plat'];
                         $composition[$role]['plat_id'] = $platTrouve['plat_id'];
+                        $composition[$role]['allergenes'] = array_column(
+                            $allergenesParPlat[$platTrouve['plat_id']] ?? [],
+                            'libelle'
+                        );
                     } else {
                         $composition[$role]['nom'] = 'Actuellement indisponible';
+                        $composition[$role]['allergenes'] = [];
                     }
                 }
             }

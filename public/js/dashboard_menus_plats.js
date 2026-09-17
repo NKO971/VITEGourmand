@@ -118,7 +118,19 @@ if (btnAddMenu) {
 
         document.getElementById('edit_plat_id').value = platId;
         document.getElementById('edit_titre_plat').value = titrePlat;
-        
+
+        // Pré-sélection des allergènes déjà associés à ce plat (data-allergenes="1,3,7")
+        const selectAllergenes = document.getElementById('edit_plat_allergenes');
+        if (selectAllergenes) {
+            const idsExistants = (btnEditPlat.dataset.allergenes || '')
+                .split(',')
+                .map(v => v.trim())
+                .filter(Boolean);
+            Array.from(selectAllergenes.options).forEach(opt => {
+                opt.selected = idsExistants.includes(opt.value);
+            });
+        }
+
         const modalEl = document.getElementById('modalEditPlat');
         const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
         modal.show();
@@ -246,7 +258,8 @@ document.addEventListener('click', (e) => {
     } catch (err) {
         conditions = {};
     }
-    document.getElementById('edit_delai_commande').value = conditions.delai_commande || '';
+    document.getElementById('edit_delai_valeur').value = ds.delaiValeur || '';
+    document.getElementById('edit_delai_unite').value = ds.delaiUnite || 'heures';
     document.getElementById('edit_conservation').value = conditions.conservation || '';
 
     // Galerie : pré-remplissage du textarea (une URL par ligne) via fetch
@@ -346,9 +359,12 @@ document.addEventListener('click', (e) => {
             if (dessertData) compositionObj.dessert = dessertData;
 
             const conditionsObj = {
-                delai_commande: document.getElementById('edit_delai_commande').value.trim(),
                 conservation: document.getElementById('edit_conservation').value.trim()
             };
+
+            const delaiValeurRaw = document.getElementById('edit_delai_valeur').value.trim();
+            const delaiValeur = delaiValeurRaw === '' ? null : parseInt(delaiValeurRaw, 10);
+            const delaiUnite = delaiValeurRaw === '' ? null : document.getElementById('edit_delai_unite').value;
 
             // Nettoyage et conversion du prix (gestion de la virgule)
             const rawPrix = document.getElementById('edit_menu_prix').value.toString().replace(',', '.').trim();
@@ -365,7 +381,9 @@ document.addEventListener('click', (e) => {
                 description: document.getElementById('edit_menu_description').value,
                 galerie: document.getElementById('edit_menu_galerie').value,
                 composition: JSON.stringify(compositionObj),
-                conditions_stockage: JSON.stringify(conditionsObj)
+                conditions_stockage: JSON.stringify(conditionsObj),
+                delai_valeur: delaiValeur,
+                delai_unite: delaiUnite
             };
 
             try { console.log("Payload envoyé :", payload);
@@ -474,9 +492,12 @@ if (formCreateMenu) {
         if (dessertData) compositionObj.dessert = dessertData;
 
         const conditionsObj = {
-            delai_commande: document.getElementById('create_delai_commande').value.trim(),
             conservation: document.getElementById('create_conservation').value.trim()
         };
+
+        const delaiValeurRaw = document.getElementById('create_delai_valeur').value.trim();
+        const delaiValeur = delaiValeurRaw === '' ? null : parseInt(delaiValeurRaw, 10);
+        const delaiUnite = delaiValeurRaw === '' ? null : document.getElementById('create_delai_unite').value;
 
         const rawPrix = document.getElementById('create_menu_prix').value.toString().replace(',', '.').trim();
         const prixFormate = parseFloat(rawPrix);
@@ -491,7 +512,9 @@ if (formCreateMenu) {
             description: document.getElementById('create_menu_description').value,
             galerie: document.getElementById('create_menu_galerie').value,
             composition: JSON.stringify(compositionObj),
-            conditions_stockage: JSON.stringify(conditionsObj)
+            conditions_stockage: JSON.stringify(conditionsObj),
+            delai_valeur: delaiValeur,
+            delai_unite: delaiUnite
         };
 
         try {

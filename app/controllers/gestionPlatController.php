@@ -24,8 +24,15 @@ function createPlatController(PDO $pdo): void
     require_once ROOT_PATH . 'app/models/Plat.php';
     $platModel = new Plat($pdo);
 
+    $allergeneIds = isset($_POST['allergenes']) ? (array)$_POST['allergenes'] : [];
+    $allergeneIds = array_values(array_filter(array_map('intval', $allergeneIds)));
+
     try {
         $platId = $platModel->createPlat($titrePlat, $actif);
+
+        if (!empty($allergeneIds)) {
+            $platModel->saveAllergenes((int)$platId, $allergeneIds);
+        }
 
         echo json_encode([
             'success' => true,
@@ -54,7 +61,7 @@ function updatePlatController($pdo)
 
     $photoData = null;
     if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
-        require_once ROOT_PATH . 'helpers/upload.php';
+        require_once ROOT_PATH . 'helpers/uploadImage.php';
         $mimeError = validateImageMimeType($_FILES['photo']);
 
         if ($mimeError) {
@@ -69,8 +76,12 @@ function updatePlatController($pdo)
     require_once ROOT_PATH . 'app/models/Plat.php';
     $platModel = new Plat($pdo);
 
+    $allergeneIds = isset($_POST['allergenes']) ? (array)$_POST['allergenes'] : [];
+    $allergeneIds = array_values(array_filter(array_map('intval', $allergeneIds)));
+
     try {
         $platModel->updatePlat($platId, $titrePlat, $photoData);
+        $platModel->saveAllergenes((int)$platId, $allergeneIds);
 
         echo json_encode(['success' => true, 'message' => 'Plat mis à jour avec succès.']);
         exit();

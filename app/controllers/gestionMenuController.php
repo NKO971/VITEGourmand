@@ -9,23 +9,32 @@ function renderGestionMenuController($pdo)
     require_once ROOT_PATH . 'app/models/Plat.php';
     require_once ROOT_PATH . 'app/models/Theme.php';
     require_once ROOT_PATH . 'app/models/Regime.php';
+    require_once ROOT_PATH . 'app/models/Allergene.php';
 
     try {
         $menuModel = new Menu($pdo);
         $platModel = new Plat($pdo);
         $themeModel = new Theme($pdo);
         $regimeModel = new Regime($pdo);
+        $allergeneModel = new Allergene($pdo);
 
         $menus = $menuModel->getAllWithLabels();
         $plats = $platModel->getAll();
         $themes = $themeModel->getAll();
         $regimes = $regimeModel->getAll();
+        $allergenes = $allergeneModel->getAll();
+
+        // Allergenes deja associes a chaque plat, pour pre-remplir le
+        // select multiple en edition (data-allergenes sur le bouton Modifier).
+        $allergenesParPlat = $platModel->getAllergenesForPlats(array_column($plats, 'plat_id'));
     } catch (PDOException $e) {
         error_log("Erreur chargement carte back-office : " . $e->getMessage());
         $menus = [];
         $plats = [];
         $themes = [];
         $regimes = [];
+        $allergenes = [];
+        $allergenesParPlat = [];
     }
 
     $currentPage = 'employee_menus';
@@ -37,11 +46,13 @@ function renderGestionMenuController($pdo)
         [],
         ['js/dashboard_menus_plats.js'],
         [
-            'menus'       => $menus,
-            'plats'       => $plats,
-            'themes'      => $themes,
-            'regimes'     => $regimes,
-            'currentPage' => 'employee_menus'
+            'menus'              => $menus,
+            'plats'              => $plats,
+            'themes'             => $themes,
+            'regimes'            => $regimes,
+            'allergenes'         => $allergenes,
+            'allergenesParPlat'  => $allergenesParPlat,
+            'currentPage'        => 'employee_menus'
         ],
         'back'
     );

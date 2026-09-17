@@ -20,6 +20,19 @@
                         <label for="edit_titre_plat" class="form-label fw-semibold">Titre du plat <span class="text-danger">*</span></label>
                         <input type="text" class="form-control" id="edit_titre_plat" name="titre_plat" required>
                     </div>
+
+                    <!-- Allergènes (14 allergènes majeurs UE 1169/2011) -->
+                    <div class="mb-3">
+                        <label for="edit_plat_allergenes" class="form-label fw-semibold">Allergènes</label>
+                        <select class="form-select" id="edit_plat_allergenes" name="allergenes[]" multiple size="6">
+                            <?php if (!empty($allergenes)): ?>
+                                <?php foreach ($allergenes as $allergene): ?>
+                                    <option value="<?= $allergene['allergene_id'] ?>"><?= htmlspecialchars($allergene['libelle']) ?></option>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </select>
+                        <div class="form-text">Maintenez Ctrl (ou Cmd sur Mac) pour sélectionner plusieurs allergènes.</div>
+                    </div>
                 </div>
 
                 <div class="modal-footer bg-light">

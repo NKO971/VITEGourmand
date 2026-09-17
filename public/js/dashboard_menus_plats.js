@@ -118,7 +118,19 @@ if (btnAddMenu) {
 
         document.getElementById('edit_plat_id').value = platId;
         document.getElementById('edit_titre_plat').value = titrePlat;
-        
+
+        // Pré-sélection des allergènes déjà associés à ce plat (data-allergenes="1,3,7")
+        const selectAllergenes = document.getElementById('edit_plat_allergenes');
+        if (selectAllergenes) {
+            const idsExistants = (btnEditPlat.dataset.allergenes || '')
+                .split(',')
+                .map(v => v.trim())
+                .filter(Boolean);
+            Array.from(selectAllergenes.options).forEach(opt => {
+                opt.selected = idsExistants.includes(opt.value);
+            });
+        }
+
         const modalEl = document.getElementById('modalEditPlat');
         const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
         modal.show();

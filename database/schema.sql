@@ -40,6 +40,29 @@ CREATE TABLE IF NOT EXISTS `zone_livraison` (
     distance_km INT NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+CREATE TABLE IF NOT EXISTS `allergene` (
+    allergene_id INT AUTO_INCREMENT PRIMARY KEY,
+    libelle VARCHAR(50) NOT NULL UNIQUE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- Seed idempotent des 14 allergenes majeurs (reglement UE 1169/2011).
+-- INSERT IGNORE : sans danger a rejouer sur une base existante.
+INSERT IGNORE INTO `allergene` (`allergene_id`, `libelle`) VALUES
+(1, 'Gluten'),
+(2, 'Crustacés'),
+(3, 'Œufs'),
+(4, 'Poissons'),
+(5, 'Arachides'),
+(6, 'Soja'),
+(7, 'Lait'),
+(8, 'Fruits à coque'),
+(9, 'Céleri'),
+(10, 'Moutarde'),
+(11, 'Sésame'),
+(12, 'Sulfites'),
+(13, 'Lupin'),
+(14, 'Mollusques');
+
 -- ---------------------------------------------------------------------
 -- 2. Utilisateurs (dépend de role)
 -- ---------------------------------------------------------------------
@@ -69,6 +92,16 @@ CREATE TABLE IF NOT EXISTS `plat` (
     titre_plat VARCHAR(100) NOT NULL,
     photo LONGBLOB DEFAULT NULL,
     actif TINYINT(1) DEFAULT 1
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- Association many-to-many plat <-> allergene (un plat peut avoir
+-- plusieurs allergenes, un allergene concerne plusieurs plats).
+CREATE TABLE IF NOT EXISTS `plat_allergene` (
+    plat_id INT NOT NULL,
+    allergene_id INT NOT NULL,
+    PRIMARY KEY (plat_id, allergene_id),
+    FOREIGN KEY (plat_id) REFERENCES plat (plat_id) ON DELETE CASCADE,
+    FOREIGN KEY (allergene_id) REFERENCES allergene (allergene_id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 CREATE TABLE IF NOT EXISTS `menu` (

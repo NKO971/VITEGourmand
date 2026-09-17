@@ -25,6 +25,19 @@
                         <label class="form-check-label fw-semibold" for="create_plat_actif">Rendre ce plat immédiatement actif</label>
                     </div>
 
+                    <!-- Allergènes (14 allergènes majeurs UE 1169/2011) -->
+                    <div class="mb-3">
+                        <label for="create_plat_allergenes" class="form-label fw-semibold">Allergènes</label>
+                        <select class="form-select" id="create_plat_allergenes" name="allergenes[]" multiple size="6">
+                            <?php if (!empty($allergenes)): ?>
+                                <?php foreach ($allergenes as $allergene): ?>
+                                    <option value="<?= $allergene['allergene_id'] ?>"><?= htmlspecialchars($allergene['libelle']) ?></option>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </select>
+                        <div class="form-text">Maintenez Ctrl (ou Cmd sur Mac) pour sélectionner plusieurs allergènes.</div>
+                    </div>
+
                 </div>
 
                 <div class="modal-footer bg-light">

@@ -40,6 +40,29 @@ CREATE TABLE IF NOT EXISTS `zone_livraison` (
     distance_km INT NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+CREATE TABLE IF NOT EXISTS `allergene` (
+    allergene_id INT AUTO_INCREMENT PRIMARY KEY,
+    libelle VARCHAR(50) NOT NULL UNIQUE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- Seed idempotent des 14 allergenes majeurs (reglement UE 1169/2011).
+-- INSERT IGNORE : sans danger a rejouer sur une base existante.
+INSERT IGNORE INTO `allergene` (`allergene_id`, `libelle`) VALUES
+(1, 'Gluten'),
+(2, 'Crustacés'),
+(3, 'Œufs'),
+(4, 'Poissons'),
+(5, 'Arachides'),
+(6, 'Soja'),
+(7, 'Lait'),
+(8, 'Fruits à coque'),
+(9, 'Céleri'),
+(10, 'Moutarde'),
+(11, 'Sésame'),
+(12, 'Sulfites'),
+(13, 'Lupin'),
+(14, 'Mollusques');
+
 -- ---------------------------------------------------------------------
 -- 2. Utilisateurs (dépend de role)
 -- ---------------------------------------------------------------------
@@ -71,6 +94,16 @@ CREATE TABLE IF NOT EXISTS `plat` (
     actif TINYINT(1) DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+-- Association many-to-many plat <-> allergene (un plat peut avoir
+-- plusieurs allergenes, un allergene concerne plusieurs plats).
+CREATE TABLE IF NOT EXISTS `plat_allergene` (
+    plat_id INT NOT NULL,
+    allergene_id INT NOT NULL,
+    PRIMARY KEY (plat_id, allergene_id),
+    FOREIGN KEY (plat_id) REFERENCES plat (plat_id) ON DELETE CASCADE,
+    FOREIGN KEY (allergene_id) REFERENCES allergene (allergene_id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
 CREATE TABLE IF NOT EXISTS `menu` (
     menu_id INT AUTO_INCREMENT PRIMARY KEY,
     titre VARCHAR(100) NOT NULL,
@@ -82,6 +115,8 @@ CREATE TABLE IF NOT EXISTS `menu` (
     regime_id INT DEFAULT NULL,
     composition LONGTEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`composition`)),
     conditions_stockage LONGTEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`conditions_stockage`)),
+    delai_commande_valeur INT DEFAULT NULL,
+    delai_commande_unite VARCHAR(10) DEFAULT NULL,
     image VARCHAR(255) DEFAULT NULL,
     actif TINYINT(1) DEFAULT 1,
     FOREIGN KEY (theme_id) REFERENCES theme (theme_id),
@@ -98,9 +133,22 @@ CREATE TABLE IF NOT EXISTS `menu_images` (
     id INT AUTO_INCREMENT PRIMARY KEY,
     menu_id INT NOT NULL,
     image_url VARCHAR(255) DEFAULT NULL,
+    ordre INT DEFAULT 0,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (menu_id) REFERENCES menu (menu_id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- Patch idempotent : ajoute la colonne ordre si menu_images existe deja
+-- sans elle (utilisee par Menu::saveGallery/getImagesByMenuId/getAllImagesByMenuIds).
+-- Sans danger a rejouer sur une base existante (IF NOT EXISTS), y compris en prod.
+ALTER TABLE `menu_images` ADD COLUMN IF NOT EXISTS `ordre` INT DEFAULT 0 AFTER `image_url`;
+
+-- Patch idempotent : ajoute les colonnes de delai de commande a menu si elles
+-- n'existent pas deja (utilisees par Menu::createMenu/updateMenu et par le
+-- blocage reel de date_prestation cote commande). Sans danger a rejouer sur
+-- une base existante (IF NOT EXISTS), y compris en prod.
+ALTER TABLE `menu` ADD COLUMN IF NOT EXISTS `delai_commande_valeur` INT DEFAULT NULL AFTER `conditions_stockage`;
+ALTER TABLE `menu` ADD COLUMN IF NOT EXISTS `delai_commande_unite` VARCHAR(10) DEFAULT NULL AFTER `delai_commande_valeur`;
 
 -- ---------------------------------------------------------------------
 -- 5. Commandes et suivi (dépendent de utilisateur et menu)

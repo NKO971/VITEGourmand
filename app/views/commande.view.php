@@ -46,6 +46,9 @@
                     <div class="mb-3">
                         <label for="date_prestation" class="form-label fw-bold">Date de la prestation</label>
                         <input type="date" class="form-control" id="date_prestation" name="date_prestation" required>
+                        <div id="delai_commande_info" class="form-text"></div>
+                        <input type="hidden" id="delai_valeur_hidden" value="<?= (int)($menu['delai_commande_valeur'] ?? 0) ?>">
+                        <input type="hidden" id="delai_unite_hidden" value="<?= htmlspecialchars($menu['delai_commande_unite'] ?? '') ?>">
                     </div>
                 </div>
                 <div class="col-md-6">

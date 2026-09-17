@@ -17,9 +17,9 @@ class Menu
 
     public function createMenu(array $data)
     {
-        $sql = "INSERT INTO menu (titre, description, prix_par_personne, quantite_restante, nombre_personne_minimum, theme_id, regime_id, composition, conditions_stockage, actif"
+        $sql = "INSERT INTO menu (titre, description, prix_par_personne, quantite_restante, nombre_personne_minimum, theme_id, regime_id, composition, conditions_stockage, delai_commande_valeur, delai_commande_unite, actif"
             . (!empty($data['image']) ? ", image" : "") . ")
-            VALUES (:titre, :description, :prix, :stock, :min_pers, :theme_id, :regime_id, :composition, :conditions_stockage, 1"
+            VALUES (:titre, :description, :prix, :stock, :min_pers, :theme_id, :regime_id, :composition, :conditions_stockage, :delai_valeur, :delai_unite, 1"
             . (!empty($data['image']) ? ", :image" : "") . ")";
 
         $params = [
@@ -32,6 +32,8 @@ class Menu
             ':regime_id'           => $data['regime_id'],
             ':composition'         => $data['composition'],
             ':conditions_stockage' => $data['conditions_stockage'],
+            ':delai_valeur'        => $data['delai_commande_valeur'] ?? null,
+            ':delai_unite'         => $data['delai_commande_unite'] ?? null,
         ];
 
         if (!empty($data['image'])) {
@@ -55,7 +57,9 @@ class Menu
                 theme_id = :theme_id, 
                 regime_id = :regime_id, 
                 composition = :composition, 
-                conditions_stockage = :conditions_stockage"
+                conditions_stockage = :conditions_stockage,
+                delai_commande_valeur = :delai_valeur,
+                delai_commande_unite = :delai_unite"
             . (!empty($data['image']) ? ", image = :image" : "") . " 
             WHERE menu_id = :id";
 
@@ -69,6 +73,8 @@ class Menu
             ':regime_id'           => $data['regime_id'],
             ':composition'         => $data['composition'],
             ':conditions_stockage' => $data['conditions_stockage'],
+            ':delai_valeur'        => $data['delai_commande_valeur'] ?? null,
+            ':delai_unite'         => $data['delai_commande_unite'] ?? null,
             ':id'                  => $data['menu_id']
         ];
 
@@ -239,5 +245,27 @@ class Menu
             }
         }
         return $urls;
+    }
+
+    /**
+     * Calcule la date la plus proche a laquelle une prestation peut etre
+     * reservee pour un menu ayant un delai de commande (valeur + unite
+     * 'heures'|'jours'). Reproduit exactement calculerDateMinimum() de
+     * public/js/commande.js (granularite jour : les heures sont arrondies
+     * au jour superieur) afin que la validation serveur et la validation
+     * cote client soient strictement coherentes.
+     * Retourne null si le menu n'a pas de delai de commande structure.
+     */
+    public static function computeMinDateForDelai(?int $valeur, ?string $unite): ?DateTimeImmutable
+    {
+        if (empty($valeur) || $valeur <= 0) {
+            return null;
+        }
+
+        $heuresTotales = ($unite === 'jours') ? $valeur * 24 : $valeur;
+        $joursMinimum = (int)ceil($heuresTotales / 24);
+
+        $today = new DateTimeImmutable('today');
+        return $today->modify("+{$joursMinimum} days");
     }
 }

@@ -2,6 +2,7 @@
     "require": {
         "ext-mongodb": "*",
         "ext-pdo_mysql": "*",
+        "ext-mbstring": "*",
         "mongodb/mongodb": "^2.3",
         "phpmailer/phpmailer": "^7.1"
     }

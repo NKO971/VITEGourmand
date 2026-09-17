@@ -96,6 +96,21 @@ class Menu
         return $stmt->rowCount();
     }
 
+    // Décrémente la quantité restante d'un menu de 1 si elle est supérieure à 0.
+    public function decrementerStock(int $menuId): bool
+    {
+        $stmt = $this->pdo->prepare("UPDATE menu SET quantite_restante = quantite_restante - 1 WHERE menu_id = :id AND quantite_restante > 0");
+        $stmt->execute([':id' => $menuId]);
+        return $stmt->rowCount() > 0;
+    }
+
+    // Incrémente la quantité restante d'un menu de 1.
+    public function incrementerStock(int $menuId): void
+    {
+        $stmt = $this->pdo->prepare("UPDATE menu SET quantite_restante = quantite_restante + 1 WHERE menu_id = :id");
+        $stmt->execute([':id' => $menuId]);
+    }
+
     public function getMenusByIds(array $menuIds): array
     {
         if (empty($menuIds)) {

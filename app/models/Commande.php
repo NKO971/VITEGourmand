@@ -48,18 +48,45 @@ class Commande
 
     public function cancelOrder($orderId, $userId, $nouveauStatut)
     {
-        // On vérifie que la commande appartient bien à l'utilisateur
+        // On verifie que la commande appartient bien a l'utilisateur
         // ET que le statut est bien 'En attente' avant de modifier
-        $sql = "UPDATE commande 
+        $stmt = $this->pdo->prepare("SELECT menu_id FROM commande WHERE commande_id = :c_id AND utilisateur_id = :u_id AND statut = 'En attente'");
+        $stmt->execute([':c_id' => $orderId, ':u_id' => $userId]);
+        $commande = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$commande) {
+            return false;
+        }
+
+        $this->pdo->beginTransaction();
+        try {
+            $sql = "UPDATE commande 
             SET statut = :statut 
             WHERE commande_id = :c_id AND utilisateur_id = :u_id AND statut = 'En attente'";
 
-        $stmt = $this->pdo->prepare($sql);
-        return $stmt->execute([
-            ':statut' => $nouveauStatut,
-            ':c_id'   => $orderId,
-            ':u_id'   => $userId
-        ]);
+            $stmtUpdate = $this->pdo->prepare($sql);
+            $stmtUpdate->execute([
+                ':statut' => $nouveauStatut,
+                ':c_id'   => $orderId,
+                ':u_id'   => $userId
+            ]);
+
+            if ($stmtUpdate->rowCount() === 0) {
+                $this->pdo->rollBack();
+                return false;
+            }
+
+            require_once __DIR__ . '/Menu.php';
+            $menuModel = new Menu($this->pdo);
+            $menuModel->incrementerStock((int)$commande['menu_id']);
+
+            $this->pdo->commit();
+            return true;
+        } catch (Exception $e) {
+            $this->pdo->rollBack();
+            error_log("Erreur annulation commande : " . $e->getMessage());
+            return false;
+        }
     }
 
     public function getOrderWithUserInfo($orderId)
@@ -79,10 +106,14 @@ class Commande
         try {
             $this->pdo->beginTransaction();
 
+            $stmtInfo = $this->pdo->prepare("SELECT statut, menu_id FROM commande WHERE commande_id = :c_id");
+            $stmtInfo->execute([':c_id' => $orderId]);
+            $commandeActuelle = $stmtInfo->fetch(PDO::FETCH_ASSOC);
+
             $sql = "UPDATE commande 
-                SET statut = :statut,
-                    mode_contact = :mode_contact,
-                    motif_annulation = :motif";
+            SET statut = :statut,
+                mode_contact = :mode_contact,
+                motif_annulation = :motif";
 
             if ($setRestitution) {
                 $sql .= ", restitution_materiel = 1";
@@ -98,11 +129,18 @@ class Commande
                 ':c_id'         => $orderId
             ]);
 
-            $stmt2 = $this->pdo->prepare("INSERT INTO suivi_commande (commande_id, statut, date_modification, date_suivi) VALUES (:c_id, :statut, NOW(), NOW())");
+            $stmt2 = $this->pdo->prepare("INSERT INTO suivi_commande(commande_id, statut, date_modification, date_suivi) VALUES (:c_id, :statut, NOW(), NOW())");
             $stmt2->execute([
                 ':c_id'   => $orderId,
                 ':statut' => $nouveauStatut
             ]);
+
+            // Restitution du stock uniquement si la commande passe (pour la premiere fois) a Annulee
+            if ($nouveauStatut === 'Annulée' && $commandeActuelle && $commandeActuelle['statut'] !== 'Annulée') {
+                require_once __DIR__ . '/Menu.php';
+                $menuModel = new Menu($this->pdo);
+                $menuModel->incrementerStock((int)$commandeActuelle['menu_id']);
+            }
 
             $this->pdo->commit();
             return true;
@@ -274,18 +312,18 @@ class Commande
 
     // Cette fonction vérifie si la transition de statut est autorisée.
     public function isTransitionAutorisee(string $statutActuel, string $nouveauStatut): bool
-{
-    $transitionsAutorisees = [
-        'En attente'                       => ['En attente', 'Acceptée', 'Annulée'],
-        'Acceptée'                          => ['Acceptée', 'En préparation', 'Annulée'],
-        'En préparation'                    => ['En préparation', 'En cours de livraison'],
-        'En cours de livraison'             => ['En cours de livraison', 'Livré'],
-        'Livré'                              => ['Livré', 'En attente du retour de matériel', 'Terminée'],
-        'En attente du retour de matériel'  => ['En attente du retour de matériel', 'Terminée'],
-        'Terminée'                          => ['Terminée'],
-        'Annulée'                           => ['Annulée'],
-    ];
+    {
+        $transitionsAutorisees = [
+            'En attente'                       => ['En attente', 'Acceptée', 'Annulée'],
+            'Acceptée'                          => ['Acceptée', 'En préparation', 'Annulée'],
+            'En préparation'                    => ['En préparation', 'En cours de livraison'],
+            'En cours de livraison'             => ['En cours de livraison', 'Livré'],
+            'Livré'                              => ['Livré', 'En attente du retour de matériel', 'Terminée'],
+            'En attente du retour de matériel'  => ['En attente du retour de matériel', 'Terminée'],
+            'Terminée'                          => ['Terminée'],
+            'Annulée'                           => ['Annulée'],
+        ];
 
-    return in_array($nouveauStatut, $transitionsAutorisees[$statutActuel] ?? []);
-}
+        return in_array($nouveauStatut, $transitionsAutorisees[$statutActuel] ?? []);
+    }
 }

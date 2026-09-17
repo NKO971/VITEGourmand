@@ -109,51 +109,63 @@ function enregistrerCommande($pdo, $menuModel, $commandeModel, $dataPost)
         }
     }
 
-    $numeroCommande = $commandeModel->generateNumeroCommande();
+        $numeroCommande = $commandeModel->generateNumeroCommande();
 
-    $success = $commandeModel->enregistrerCommande([
-        'numero_commande'       => $numeroCommande,
-        'date_commande'         => date('Y-m-d'),
-        'date_prestation'       => $dataPost['date_prestation'],
-        'heure_livraison'       => $dataPost['heure_livraison'],
-        'adresse_livraison'     => $dataPost['lieu_livraison'],
-        'code_postal_livraison' => $dataPost['code_postal'],
-        'prix_menu'             => $resultat['total_menu'],
-        'nombre_personne'       => $dataPost['nb_personnes'],
-        'prix_livraison'        => $resultat['frais_livraison'],
-        'utilisateur_id'        => $_SESSION['user_id'],
-        'menu_id'               => $dataPost['menu_id'],
-        'statut'                => 'En attente'
-    ]);
+    $pdo->beginTransaction();
+    try {
+        if (!$menuModel->decrementerStock((int)$dataPost['menu_id'])) {
+            throw new Exception("Ce menu n'est plus disponible (stock epuise).");
+        }
 
-    if ($success) {
-        require_once ROOT_PATH . 'app/models/StatsCommandeModel.php';
-        $statsModel = new StatsCommandeModel();
-        $statsModel->upsertStats(
-            (int)$pdo->lastInsertId(),
-            (int)$dataPost['menu_id'],
-            $resultat['total_general'],
-            'En attente',
-            date('Y-m-d')
-        );
+        $success = $commandeModel->enregistrerCommande([
+            'numero_commande'       => $numeroCommande,
+            'date_commande'         => date('Y-m-d'),
+            'date_prestation'       => $dataPost['date_prestation'],
+            'heure_livraison'       => $dataPost['heure_livraison'],
+            'adresse_livraison'     => $dataPost['lieu_livraison'],
+            'code_postal_livraison' => $dataPost['code_postal'],
+            'prix_menu'             => $resultat['total_menu'],
+            'nombre_personne'       => $dataPost['nb_personnes'],
+            'prix_livraison'        => $resultat['frais_livraison'],
+            'utilisateur_id'        => $_SESSION['user_id'],
+            'menu_id'               => $dataPost['menu_id'],
+            'statut'                => 'En attente'
+        ]);
 
-        require_once ROOT_PATH . 'helpers/mailer.php';
+        if (!$success) {
+            throw new Exception("Erreur lors de l'enregistrement de la commande.");
+        }
 
-        $mailSent = sendOrderConfirmationNotification(
-            $_SESSION['email'],
-            $_SESSION['nom'],
-            $numeroCommande,
-            $dataPost['date_prestation'],
-            number_format($resultat['total_general'], 2, ',', ' ')
-        );
-
-        error_log("Tentative d'envoi de mail à : " . $_SESSION['email'] . " - Résultat : " . ($mailSent ? "Succès" : "Échec"));
-
-        header("Location: ?page=confirmation");
-        exit();
-    } else {
-        throw new Exception("Erreur lors de l'enregistrement de la commande.");
+        $pdo->commit();
+    } catch (Exception $e) {
+        $pdo->rollBack();
+        throw $e;
     }
+
+    require_once ROOT_PATH . 'app/models/StatsCommandeModel.php';
+    $statsModel = new StatsCommandeModel();
+    $statsModel->upsertStats(
+        (int)$pdo->lastInsertId(),
+        (int)$dataPost['menu_id'],
+        $resultat['total_general'],
+        'En attente',
+        date('Y-m-d')
+    );
+
+    require_once ROOT_PATH . 'helpers/mailer.php';
+
+    $mailSent = sendOrderConfirmationNotification(
+        $_SESSION['email'],
+        $_SESSION['nom'],
+        $numeroCommande,
+        $dataPost['date_prestation'],
+        number_format($resultat['total_general'], 2, ',', ' ')
+    );
+
+    error_log("Tentative d'envoi de mail a : " . $_SESSION['email'] . " - Resultat : " . ($mailSent ? "Succes" : "Echec"));
+
+    header("Location: ?page=confirmation");
+    exit();
 }
 
 function modifierCommandeController($pdo, $menuModel, $commandeModel)

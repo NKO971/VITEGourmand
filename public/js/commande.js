@@ -34,10 +34,18 @@ document.addEventListener('DOMContentLoaded', () => {
         return d;
     }
 
+    // Formate une date en chaîne "YYYY/MM/DD" pour l'affichage dans le message d'information.
+    function formatDateLocale(d) {
+        const annee = d.getFullYear();
+        const mois = String(d.getMonth() + 1).padStart(2, '0');
+        const jour = String(d.getDate()).padStart(2, '0');
+        return `${annee}/${mois}/${jour}`;
+    }
+
     const dateMinimumAutorisee = calculerDateMinimum(delaiValeur, delaiUnite);
 
     if (dateMinimumAutorisee && inputDatePrestation) {
-        const iso = dateMinimumAutorisee.toISOString().slice(0, 10);
+        const iso = formatDateLocale(dateMinimumAutorisee);
         inputDatePrestation.min = iso;
         if (elDelaiInfo) {
             elDelaiInfo.textContent = `Ce menu doit être commandé au moins ${delaiValeur} ${delaiUnite} avant la prestation (date la plus proche possible : ${iso.split('-').reverse().join('/')}).`;
@@ -48,6 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let zoneDesservie = true; // Suivi de l'état de la zone, pour la validation au submit
 
     function mettreAJourResume() {
+        inputNbPersonnes.setCustomValidity('');
         const nbPersonnes = parseInt(inputNbPersonnes.value) || 1;
         
         txtAffichageNbPers.textContent = nbPersonnes;
@@ -73,6 +82,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // On intéroge l'API à chaque changement du code postal pour mettre à jour les frais de livraison
     function verifierCodePostal() {
+        inputCodePostal.setCustomValidity('');
         const codePostal = inputCodePostal.value.trim();
 
         if (codePostal.length === 5) {
@@ -150,6 +160,10 @@ document.addEventListener('DOMContentLoaded', () => {
     inputNbPersonnes.addEventListener('input', mettreAJourResume);
     inputCodePostal.addEventListener('input', verifierCodePostal);
     formCommande.addEventListener('submit', validerAvantEnvoi);
+
+    if (inputDatePrestation) {
+        inputDatePrestattion.addEventListener('input', () => inputDatePrestation.setCustomValidity('')); // Réinitialise la validité si l'utilisateur change la date
+    }
 
     if (inputCodePostal.value.trim().length === 5) {
         verifierCodePostal(); 

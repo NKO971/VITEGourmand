@@ -98,9 +98,15 @@ CREATE TABLE IF NOT EXISTS `menu_images` (
     id INT AUTO_INCREMENT PRIMARY KEY,
     menu_id INT NOT NULL,
     image_url VARCHAR(255) DEFAULT NULL,
+    ordre INT DEFAULT 0,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (menu_id) REFERENCES menu (menu_id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- Patch idempotent : ajoute la colonne ordre si menu_images existe deja
+-- sans elle (utilisee par Menu::saveGallery/getImagesByMenuId/getAllImagesByMenuIds).
+-- Sans danger a rejouer sur une base existante (IF NOT EXISTS), y compris en prod.
+ALTER TABLE `menu_images` ADD COLUMN IF NOT EXISTS `ordre` INT DEFAULT 0 AFTER `image_url`;
 
 -- ---------------------------------------------------------------------
 -- 5. Commandes et suivi (dépendent de utilisateur et menu)

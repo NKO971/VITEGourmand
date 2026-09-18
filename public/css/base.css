@@ -11,7 +11,9 @@
     --vg-radius: 12px;
     --vg-shadow-md: 0 4px 6px -1px rgba(15, 23, 42, 0.05), 0 2px 4px -2px rgba(15, 23, 42, 0.05);
 }
-
+body {
+    font-family: 'Poppins', sans-serif;
+}
 /* STYLE DU BLOC DE FILTRES*/
    
 .vg-filter-container {

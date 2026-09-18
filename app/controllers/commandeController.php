@@ -71,7 +71,7 @@ function getZoneDistance($pdo)
     if (!$resultat['zone_desservie']) {
         echo json_encode([
             'success' => false,
-            'message' => 'Désolé, cette adresse se trouve hors de notre zone de livraison (' . $resultat['distance_km'] . ' km, 80 km maximum).',
+            'message' => 'Zone non desservie (' . $resultat['distance_km'] . ' km, 80 km maximum).',
         ]);
         exit();
     }

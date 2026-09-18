@@ -54,7 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    let fraisLivraisonActuels = 0;
+let fraisLivraisonActuels = 0;
 let zoneDesservie = true;
 let debounceTimer = null;
 

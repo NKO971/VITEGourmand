@@ -1,0 +1,3 @@
+<?php
+define('DB_USER', 'user_local');
+define('DB_PASS', 'mot_de_passe_local');

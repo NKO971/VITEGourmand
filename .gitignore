@@ -12,3 +12,6 @@ database/backup_*.txt
 .DS_Store
 Thumbs.db
 import_*.php
+
+# Fichiers de log SQL 
+app/config/constants.local.php

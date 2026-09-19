@@ -8,9 +8,12 @@ class ZoneLivraison
     // Rayon maximal de livraison en km — au-delà : zone non desservie
     private const MAX_DISTANCE_KM = 80;
 
-    /**
-     * Géocode une adresse complète (adresse + code postal) via l'API Adresse
-     * (api-adresse.data.gouv.fr, gratuite, sans clé) et calcule la distance
+     /**
+     * Géocode une adresse complète (adresse + code postal) via l'API Géoplateforme
+     * (data.geopf.fr/geocodage, gratuite, sans clé, ex-api-adresse.data.gouv.fr) et calcule
+     * la distance par rapport au centre de Bordeaux.
+     * @param string $adresse L'adresse à géocoder
+     * @param string $codePostal Le code postal associé à l'adresse
      * par rapport au centre de Bordeaux.
      *
      * @return array|null ['distance_km','ville','zone_desservie','lat','lng'] ou null si non géocodable
@@ -50,7 +53,7 @@ class ZoneLivraison
      
     private function geocoder(string $requete): ?array
     {
-        $url = 'https://api-adresse.data.gouv.fr/search/?' . http_build_query([
+        $url = 'https://data.geopf.fr/geocodage/search/?' . http_build_query([
             'q'            => $requete,
             'limit'        => 1,
             'autocomplete' => 0,

@@ -13,5 +13,5 @@ database/backup_*.txt
 Thumbs.db
 import_*.php
 
-# Fichiers de log SQL 
+# Fichiers de log SQL
 app/config/constants.local.php

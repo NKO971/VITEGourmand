@@ -3,6 +3,7 @@
         <h1 class="mb-4">Finaliser votre commande</h1>
 
         <form action="index.php?page=enregistrer_commande" method="POST">
+            <?= csrf_field() ?>
             <input type="hidden" name="menu_id" value="<?= htmlspecialchars($menu['menu_id']) ?>">
             <p class="text-muted small mb-3">Les champs marqués <span class="text-danger">*</span> sont obligatoires.</p>
             <div class="row">

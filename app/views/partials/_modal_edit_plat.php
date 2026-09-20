@@ -10,6 +10,7 @@
             </div>
             
             <form id="formEditPlat" action="index.php?action=update_plat" method="POST">
+                <?= csrf_field() ?>
                 <div class="modal-body">
                     <p class="text-muted small mb-3">Les champs marqués <span class="text-danger">*</span> sont obligatoires.</p>
                     <!-- Champ caché ID -->

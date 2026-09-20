@@ -16,6 +16,7 @@
                     <?php endif; ?>
 
                     <form method="POST" action="?page=profile">
+                        <?= csrf_field() ?>
                         <p class="text-muted small mb-3">Les champs marqués <span class="text-danger">*</span> sont obligatoires.</p>
                         <div class="mb-3">
                             <label class="form-label" for="profile_nom">Nom</label>

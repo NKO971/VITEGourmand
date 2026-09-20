@@ -10,6 +10,7 @@
                 <?php endif; ?>
 
                 <form id="connexion-form" method="post" action="">
+                    <?= csrf_field() ?>
                     <fieldset class="fieldset-connexion p-4 bg-white">
                         <legend class="fw-bold mb-4">Connexion</legend>
                         <p class="text-muted small mb-3">Les champs marqués <span class="text-danger">*</span> sont obligatoires.</p>

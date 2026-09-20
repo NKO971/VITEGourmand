@@ -17,6 +17,7 @@
                     </p>
 
                     <form action="?page=traitement_avis" method="POST">
+                        <?= csrf_field() ?>
                         <!-- ID de la commande masqué pour la transmission -->
                         <input type="hidden" name="commande_id" value="<?= htmlspecialchars($_GET['commande_id'] ?? '') ?>">
                         <p class="text-muted small mb-3">Les champs marqués <span class="text-danger">*</span> sont obligatoires.</p>

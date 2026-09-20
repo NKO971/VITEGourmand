@@ -41,7 +41,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-Requested-With': 'XMLHttpRequest'
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRF-Token': getCsrfToken()
                 },
                 body: JSON.stringify(payload)
             });
@@ -391,7 +392,8 @@ document.addEventListener('click', (e) => {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-Requested-With': 'XMLHttpRequest'
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRF-Token': getCsrfToken()
                     },
                     body: JSON.stringify(payload)
                 });
@@ -522,7 +524,8 @@ if (formCreateMenu) {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-Requested-With': 'XMLHttpRequest'
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRF-Token': getCsrfToken()
                 },
                 body: JSON.stringify(payload)
             });

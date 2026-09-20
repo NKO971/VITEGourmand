@@ -22,7 +22,7 @@ class BaseController
         }
 
         $specificCss = array_merge(["css/bootstrap.min.css", "css/base.css"], $additionalCss);
-        $specificJs  = array_merge(["js/jquery-3.7.1.min.js", "js/bootstrap.bundle.min.js"], $additionalJs);
+        $specificJs  = array_merge(["js/jquery-3.7.1.min.js", "js/bootstrap.bundle.min.js", "js/csrf.js"], $additionalJs);
 
         if ($layout === 'front') {
             require_once __DIR__ . '/../views/includes/header.php';

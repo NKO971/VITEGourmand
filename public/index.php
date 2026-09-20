@@ -17,8 +17,28 @@ loadEnv(ROOT_PATH . '.env');
 // Chargement de la BDD et du contrôleur de base
 require_once ROOT_PATH . 'app/config/db.php';
 require_once ROOT_PATH . 'app/controllers/baseController.php';
+require_once ROOT_PATH . 'helpers/csrf.php';
 
 $page = $_GET['page'] ?? 'home';
+
+// Vérification CSRF centralisée : toute requête POST doit porter un jeton
+// valide, envoyé soit en champ de formulaire, soit en en-tête pour l'AJAX JSON.
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $submittedToken = $_POST['csrf_token'] ?? ($_SERVER['HTTP_X_CSRF_TOKEN'] ?? '');
+
+    if (!csrf_verify($submittedToken)) {
+        http_response_code(403);
+
+        $contentType = $_SERVER['CONTENT_TYPE'] ?? '';
+        if (str_contains($contentType, 'application/json')) {
+            header('Content-Type: application/json');
+            echo json_encode(['success' => false, 'error' => 'Requête invalide (jeton de sécurité manquant ou expiré). Merci de recharger la page.']);
+        } else {
+            die('Requête invalide (jeton de sécurité manquant ou expiré). Merci de revenir en arrière et de recharger la page.');
+        }
+        exit();
+    }
+}
 
 switch ($page) {
 

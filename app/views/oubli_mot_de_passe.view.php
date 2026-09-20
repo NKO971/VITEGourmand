@@ -14,6 +14,7 @@
 
                 <?php if (empty($success)): ?>
                 <form method="post" action="?page=oubli-mot-de-passe">
+                    <?= csrf_field() ?>
                     <fieldset class="fieldset-connexion p-4 bg-white">
                         <legend class="fw-bold mb-4">Mot de passe oublié</legend>
                         <p class="text-muted small mb-3">Les champs marqués <span class="text-danger">*</span> sont obligatoires.</p>

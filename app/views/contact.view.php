@@ -15,6 +15,7 @@
 
                 <?php if (empty($success)): ?>
                 <form method="post" action="?page=contact">
+                    <?= csrf_field() ?>
                     <fieldset class="fieldset-connexion p-4 bg-white">
                         <p class="text-muted small mb-3">Les champs marqués <span class="text-danger">*</span> sont obligatoires.</p>
 

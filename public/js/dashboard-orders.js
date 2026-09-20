@@ -247,7 +247,7 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const response = await fetch('index.php?page=update_order_status', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': getCsrfToken() },
                 body: JSON.stringify({
                     commande_id: commandeId,
                     statut: 'Acceptée'
@@ -369,7 +369,7 @@ document.addEventListener('DOMContentLoaded', () => {
             try {
                 const response = await fetch('index.php?page=update_order_status', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': getCsrfToken() },
                     body: JSON.stringify({
                         commande_id: orderId,
                         statut: newStatus,
@@ -406,7 +406,7 @@ document.addEventListener('DOMContentLoaded', () => {
             try {
                 const response = await fetch('index.php?page=cancel_order', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': getCsrfToken() },
                     body: JSON.stringify({
                         commande_id: commandeId,
                         statut: 'Annulée',

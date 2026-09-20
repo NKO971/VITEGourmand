@@ -7,6 +7,7 @@
         <h1 class="mb-4">Modifier ma commande</h1>
 
         <form action="index.php?page=update_commande" method="POST">
+            <?= csrf_field() ?>
             <input type="hidden" name="commande_id" value="<?= htmlspecialchars($commande['commande_id']) ?>">
             <p class="text-muted small mb-3">Les champs marqués <span class="text-danger">*</span> sont obligatoires.</p>
             <div class="row">

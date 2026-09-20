@@ -14,6 +14,7 @@
 
                 <?php if (empty($success)): ?>
                 <form method="post" action="?page=reset-mot-de-passe">
+                    <?= csrf_field() ?>
                     <input type="hidden" name="token" value="<?= htmlspecialchars($token) ?>">
                     <fieldset class="fieldset-connexion p-4 bg-white">
                         <legend class="fw-bold mb-4">Nouveau mot de passe</legend>

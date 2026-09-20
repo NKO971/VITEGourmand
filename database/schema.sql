@@ -6,67 +6,50 @@
 -- Moteur InnoDB obligatoire (clés étrangères), encodage utf8mb4.
 -- Base cible : MariaDB 10.4 / MySQL 5.7+ (compatible Heroku JawsDB)
 -- =====================================================================
-
+ 
 -- ---------------------------------------------------------------------
 -- 1. Tables de référence (aucune dépendance)
 -- ---------------------------------------------------------------------
-
+ 
 CREATE TABLE IF NOT EXISTS `role` (
     role_id INT AUTO_INCREMENT PRIMARY KEY,
     libelle VARCHAR(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
+ 
 CREATE TABLE IF NOT EXISTS `theme` (
     theme_id INT AUTO_INCREMENT PRIMARY KEY,
     libelle VARCHAR(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
+ 
 CREATE TABLE IF NOT EXISTS `regime` (
     regime_id INT AUTO_INCREMENT PRIMARY KEY,
     libelle VARCHAR(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
+ 
 CREATE TABLE IF NOT EXISTS `horaire` (
     horaire_id INT AUTO_INCREMENT PRIMARY KEY,
     jour VARCHAR(50) NOT NULL,
     heure_ouverture VARCHAR(50) NOT NULL,
     heure_fermeture VARCHAR(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
+ 
 CREATE TABLE IF NOT EXISTS `zone_livraison` (
     zone_id INT AUTO_INCREMENT PRIMARY KEY,
     code_postal VARCHAR(5) NOT NULL,
     ville VARCHAR(50) NOT NULL,
     distance_km INT NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
+ 
 CREATE TABLE IF NOT EXISTS `allergene` (
     allergene_id INT AUTO_INCREMENT PRIMARY KEY,
     libelle VARCHAR(50) NOT NULL UNIQUE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- Seed idempotent des 14 allergenes majeurs (reglement UE 1169/2011).
--- INSERT IGNORE : sans danger a rejouer sur une base existante.
-INSERT IGNORE INTO `allergene` (`allergene_id`, `libelle`) VALUES
-(1, 'Gluten'),
-(2, 'Crustacés'),
-(3, 'Œufs'),
-(4, 'Poissons'),
-(5, 'Arachides'),
-(6, 'Soja'),
-(7, 'Lait'),
-(8, 'Fruits à coque'),
-(9, 'Céleri'),
-(10, 'Moutarde'),
-(11, 'Sésame'),
-(12, 'Sulfites'),
-(13, 'Lupin'),
-(14, 'Mollusques');
-
+ 
+ 
 -- ---------------------------------------------------------------------
 -- 2. Utilisateurs (dépend de role)
 -- ---------------------------------------------------------------------
-
+ 
 CREATE TABLE IF NOT EXISTS `utilisateur` (
     utilisateur_id INT AUTO_INCREMENT PRIMARY KEY,
     email VARCHAR(100) NOT NULL,
@@ -79,21 +62,21 @@ CREATE TABLE IF NOT EXISTS `utilisateur` (
     is_active TINYINT(1) DEFAULT 0,
     FOREIGN KEY (role_id) REFERENCES role (role_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
-
+ 
+ 
 -- ---------------------------------------------------------------------
 -- 3. Carte : plats et menus (menus dépendent de theme et regime)
 -- La composition du menu est stockée en JSON (hybride SQL / NoSQL) :
 -- {"entree": {"plat_id": 1, "nom": "..."}, "plat": {...}, "dessert": {...}}
 -- ---------------------------------------------------------------------
-
+ 
 CREATE TABLE IF NOT EXISTS `plat` (
     plat_id INT AUTO_INCREMENT PRIMARY KEY,
     titre_plat VARCHAR(100) NOT NULL,
     photo LONGBLOB DEFAULT NULL,
     actif TINYINT(1) DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
+ 
 -- Association many-to-many plat <-> allergene (un plat peut avoir
 -- plusieurs allergenes, un allergene concerne plusieurs plats).
 CREATE TABLE IF NOT EXISTS `plat_allergene` (
@@ -103,7 +86,7 @@ CREATE TABLE IF NOT EXISTS `plat_allergene` (
     FOREIGN KEY (plat_id) REFERENCES plat (plat_id) ON DELETE CASCADE,
     FOREIGN KEY (allergene_id) REFERENCES allergene (allergene_id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
+ 
 CREATE TABLE IF NOT EXISTS `menu` (
     menu_id INT AUTO_INCREMENT PRIMARY KEY,
     titre VARCHAR(100) NOT NULL,
@@ -122,13 +105,12 @@ CREATE TABLE IF NOT EXISTS `menu` (
     FOREIGN KEY (theme_id) REFERENCES theme (theme_id),
     FOREIGN KEY (regime_id) REFERENCES regime (regime_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
+ 
 -- ---------------------------------------------------------------------
--- 4. Galerie d'images par menu (URLs externes, pas d'upload fichier :
--- filesystem éphémère sur Heroku). menu.image reste la vignette.
+-- 4. Galerie d'images par menu (URLs externes, pas d'upload fichier choix fait du au contexte fictif du site et du filesystem éphémère sur Heroku). menu.image reste la vignette.
 -- Suppression en cascade : effacer un menu efface sa galerie.
 -- ---------------------------------------------------------------------
-
+ 
 CREATE TABLE IF NOT EXISTS `menu_images` (
     id INT AUTO_INCREMENT PRIMARY KEY,
     menu_id INT NOT NULL,
@@ -137,23 +119,11 @@ CREATE TABLE IF NOT EXISTS `menu_images` (
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (menu_id) REFERENCES menu (menu_id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- Patch idempotent : ajoute la colonne ordre si menu_images existe deja
--- sans elle (utilisee par Menu::saveGallery/getImagesByMenuId/getAllImagesByMenuIds).
--- Sans danger a rejouer sur une base existante (IF NOT EXISTS), y compris en prod.
-ALTER TABLE `menu_images` ADD COLUMN IF NOT EXISTS `ordre` INT DEFAULT 0 AFTER `image_url`;
-
--- Patch idempotent : ajoute les colonnes de delai de commande a menu si elles
--- n'existent pas deja (utilisees par Menu::createMenu/updateMenu et par le
--- blocage reel de date_prestation cote commande). Sans danger a rejouer sur
--- une base existante (IF NOT EXISTS), y compris en prod.
-ALTER TABLE `menu` ADD COLUMN IF NOT EXISTS `delai_commande_valeur` INT DEFAULT NULL AFTER `conditions_stockage`;
-ALTER TABLE `menu` ADD COLUMN IF NOT EXISTS `delai_commande_unite` VARCHAR(10) DEFAULT NULL AFTER `delai_commande_valeur`;
-
+ 
 -- ---------------------------------------------------------------------
 -- 5. Commandes et suivi (dépendent de utilisateur et menu)
 -- ---------------------------------------------------------------------
-
+ 
 CREATE TABLE IF NOT EXISTS `commande` (
     commande_id INT AUTO_INCREMENT PRIMARY KEY,
     numero_commande VARCHAR(50) NOT NULL,
@@ -175,7 +145,7 @@ CREATE TABLE IF NOT EXISTS `commande` (
     FOREIGN KEY (utilisateur_id) REFERENCES utilisateur (utilisateur_id),
     FOREIGN KEY (menu_id) REFERENCES menu (menu_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
+ 
 CREATE TABLE IF NOT EXISTS `suivi_commande` (
     id INT AUTO_INCREMENT PRIMARY KEY,
     commande_id INT NOT NULL,
@@ -184,11 +154,11 @@ CREATE TABLE IF NOT EXISTS `suivi_commande` (
     date_suivi DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (commande_id) REFERENCES commande (commande_id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
+ 
 -- ---------------------------------------------------------------------
 -- 6. Tables annexes
 -- ---------------------------------------------------------------------
-
+ 
 -- Avis SQL historique (les avis applicatifs sont stockés en MongoDB,
 -- collection "avis" : voir app/models/AvisModel.php)
 CREATE TABLE IF NOT EXISTS `avis` (
@@ -199,7 +169,7 @@ CREATE TABLE IF NOT EXISTS `avis` (
     utilisateur_id INT DEFAULT NULL,
     FOREIGN KEY (utilisateur_id) REFERENCES utilisateur (utilisateur_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
+ 
 CREATE TABLE IF NOT EXISTS `password_reset_tokens` (
     token_id INT AUTO_INCREMENT PRIMARY KEY,
     utilisateur_id INT NOT NULL,

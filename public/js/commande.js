@@ -138,7 +138,7 @@ function rechercherSuggestions() {
         return;
     }
 
-    fetch(`https://data.geopf.fr/geocodage/search/?`)
+    fetch(`https://data.geopf.fr/geocodage/search/?q=${encodeURIComponent(texte)}&limit=5&autocomplete=1`)
         .then(response => response.json())
         .then(data => {
             listeSuggestions.innerHTML = '';

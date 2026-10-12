@@ -59,6 +59,8 @@ MongoDB Atlas et Mailtrap restent des services externes (cloud).
    ```
    Au premier démarrage, la base est créée automatiquement et les scripts `database/schema.sql` puis `database/fixtures.sql` sont importés.
 
+   Le script `database/privileges.sh` restreint ensuite l'utilisateur applicatif aux droits `SELECT, INSERT, UPDATE, DELETE` (principe du moindre privilège).
+
 4. Accéder à l'application : http://localhost:8080
 
 ### Commandes utiles

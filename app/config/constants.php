@@ -12,6 +12,16 @@ if ($jawsdbUrl) {
     define('DB_PASS', $dbParts['pass']);
 
     define('BASE_URL', '');
+
+} elseif (getenv('DB_HOST')) {
+    // Docker : configuration fournie par les variables d'environnement (compose.yaml + .env)
+    define('DB_HOST', getenv('DB_HOST'));
+    define('DB_NAME', getenv('DB_NAME'));
+    define('DB_USER', getenv('DB_USER'));
+    define('DB_PASS', getenv('DB_PASS'));
+
+    define('BASE_URL', '');
+    
 } else {
     define('DB_HOST', 'localhost');
     define('DB_NAME', 'vitegourmand');

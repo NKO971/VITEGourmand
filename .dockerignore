@@ -1,0 +1,5 @@
+.git
+.env
+vendor
+livrables
+app/config/constants.local.php

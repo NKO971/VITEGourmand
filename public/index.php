@@ -1,4 +1,11 @@
 <?php
+// Ajouts de la sécurité HTTPS
+if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'http') {
+    $url = 'https://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+    header('Location: ' . $url, true, 301);
+    exit();
+}
+
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
@@ -7,6 +14,14 @@ define('ROOT_PATH', dirname(__DIR__) . '/');
 
 // Initialiser la session
 if (session_status() === PHP_SESSION_NONE) {
+    $isHttps = isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https'; // Vérifie si la requête est en HTTPS
+    session_set_cookie_params([
+        'lifetime' => 0, // Le cookie expire à la fermeture du navigateur
+        'path' => '/',
+        'secure' => $isHttps, // Le cookie est envoyé uniquement via HTTPS
+        'httponly' => true, // Le cookie n'est pas accessible via JavaScript
+        'samesite' => 'Lax', // Le cookie est envoyé uniquement pour les requêtes du même site ou les requêtes de navigation normale (pas pour les requêtes cross-site)
+    ]);
     session_start();
 }
 

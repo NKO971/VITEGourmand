@@ -1,5 +1,5 @@
-# Image de base 
-FROM php:8.4-apache
+# Image de base : PHP 8.4.27 minimum (correctif php2shell CVE-2026-109618 / CVE-2026-109619)
+FROM php:8.4.27-apache
 
 # Paquets système : libssl-dev et pkg-congig pour compiler MongoDB avec TLS (exigé par Atlas), unzip pour composer 
 RUN apt-get update \

@@ -1,3 +1,4 @@
+<main>
 <!-- Filtres des menus -->
 <section id="menus" class="container my-5">
   <h1 class="visually-hidden">Découvrez nos menus</h1>
@@ -117,4 +118,5 @@
 
   </div>
 </section>
+</main>
 
